@@ -8,6 +8,9 @@
 set -euo pipefail
 cd "$(dirname "$0")"
 
+echo "== evidence: the app's copies of the attack lists match evidence/ exactly"
+cmp evidence/attacks.json app/src/evidence/attacks.json && cmp evidence/attacks-2.json app/src/evidence/attacks-2.json && echo "attack lists in sync"
+
 echo "== contract: compile ReceiptMinter (CashScript 0.14)"
 (cd app && npx --no-install cashc contracts/ReceiptMinter.cash -o contracts/ReceiptMinter.json)
 

@@ -1,0 +1,87 @@
+{
+  "about": "Second, labelled attack list for the partial-refund path added after the first list (evidence/attacks.json). Written 2026-11-20 03:45 IST before any run against partialRefund. Every attack must be rejected; every valid case accepted.",
+  "seed": 20261123,
+  "valid": [
+    {
+      "id": "PV1",
+      "path": "partialRefund",
+      "what": "refund 2,000 of a 5,000 receipt; the holder gets 2,000 and a new receipt for 3,000 with the same order id"
+    },
+    {
+      "id": "PV2",
+      "path": "partialRefund",
+      "what": "refund 1 sat of a 5,000 receipt with a 4,999 remainder receipt"
+    },
+    {
+      "id": "PV3",
+      "path": "partialRefund",
+      "what": "refund 546 sats (the dust minimum) of a 5,000 receipt with a 4,454 remainder receipt",
+      "added": "2026-11-20 03:50 IST after the first run: PV2 (a 1-sat refund) can't exist, a 1-sat output is below the 546-sat dust limit"
+    }
+  ],
+  "attacks": [
+    {
+      "id": "P01",
+      "path": "partialRefund",
+      "what": "remainder receipt for more than what's left (2,000 refunded, 4,000 re-issued)"
+    },
+    {
+      "id": "P02",
+      "path": "partialRefund",
+      "what": "remainder receipt sent to an attacker instead of the holder"
+    },
+    {
+      "id": "P03",
+      "path": "partialRefund",
+      "what": "remainder receipt minted with minting capability"
+    },
+    {
+      "id": "P04",
+      "path": "partialRefund",
+      "what": "remainder receipt with a different order id"
+    },
+    {
+      "id": "P05",
+      "path": "partialRefund",
+      "what": "refund amount 0 with a full-value remainder receipt"
+    },
+    {
+      "id": "P06",
+      "path": "partialRefund",
+      "what": "refund the whole amount through the partial path with a 0 remainder receipt"
+    },
+    {
+      "id": "P07",
+      "path": "partialRefund",
+      "what": "partial refund that also mints a second remainder receipt"
+    },
+    {
+      "id": "P08",
+      "path": "partialRefund",
+      "what": "partial refund without the refund key's signature"
+    },
+    {
+      "id": "P09",
+      "path": "partialRefund",
+      "what": "partial refund paid to an attacker"
+    },
+    {
+      "id": "P10",
+      "path": "partialRefund",
+      "what": "partial refund with no remainder receipt (customer short-changed)"
+    },
+    {
+      "id": "P11",
+      "path": "partialRefund",
+      "what": "partial refund that drains the float beyond the refund amount"
+    },
+    {
+      "id": "P12",
+      "path": "partialRefund",
+      "what": "partial refund of more than the receipt amount"
+    }
+  ],
+  "not_applicable": {
+    "PV2": "a 1-sat refund output is below the 546-sat dust limit, so no standard transaction can carry it"
+  }
+}

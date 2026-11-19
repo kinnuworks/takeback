@@ -6,8 +6,8 @@ import {
   cashAddressToLockingBytecode, binToHex, secp256k1, encodeLockingBytecodeP2pkh, hash160,
   lockingBytecodeToCashAddress, bigIntToVmNumber, sha256,
 } from "@bitauth/libauth";
-import attackSpec from "../../../evidence/attacks.json" with { type: "json" };
-import attackSpec2 from "../../../evidence/attacks-2.json" with { type: "json" };
+import attackSpec from "../evidence/attacks.json" with { type: "json" };
+import attackSpec2 from "../evidence/attacks-2.json" with { type: "json" };
 import { minterContract } from "./takeback.ts";
 
 export const spec2 = attackSpec2 as { seed: number; valid: { id: string; path: string; what: string }[]; attacks: { id: string; path: string; what: string }[] };
