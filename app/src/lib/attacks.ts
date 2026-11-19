@@ -7,8 +7,10 @@ import {
   lockingBytecodeToCashAddress, bigIntToVmNumber, sha256,
 } from "@bitauth/libauth";
 import attackSpec from "../../../evidence/attacks.json" with { type: "json" };
+import attackSpec2 from "../../../evidence/attacks-2.json" with { type: "json" };
 import { minterContract } from "./takeback.ts";
 
+export const spec2 = attackSpec2 as { seed: number; valid: { id: string; path: string; what: string }[]; attacks: { id: string; path: string; what: string }[] };
 export const spec = attackSpec as { seed: number; valid: { id: string; path: string; what: string }[]; attacks: { id: string; path: string; what: string }[] };
 
 type Key = { pub: Uint8Array; sig: SignatureTemplate; addr: string };
@@ -85,6 +87,28 @@ function refund(opts: {
     return tb.debug();
   };
 }
+// Partial refund of `refundAmount` from a 5,000 receipt (order 7): out0 minter, out1 refund, out2 remainder receipt.
+function partial(opts: {
+  refundAmount?: bigint; signer?: (c: Ctx) => SignatureTemplate; outs?: (c: Ctx, outs: Out[]) => Out[];
+} = {}) {
+  return () => {
+    const c = setup();
+    const amount = 5_000n, refundAmount = opts.refundAmount ?? 2_000n;
+    const receipt: SpendableUtxo = { ...randomUtxo({ satoshis: 5_000n, token: nft(c.category, "none", commit(amount, 7n)) }), lockingBytecode: lbHex(c.customer.addr) };
+    c.provider.addUtxo(c.customer.addr, receipt);
+    const tb = new TransactionBuilder({ provider: c.provider })
+      .addInput(c.baton, c.minter.unlock.partialRefund(opts.signer ? opts.signer(c) : c.merchant.sig, 1n, refundAmount))
+      .addInput(receipt, c.customer.sig.unlockP2PKH());
+    const outs: Out[] = [
+      { to: c.minter.tokenAddress, amount: 50_000n - (refundAmount > 0n ? refundAmount : 0n), token: nft(c.category, "minting", "") },
+      { to: c.customer.addr, amount: refundAmount > 0n ? refundAmount : 546n },
+      { to: c.customer.addr, amount: 1_000n, token: nft(c.category, "none", commit(amount - refundAmount, 7n)) },
+    ];
+    for (const o of opts.outs ? opts.outs(c, outs) : outs) tb.addOutput(o as never);
+    return tb.debug();
+  };
+}
+
 const setAmount = (i: number, amount: bigint) => (_c: Ctx, o: Out[]) => o.map((x, j) => (j === i ? { ...x, amount } : x));
 const setTo = (i: number, f: (c: Ctx) => string) => (c: Ctx, o: Out[]) => o.map((x, j) => (j === i ? { ...x, to: f(c) } : x));
 const setToken = (i: number, f: (c: Ctx) => Out["token"]) => (c: Ctx, o: Out[]) => o.map((x, j) => (j === i ? { ...x, token: f(c) } : x));
@@ -131,6 +155,23 @@ export const cases: Record<string, () => unknown> = {
   A34: refund({ extraInput: (c) => ({ ...randomUtxo({ satoshis: 1_000n, token: nft(c.category, "none", commit(5_000n, 3n)) }), lockingBytecode: lbHex(c.customer.addr) }) }),
 };
 
+Object.assign(cases, {
+  PV1: partial(),
+  PV3: partial({ refundAmount: 546n }),
+  P01: partial({ outs: setToken(2, (c) => nft(c.category, "none", commit(4_000n, 7n))) }),
+  P02: partial({ outs: setTo(2, (c) => c.attacker.addr) }),
+  P03: partial({ outs: setToken(2, (c) => nft(c.category, "minting", commit(3_000n, 7n))) }),
+  P04: partial({ outs: setToken(2, (c) => nft(c.category, "none", commit(3_000n, 8n))) }),
+  P05: partial({ refundAmount: 0n }),
+  P06: partial({ refundAmount: 5_000n }),
+  P07: partial({ outs: add((c) => ({ to: c.customer.addr, amount: 1_000n, token: nft(c.category, "none", commit(3_000n, 7n)) })) }),
+  P08: partial({ signer: (c) => c.customer.sig }),
+  P09: partial({ outs: setTo(1, (c) => c.attacker.addr) }),
+  P10: partial({ outs: (_c, o) => [o[0], o[1]] }),
+  P11: partial({ outs: (c, o) => add((cc) => ({ to: cc.attacker.addr, amount: 5_000n }))(c, setAmount(0, 43_000n)(c, o)) }),
+  P12: partial({ refundAmount: 6_000n, outs: setToken(2, (c) => nft(c.category, "none", commit(1n, 7n))) }),
+});
+
 export interface CaseResult { id: string; what: string; kind: "valid" | "attack"; expected: "accept" | "reject"; outcome: "accepted" | "rejected" | "not-applicable" | "setup-error"; ok: boolean; detail: string }
 
 const SETUP_ERROR = /missing its lockingBytecode|fee per byte|Insufficient|less than the required minimum|OutputSatoshisTooSmall/i;
@@ -138,7 +179,8 @@ const SETUP_ERROR = /missing its lockingBytecode|fee per byte|Insufficient|less 
 export function runCase(id: string, what: string, kind: "valid" | "attack"): CaseResult {
   const expected = kind === "valid" ? "accept" : "reject";
   const fn = cases[id];
-  if (!fn) return { id, what, kind, expected, outcome: "not-applicable", ok: kind === "valid", detail: "one shop per transaction by design (minter must be input 0)" };
+  const naReason = (spec2 as unknown as { not_applicable?: Record<string, string> }).not_applicable?.[id];
+  if (!fn) return { id, what, kind, expected, outcome: "not-applicable", ok: kind === "valid", detail: naReason ?? "one shop per transaction by design (minter must be input 0)" };
   try {
     fn();
     return { id, what, kind, expected, outcome: "accepted", ok: kind === "valid", detail: "accepted by the VM" };
@@ -150,9 +192,10 @@ export function runCase(id: string, what: string, kind: "valid" | "attack"): Cas
   }
 }
 
-export function runAll(): CaseResult[] {
-  return [
-    ...spec.valid.map((v) => runCase(v.id, v.what, "valid")),
-    ...spec.attacks.map((a) => runCase(a.id, a.what, "attack")),
-  ];
+export function runAll(list: 1 | 2 | "both" = "both"): CaseResult[] {
+  const specs = list === 1 ? [spec] : list === 2 ? [spec2] : [spec, spec2];
+  return specs.flatMap((sp) => [
+    ...sp.valid.map((v) => runCase(v.id, v.what, "valid")),
+    ...sp.attacks.map((a) => runCase(a.id, a.what, "attack")),
+  ]);
 }

@@ -16,7 +16,7 @@ type Res = { status: (n: number) => Res; json: (b: unknown) => void; setHeader: 
 export default async function handler(req: Req, res: Res) {
   res.setHeader("Cache-Control", "no-store");
   if (req.method !== "POST") return res.status(405).json({ error: "POST only" });
-  const body = (typeof req.body === "string" ? JSON.parse(req.body) : req.body) as { txid?: string; vout?: number; holderAddress?: string; network?: string };
+  const body = (typeof req.body === "string" ? JSON.parse(req.body) : req.body) as { txid?: string; vout?: number; holderAddress?: string; network?: string; amount?: string };
   const network = body.network === "chipnet" ? "chipnet" : "mainnet";
   const shop = loadShop(network);
   if (!shop) return res.status(503).json({ error: `No ${network} shop is set up yet` });
@@ -41,7 +41,8 @@ export default async function handler(req: Req, res: Res) {
     const minterUtxo: SpendableUtxo = { ...minters[Math.floor(Math.random() * minters.length)], lockingBytecode: binToHex(cashAddressToLockingBytecode(shop.minterAddress).bytecode as Uint8Array) };
     const receiptUtxo: SpendableUtxo = { ...receipt, lockingBytecode: binToHex(lb.bytecode) };
     const keys: ShopKeys = { merchantPkh: hexToBin(shop.merchantPkh), refundPk: hexToBin(shop.refundPk), ownerPk: hexToBin(shop.ownerPk) };
-    const plan = buildRefund({ provider, keys, minterUtxo, refundKey: hexToBin(keyHex), receiptUtxo, holderAddress: body.holderAddress });
+    const refundAmount = body.amount ? BigInt(body.amount) : undefined;
+    const plan = buildRefund({ provider, keys, minterUtxo, refundKey: hexToBin(keyHex), receiptUtxo, holderAddress: body.holderAddress, refundAmount });
     return res.status(200).json({ wc: relaySafe(plan.wc), inputIndex: plan.inputIndex, amount: plan.amount.toString() });
   } catch (e) {
     return res.status(500).json({ error: String((e as Error).message ?? e).split("\n")[0] });

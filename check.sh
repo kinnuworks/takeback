@@ -12,7 +12,10 @@ echo "== contract: compile ReceiptMinter (CashScript 0.14)"
 (cd app && npx --no-install cashc contracts/ReceiptMinter.cash -o contracts/ReceiptMinter.json)
 
 echo "== contract: evidence/attacks.json on the BCH 2026 VM (every attack rejected, every valid case accepted)"
-(cd app && node contracts/attacks.test.mjs | tail -2)
+(cd app && node contracts/attacks.test.mjs 1 | tail -2)
+
+echo "== contract: evidence/attacks-2.json, the second labelled list (partial refunds)"
+(cd app && node contracts/attacks.test.mjs 2 | tail -2)
 
 echo "== flow: purchase + refund built by the app, signed by the headless wallet, verified on the VM"
 (cd app && node tests/flow.test.ts | tail -1)

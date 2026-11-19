@@ -73,5 +73,18 @@ ok(rtx.outputs[1].valueSatoshis === 10_000n, "holder gets exactly 10,000 sats ba
 ok(rtx.outputs.slice(1).every((o) => !o.token), "receipt is burned (no token after the minter)");
 ok(p2pkhAddress(keys.merchantPkh, "chipnet").startsWith("bchtest:"), "merchant address derives");
 
+// 3. Partial refund of 4,000 from the same 10,000 receipt (as if the full refund hadn't happened)
+const part = buildRefund({ provider, keys, minterUtxo: newBaton, refundKey, receiptUtxo, holderAddress: custAddr, refundAmount: 4_000n });
+const pwire = relaySafe({ transaction: part.wc.transaction, sourceOutputs: part.wc.sourceOutputs });
+const psigned: string = signP2pkhInputs(wallet, pwire, [[1, "receive", 0]]);
+const ptx = decodeTransactionBCH(hexToBin(psigned));
+if (typeof ptx === "string") throw new Error(ptx);
+const psources = part.wc.sourceOutputs.map((o) => ({ lockingBytecode: o.lockingBytecode, valueSatoshis: o.valueSatoshis, token: o.token }));
+const pverdict = vm.verify({ sourceOutputs: psources, transaction: ptx });
+ok(pverdict === true, "partial refund passes the BCH VM" + (pverdict === true ? "" : `: ${pverdict}`));
+ok(ptx.outputs[1].valueSatoshis === 4_000n, "holder gets 4,000 back");
+const rem = decodeReceipt(binToHex(ptx.outputs[2].token!.nft!.commitment));
+ok(rem?.amount === 6_000n && rem?.orderId === 42n, "new receipt says 6,000 sats, same order 42");
+
 console.log(failures === 0 ? "FLOW: ALL PASS" : `FLOW: ${failures} FAILED`);
 process.exit(failures === 0 ? 0 : 1);

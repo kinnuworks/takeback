@@ -108,17 +108,17 @@ export default function App() {
     } finally { setBusy(null); }
   };
 
-  const refund = async (r: HeldReceipt) => {
+  const refund = async (r: HeldReceipt, partAmount?: bigint) => {
     if (!wc.manager) return;
     setBusy(`refund-${r.txid}`); setMsg(null);
     try {
-      const resp = await fetch("/api/refund", { method: "POST", headers: { "content-type": "application/json" }, body: JSON.stringify({ txid: r.txid, vout: r.vout, holderAddress: r.address, network: NET }) });
+      const resp = await fetch("/api/refund", { method: "POST", headers: { "content-type": "application/json" }, body: JSON.stringify({ txid: r.txid, vout: r.vout, holderAddress: r.address, network: NET, amount: partAmount?.toString() }) });
       const j = await resp.json();
       if (!resp.ok) throw new Error(j.error ?? "Refund request failed");
       const res = await wc.manager.signTransaction({ transaction: j.wc, inputPaths: [[j.inputIndex, r.path, r.index]] });
       if (!res.signedTransaction) throw new Error(res.error ?? "The wallet didn't sign");
       const txid = (await broadcast(res.signedTransaction)) ?? "";
-      setMsg({ kind: "ok", text: `Refunded ${BigInt(j.amount).toLocaleString()} sats. The receipt is burned.`, txid });
+      setMsg({ kind: "ok", text: partAmount ? `Refunded ${BigInt(j.amount).toLocaleString()} sats. A new receipt for the rest is in your wallet.` : `Refunded ${BigInt(j.amount).toLocaleString()} sats. The receipt is burned.`, txid });
       setTimeout(() => { scanWallet(); refreshLedger(); }, 1500);
     } catch (e) {
       setMsg({ kind: "err", text: String((e as Error).message ?? e) });
@@ -215,7 +215,10 @@ export default function App() {
                 <li key={`${r.txid}:${r.vout}`}>
                   <div><b>{r.amount.toLocaleString()} sats</b> <span className="muted">order {String(r.orderId).slice(-6)}</span></div>
                   <a href={txLink(NET, r.txid)} target="_blank" rel="noreferrer">{shortTx(r.txid)}</a>
-                  <button disabled={!!busy} onClick={() => refund(r)}>{busy === `refund-${r.txid}` ? "Waiting for your wallet…" : "Refund"}</button>
+                  <span className="actions">
+                    <button disabled={!!busy} onClick={() => refund(r)}>{busy === `refund-${r.txid}` ? "Waiting for your wallet…" : "Refund"}</button>
+                    {r.amount >= 1092n && <button className="secondary" disabled={!!busy} onClick={() => refund(r, r.amount / 2n)}>Refund half</button>}
+                  </span>
                 </li>
               ))}
             </ul>
@@ -246,8 +249,8 @@ export default function App() {
 
       <section>
         <h2>Try to cheat the contract</h2>
-        <p>Thirty-four attacks we wrote before building it: over-refunds, second refunds, refunds to someone else, underpaid purchases that still get a receipt, extra minting tokens. Press the button and your browser runs each one against the real contract on a local copy of the BCH virtual machine. No wallet or money needed.</p>
-        <button onClick={runBreakTest} disabled={breaking}>{breaking ? "Running 37 cases…" : "Run the attacks"}</button>
+        <p>Forty-six attacks we wrote before running them: 34 in the first list (over-refunds, second refunds, refunds to someone else, underpaid purchases that still get a receipt, extra minting tokens) and 12 more for partial refunds. Press the button and your browser runs each one against the real contract on a local copy of the BCH virtual machine. No wallet or money needed.</p>
+        <button onClick={runBreakTest} disabled={breaking}>{breaking ? "Running the cases…" : "Run the attacks"}</button>
         {breakResults && (() => {
           const attacks = breakResults.filter((r) => r.kind === "attack");
           const rejected = attacks.filter((r) => r.outcome === "rejected").length;

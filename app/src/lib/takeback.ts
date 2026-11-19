@@ -12,8 +12,8 @@ import {
 } from "@bitauth/libauth";
 import artifact from "../../contracts/ReceiptMinter.json" with { type: "json" };
 
-/** Satoshis put on each receipt NFT output (token outputs need more than plain dust). */
-export const RECEIPT_DUST = 1000n;
+/** Satoshis put on each receipt NFT: token dust plus enough to pay the fee of a later refund. */
+export const RECEIPT_DUST = 2500n;
 export const FEE_RATE = 1.0;
 
 export interface ShopKeys {
@@ -126,8 +126,9 @@ export interface RefundPlan { wc: WcTransactionObject; inputIndex: number; amoun
  */
 export function buildRefund(opts: {
   provider: NetworkProvider; keys: ShopKeys; minterUtxo: Utxo; refundKey: Uint8Array;
-  receiptUtxo: Utxo; holderAddress: string;
+  receiptUtxo: Utxo; holderAddress: string; refundAmount?: bigint;
 }): RefundPlan {
+  if (opts.refundAmount !== undefined) return buildPartialRefund({ ...opts, refundAmount: opts.refundAmount });
   const { provider, keys, minterUtxo, receiptUtxo, holderAddress } = opts;
   const commitment = receiptUtxo.token?.nft?.commitment;
   if (!commitment || receiptUtxo.token?.category !== categoryOf(minterUtxo)) throw new Error("Not a receipt from this shop");
@@ -144,6 +145,36 @@ export function buildRefund(opts: {
     .addBchChangeOutputIfNeeded({ to: plain, feeRate: FEE_RATE });
   const wc = tb.generateWcTransactionObject({ broadcast: true, userPrompt: `Refund ${decoded.amount} sats for your Takeback receipt` });
   return { wc, inputIndex: 1, amount: decoded.amount, builder: tb };
+}
+
+/**
+ * Partial refund: pays `refundAmount` and gives the holder a new receipt for the rest (same order
+ * id). Output 0 minter less the refund, 1 the refund, 2 the remainder receipt, 3 dust back.
+ */
+export function buildPartialRefund(opts: {
+  provider: NetworkProvider; keys: ShopKeys; minterUtxo: Utxo; refundKey: Uint8Array;
+  receiptUtxo: Utxo; holderAddress: string; refundAmount: bigint;
+}): RefundPlan {
+  const { provider, keys, minterUtxo, receiptUtxo, holderAddress, refundAmount } = opts;
+  const commitment = receiptUtxo.token?.nft?.commitment;
+  const category = categoryOf(minterUtxo);
+  if (!commitment || receiptUtxo.token?.category !== category) throw new Error("Not a receipt from this shop");
+  const decoded = decodeReceipt(commitment);
+  if (!decoded) throw new Error("Malformed receipt");
+  if (refundAmount < 546n) throw new Error("A refund has to be at least 546 sats (the dust limit)");
+  if (refundAmount >= decoded.amount) throw new Error("A partial refund must be less than the receipt; use a full refund");
+  if (minterUtxo.satoshis - refundAmount < 1000n) throw new Error("The shop's refund float is too low right now");
+  const minter = minterContract(keys, provider);
+  const plain = toPlainAddress(holderAddress);
+  const tb = new TransactionBuilder({ provider })
+    .addInput(minterUtxo, minter.unlock.partialRefund(new SignatureTemplate(opts.refundKey), 1n, refundAmount))
+    .addInput(receiptUtxo, placeholderP2PKHUnlocker(plain))
+    .addOutput({ to: minter.tokenAddress, amount: minterUtxo.satoshis - refundAmount, token: minterUtxo.token })
+    .addOutput({ to: plain, amount: refundAmount })
+    .addOutput({ to: toTokenAddress(plain), amount: 1000n, token: { category, amount: 0n, nft: { capability: "none", commitment: encodeReceipt(decoded.amount - refundAmount, decoded.orderId) } } })
+    .addBchChangeOutputIfNeeded({ to: plain, feeRate: FEE_RATE });
+  const wc = tb.generateWcTransactionObject({ broadcast: true, userPrompt: `Refund ${refundAmount} of ${decoded.amount} sats; keep a receipt for the rest` });
+  return { wc, inputIndex: 1, amount: refundAmount, builder: tb };
 }
 
 export function toPlainAddress(address: string): string {

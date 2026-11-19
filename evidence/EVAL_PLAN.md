@@ -52,4 +52,5 @@ Then one card per claim:
 Then a short limits paragraph, in numbers: zero real users, the interval, the data's years, and the next real test, with the metric and threshold that would change the conclusion.
 
 ## Changes after the first run
-<None yet. Each change: the date, what changed, and why.>
+- 2026-11-20 03:45 IST: a partial-refund path was added to the contract, with a second, labelled attack list (evidence/attacks-2.json, 12 attacks + 2 valid cases) committed (da8f0f3) before any run against it. The first list is unchanged.
+- 2026-11-20 03:50 IST: valid case PV2 (refund 1 sat) can't exist on chain: a 1-sat output is below the 546-sat dust limit. Kept as written and marked not applicable; PV3 (refund 546 sats) added as the smallest possible partial refund.
