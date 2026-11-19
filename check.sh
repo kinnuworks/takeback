@@ -20,6 +20,9 @@ echo "== flow: purchase + refund built by the app, signed by the headless wallet
 echo "== app: typecheck and build"
 (cd app && npm run --silent build >/dev/null && echo "build ok")
 
+echo "== demo path: real browser, banner/tagline/menu, Connect -> wallet pairs over the relay (video in app/e2e/videos)"
+(cd app && perl -e 'alarm 150; exec @ARGV' node e2e/demo-path.mjs 2>&1 | grep -E "^(PASS|FAIL|video|DEMO)" ; test "${PIPESTATUS[0]}" -eq 0)
+
 echo "== wallet: WizardConnect pairing + signing over the real relay (headless test wallet)"
 (cd tools/wiz-harness && TEST_MNEMONIC="abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon about" perl -e 'alarm 90; exec @ARGV' node e2e-relay.mjs 2>&1 | grep -E "VM verify: PASS" || { echo "relay round trip failed"; exit 1; })
 
