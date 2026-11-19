@@ -18,3 +18,4 @@ table { width: 100%; border-collapse: collapse; font-size: 14px; }
 th, td { text-align: left; padding: 6px 4px; border-bottom: 1px solid #eee; }
 code { word-break: break-all; }
 @media (max-width: 520px) { .menu li, .receipts li { grid-template-columns: 1fr auto; } .menu li button, .receipts li button { grid-column: 1 / -1; } }
+.preview-flag { background: #222; color: #fff; padding: 6px 12px; margin: 0 -16px; font-size: 13px; }

@@ -15,6 +15,10 @@ const shop = loadShop(NET);
 const SLIDES_URL = import.meta.env.VITE_SLIDES_URL as string | undefined;
 const REPO_URL = (import.meta.env.VITE_REPO_URL as string | undefined) ?? "https://github.com/kinnuworks/takeback";
 const EMBER_ADDRESS = import.meta.env.VITE_EMBER_ADDRESS as string | undefined;
+// ?state=<name> previews one UI state with sample data, for design work. Labelled on screen.
+const PREVIEW = params.get("state");
+export const PREVIEW_STATES = ["idle", "connecting", "connected-empty", "connected", "paying", "paid", "refunding", "refunded", "error", "ledger-empty", "break-test"] as const;
+const SAMPLE_TX = "3f1a9c2e7b6d4f0a8e5c1b2d9f7a6e4c3b2a1908f7e6d5c4b3a291807f6e5d4c";
 
 const MENU = [
   { id: 1n, name: "Kopi", note: "Black coffee", sats: 10_000n },
@@ -47,7 +51,7 @@ export default function App() {
   const keys: ShopKeys | null = useMemo(() => shop ? { merchantPkh: hexToBin(shop.merchantPkh), refundPk: hexToBin(shop.refundPk), ownerPk: hexToBin(shop.ownerPk) } : null, []);
 
   const refreshLedger = useCallback(() => {
-    if (!shop) return;
+    if (!shop || PREVIEW) return;
     shopLedger(shop).then((r) => { setLedger(r); setLedgerErr(null); }).catch((e) => setLedgerErr(String(e?.message ?? e)));
   }, []);
   useEffect(() => { refreshLedger(); }, [refreshLedger]);
@@ -121,6 +125,29 @@ export default function App() {
     } finally { setBusy(null); }
   };
 
+  // Preview states: fake only what the state needs, everything else stays real.
+  const pv = PREVIEW;
+  const viewState = pv === "connecting" ? "connecting" : pv && pv !== "idle" && pv !== "ledger-empty" && pv !== "break-test" ? "connected" : wc.state;
+  useEffect(() => {
+    if (!pv) return;
+    const sample: HeldReceipt[] = [
+      { txid: SAMPLE_TX, vout: 2, amount: 15_000n, orderId: 17636412001n, address: "", path: "receive", index: 0 },
+      { txid: SAMPLE_TX.split("").reverse().join(""), vout: 2, amount: 10_000n, orderId: 17636411002n, address: "", path: "receive", index: 0 },
+    ];
+    if (pv === "connected" || pv === "paid" || pv === "refunding" || pv === "paying") setReceipts(sample);
+    if (pv === "refunded") setReceipts(sample.slice(1));
+    if (pv === "paying") setBusy("buy-1");
+    if (pv === "refunding") setBusy(`refund-${SAMPLE_TX}`);
+    if (pv === "paid") setMsg({ kind: "ok", text: "Paid 15,000 sats for Teh tarik. Your receipt is in your wallet.", txid: SAMPLE_TX });
+    if (pv === "refunded") setMsg({ kind: "ok", text: "Refunded 15,000 sats. The receipt is burned.", txid: SAMPLE_TX });
+    if (pv === "error") setMsg({ kind: "err", text: "Not enough BCH in the connected wallet: need about 18,000 sats, have 4,200" });
+    if (pv === "ledger-empty") setLedger([]);
+    if (pv !== "ledger-empty" && pv !== "idle") setLedger([
+      { txid: SAMPLE_TX, height: 951234, kind: "sale", amount: 15_000n },
+      { txid: SAMPLE_TX.split("").reverse().join(""), height: 951230, kind: "refund", amount: 10_000n },
+      { txid: SAMPLE_TX.replace(/a/g, "b"), height: 951229, kind: "sale", amount: 10_000n },
+    ]);
+  }, [pv]);
   const totals = ledger ? sumLedger(ledger) : null;
   const [breakResults, setBreakResults] = useState<CaseResult[] | null>(null);
   const [breaking, setBreaking] = useState(false);
@@ -132,10 +159,12 @@ export default function App() {
     setBreakResults(runAll());
     setBreaking(false);
   };
+  useEffect(() => { if (pv === "break-test") runBreakTest(); }, [pv]); // eslint-disable-line react-hooks/exhaustive-deps
   const lineText = (detail: string) => { const n = Number(detail.match(/line (\d+)/)?.[1]); return n ? sourceLines[n - 1]?.trim() : ""; };
 
   return (
     <div className="page">
+      {pv && <div className="preview-flag">Illustration: preview of the "{pv}" state with sample data, not real transactions.</div>}
       <div className="banner" role="note">
         <span><b>BCH BLAZE 2026</b> entry.</span>
         {SLIDES_URL ? <a href={SLIDES_URL}>Slides</a> : <span className="muted">Slides: coming soon</span>}
@@ -153,20 +182,20 @@ export default function App() {
 
       <section>
         <h2>{shop?.name ?? "Kopi Blaze"} <span className="muted">demo shop on {NET}</span></h2>
-        {wc.state !== "connected" ? (
+        {viewState !== "connected" ? (
           <div className="connect">
             <button onClick={() => wc.connect()}>Connect wallet to buy</button>
             <span className="muted">Scan with Paytaca or Selene (WizardConnect).</span>
           </div>
         ) : (
-          <p className="muted">Connected: {wc.walletName ?? "wallet"} · {coins.length} coins · <button className="link" onClick={() => wc.disconnect()}>Disconnect</button></p>
+          <p className="muted">Connected: {pv ? "Paytaca" : wc.walletName ?? "wallet"} · {pv ? 3 : coins.length} coins · <button className="link" onClick={() => wc.disconnect()}>Disconnect</button></p>
         )}
         <ul className="menu">
           {MENU.map((m) => (
             <li key={String(m.id)}>
               <div><b>{m.name}</b> <span className="muted">{m.note}</span></div>
               <div>{m.sats.toLocaleString()} sats <span className="muted">{fmtUsd(m.sats, usd)}</span></div>
-              <button disabled={wc.state !== "connected" || !!busy} onClick={() => buy(m)}>{busy === `buy-${m.id}` ? "Waiting for your wallet…" : "Buy"}</button>
+              <button disabled={viewState !== "connected" || !!busy} onClick={() => buy(m)}>{busy === `buy-${m.id}` ? "Waiting for your wallet…" : "Buy"}</button>
             </li>
           ))}
         </ul>
@@ -177,7 +206,7 @@ export default function App() {
         )}
       </section>
 
-      {wc.state === "connected" && (
+      {viewState === "connected" && (
         <section>
           <h2>Your receipts</h2>
           {receipts.length === 0 ? <p className="muted">No receipts from this shop in this wallet yet. Buy something above.</p> : (
@@ -200,7 +229,7 @@ export default function App() {
         {!shop && <p className="muted">The shop opens once its minter contract is on chain.</p>}
         {shop && !ledger && !ledgerErr && <p className="muted">Reading the minter's history…</p>}
         {totals && (
-          <p>{totals.sales} sales ({totals.salesSats.toLocaleString()} sats) · {totals.refunds} refunds ({totals.refundSats.toLocaleString()} sats) · net {totals.netSats.toLocaleString()} sats</p>
+          <p>{totals.sales} {totals.sales === 1 ? "sale" : "sales"} ({totals.salesSats.toLocaleString()} sats) · {totals.refunds} {totals.refunds === 1 ? "refund" : "refunds"} ({totals.refundSats.toLocaleString()} sats) · net {totals.netSats.toLocaleString()} sats</p>
         )}
         {ledger && ledger.length > 0 && (
           <table>
@@ -240,8 +269,9 @@ export default function App() {
       </section>
 
       {wc.uri && wc.qrUri && (
-        <WizardConnectQRDialog show={wc.state === "connecting"} onClose={() => wc.disconnect()} uri={wc.uri} qrUri={wc.qrUri} title="Connect your wallet" subtitle="Scan with Paytaca or Selene" />
+        <WizardConnectQRDialog show={wc.state === "connecting" && !pv} onClose={() => wc.disconnect()} uri={wc.uri} qrUri={wc.qrUri} title="Connect your wallet" subtitle="Scan with Paytaca or Selene" />
       )}
+      {pv === "connecting" && <p className="notice">(Preview) The WizardConnect QR dialog opens here; press Connect on the live page to see the real one.</p>}
       <footer className="muted small">Takeback · built for BCH BLAZE 2026.</footer>
     </div>
   );
