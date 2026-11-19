@@ -1,0 +1,24 @@
+pragma cashscript ^0.14.0;
+
+// Event credit vault: holds the event's fungible CashToken supply and the BCH backing.
+// Anyone can swap BCH for credits or credits for BCH at a fixed rate, but only by
+// recreating this vault as output 0 with the same token category, so the backing can
+// only leave when credits come back. The organiser takes nothing from the backing.
+contract Vault(int satsPerCredit) {
+    function swap() {
+        // This input is the vault; output 0 must be the vault again.
+        require(tx.outputs[0].lockingBytecode == tx.inputs[this.activeInputIndex].lockingBytecode);
+        require(tx.outputs[0].tokenCategory == tx.inputs[this.activeInputIndex].tokenCategory);
+
+        int creditsIn = tx.inputs[this.activeInputIndex].tokenAmount;
+        int creditsOut = tx.outputs[0].tokenAmount;
+        int satsIn = tx.inputs[this.activeInputIndex].value;
+        int satsOut = tx.outputs[0].value;
+
+        // Credits leaving the vault must be paid for in BCH at the fixed rate, and
+        // credits returning release exactly their BCH backing.
+        require(satsOut - satsIn == (creditsIn - creditsOut) * satsPerCredit);
+        // Keep the vault alive with a dust floor.
+        require(satsOut >= 1000);
+    }
+}

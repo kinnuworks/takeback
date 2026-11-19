@@ -1,0 +1,89 @@
+pragma cashscript ^0.14.0;
+
+// Takeback receipt minter for one shop.
+// The minter UTXO holds the shop's minting NFT (its receipt category) and a refund float.
+//
+// pay(): one transaction pays the merchant and mints the customer's receipt.
+//   out[0]  the minter again: same script, same minting token, float not reduced
+//   out[1]  the merchant's P2PKH, paid exactly the receipt amount
+//   out[2]  the receipt: an immutable NFT of the category, commitment = amount (8 bytes LE) + order id (8 bytes)
+//   out[3+] anything else (customer change) but never a token of this category
+//
+// refund(): the merchant co-signs; the receipt holder spends their receipt.
+//   in[receiptInput]  the receipt (an immutable NFT of this category)
+//   out[0]  the minter again, float reduced by at most the refund amount
+//   out[1]  the receipt holder's own locking bytecode, paid exactly the receipt amount, no token
+//   out[2+] change, never a token of this category (so the receipt is burned)
+contract ReceiptMinter(bytes20 merchantPkh, pubkey merchantPk) {
+    function pay() {
+        bytes category = tx.inputs[this.activeInputIndex].tokenCategory.split(32)[0];
+        bytes mintingCategory = tx.inputs[this.activeInputIndex].tokenCategory;
+        require(this.activeInputIndex == 0);
+
+        require(tx.outputs[0].lockingBytecode == tx.inputs[0].lockingBytecode);
+        require(tx.outputs[0].tokenCategory == mintingCategory);
+        require(tx.outputs[0].tokenAmount == 0);
+        require(tx.outputs[0].value >= tx.inputs[0].value);
+
+        require(tx.outputs[2].tokenCategory == category);
+        require(tx.outputs[2].tokenAmount == 0);
+        bytes receipt = tx.outputs[2].nftCommitment;
+        require(receipt.length == 16);
+        int amount = int(receipt.split(8)[0]);
+        require(amount > 0);
+
+        require(tx.outputs[1].lockingBytecode == new LockingBytecodeP2PKH(merchantPkh));
+        require(tx.outputs[1].value == amount);
+        require(tx.outputs[1].tokenCategory == 0x);
+
+        // No other output may carry this category (no extra batons, no extra receipts).
+        for (int i = 3; i < tx.outputs.length; i = i + 1) {
+            bytes oc = tx.outputs[i].tokenCategory;
+            if (oc.length > 0) {
+                require(oc.split(32)[0] != category);
+            }
+        }
+    }
+
+    function refund(sig merchantSig, int receiptInput) {
+        require(checkSig(merchantSig, merchantPk));
+        require(this.activeInputIndex == 0);
+        require(receiptInput != 0);
+        bytes category = tx.inputs[0].tokenCategory.split(32)[0];
+        bytes mintingCategory = tx.inputs[0].tokenCategory;
+
+        require(tx.outputs[0].lockingBytecode == tx.inputs[0].lockingBytecode);
+        require(tx.outputs[0].tokenCategory == mintingCategory);
+        require(tx.outputs[0].tokenAmount == 0);
+
+        // The receipt: an immutable NFT of exactly this category.
+        require(tx.inputs[receiptInput].tokenCategory == category);
+        bytes receipt = tx.inputs[receiptInput].nftCommitment;
+        require(receipt.length == 16);
+        int amount = int(receipt.split(8)[0]);
+        require(amount > 0);
+
+        // The float pays at most the refund.
+        require(tx.outputs[0].value >= tx.inputs[0].value - amount);
+
+        // The holder gets exactly the receipt amount, at their own address, with no token.
+        require(tx.outputs[1].lockingBytecode == tx.inputs[receiptInput].lockingBytecode);
+        require(tx.outputs[1].value == amount);
+        require(tx.outputs[1].tokenCategory == 0x);
+
+        // Only this one receipt of the category may be spent here.
+        for (int j = 1; j < tx.inputs.length; j = j + 1) {
+            bytes ic = tx.inputs[j].tokenCategory;
+            if (j != receiptInput && ic.length > 0) {
+                require(ic.split(32)[0] != category);
+            }
+        }
+        // And no output after the minter carries the category: the receipt is burned.
+        for (int k = 1; k < tx.outputs.length; k = k + 1) {
+            bytes kc = tx.outputs[k].tokenCategory;
+            if (kc.length > 0) {
+                require(kc.split(32)[0] != category);
+            }
+        }
+    }
+}

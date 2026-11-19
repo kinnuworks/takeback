@@ -1,0 +1,47 @@
+pragma cashscript ^0.14.0;
+
+// Receipt minter: holds a minting NFT (the baton) for the shop's receipt category.
+// pay(): the customer's payment and the receipt mint happen in one transaction. Output 0
+// recreates the minter, output 1 pays the merchant exactly the amount written in the
+// receipt, output 2 is the receipt NFT (commitment = 8-byte amount + 8-byte order id).
+// refund(): the merchant signs; a receipt NFT input is burned and the refund output pays
+// exactly the receipt's amount to the receipt holder's address given in the call.
+contract ReceiptMinter(bytes20 merchantPkh, pubkey merchantPk) {
+    function pay() {
+        bytes32 category = tx.inputs[this.activeInputIndex].tokenCategory.split(32)[0];
+        // Minter survives with its minting capability.
+        require(tx.outputs[0].lockingBytecode == tx.inputs[this.activeInputIndex].lockingBytecode);
+        require(tx.outputs[0].tokenCategory == tx.inputs[this.activeInputIndex].tokenCategory);
+        require(tx.outputs[0].value >= tx.inputs[this.activeInputIndex].value);
+
+        // Output 2 is an immutable receipt NFT of this category.
+        require(tx.outputs[2].tokenCategory == category);
+        bytes receipt = tx.outputs[2].nftCommitment;
+        require(receipt.length == 16);
+        int amount = int(receipt.split(8)[0]);
+        require(amount > 0);
+
+        // Output 1 pays the merchant exactly the receipt amount.
+        require(tx.outputs[1].lockingBytecode == new LockingBytecodeP2PKH(merchantPkh));
+        require(tx.outputs[1].value == amount);
+    }
+
+    function refund(sig merchantSig, int receiptInput, bytes refundTo) {
+        require(checkSig(merchantSig, merchantPk));
+        bytes32 category = tx.inputs[this.activeInputIndex].tokenCategory.split(32)[0];
+        // Minter survives.
+        require(tx.outputs[0].lockingBytecode == tx.inputs[this.activeInputIndex].lockingBytecode);
+        require(tx.outputs[0].tokenCategory == tx.inputs[this.activeInputIndex].tokenCategory);
+        // The receipt being refunded is an input of this category and is not carried to any
+        // output of ours: output 1 must hold no token.
+        require(tx.inputs[receiptInput].tokenCategory == category);
+        bytes receipt = tx.inputs[receiptInput].nftCommitment;
+        int amount = int(receipt.split(8)[0]);
+        require(tx.outputs[1].tokenCategory == 0x);
+        // Refund goes to the address that held the receipt, for exactly the receipt amount.
+        require(tx.inputs[receiptInput].lockingBytecode == refundTo);
+        require(tx.outputs[1].lockingBytecode == refundTo);
+        require(tx.outputs[1].value == amount);
+        require(tx.outputs.length <= 3);
+    }
+}

@@ -1,0 +1,14 @@
+{
+  "name": "wiz-harness",
+  "private": true,
+  "type": "module",
+  "description": "Headless WizardConnect test wallet and dapp for end-to-end checks on chipnet",
+  "scripts": {},
+  "dependencies": {
+    "@bitauth/libauth": "^3.0.0",
+    "@electrum-cash/network": "^4.4.8",
+    "@wizardconnect/core": "^0.2.11",
+    "@wizardconnect/dapp": "^0.2.8",
+    "@wizardconnect/wallet": "^0.2.5"
+  }
+}
