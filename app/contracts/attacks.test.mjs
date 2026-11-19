@@ -32,15 +32,15 @@ const commit = (amount, order = 1n, len = 16) => {
 
 function setup() {
   const provider = new MockNetworkProvider();
-  const merchant = key(), customer = key(), attacker = key(), other = key();
-  const minter = new Contract(artifact, [hash160(merchant.pub), merchant.pub], { provider });
+  const merchant = key(), customer = key(), attacker = key(), other = key(), owner = key();
+  const minter = new Contract(artifact, [hash160(merchant.pub), merchant.pub, owner.pub], { provider });
   const baton = withLb(randomUtxo({ satoshis: 50_000n, token: randomNFT({ nft: { capability: "minting", commitment: "" } }) }), minter.address);
   const category = baton.token.category;
   provider.addUtxo(minter.address, baton);
   const coins = withLb(randomUtxo({ satoshis: 40_000n }), customer.addr);
   provider.addUtxo(customer.addr, coins);
   const otherCat = randomNFT({ nft: { capability: "none", commitment: commit(30_000n) } });
-  return { provider, merchant, customer, attacker, other, minter, baton, category, coins, otherCat };
+  return { provider, merchant, customer, attacker, other, owner, minter, baton, category, coins, otherCat };
 }
 const nft = (category, capability, commitment) => ({ category, amount: 0n, nft: { capability, commitment } });
 

@@ -9,12 +9,15 @@ pragma cashscript ^0.14.0;
 //   out[2]  the receipt: an immutable NFT of the category, commitment = amount (8 bytes LE) + order id (8 bytes)
 //   out[3+] anything else (customer change) but never a token of this category
 //
-// refund(): the merchant co-signs; the receipt holder spends their receipt.
+// refund(): the shop's hot refund key co-signs; the receipt holder spends their receipt.
 //   in[receiptInput]  the receipt (an immutable NFT of this category)
 //   out[0]  the minter again, float reduced by at most the refund amount
 //   out[1]  the receipt holder's own locking bytecode, paid exactly the receipt amount, no token
 //   out[2+] change, never a token of this category (so the receipt is burned)
-contract ReceiptMinter(bytes20 merchantPkh, pubkey merchantPk) {
+// admin(): the shop owner's cold key can do anything (top up the float, split more minter
+//   UTXOs against congestion, withdraw). The hot refund key on the server can only refund
+//   within the rules above, so a stolen server key can't drain the shop.
+contract ReceiptMinter(bytes20 merchantPkh, pubkey refundPk, pubkey ownerPk) {
     function pay() {
         bytes category = tx.inputs[this.activeInputIndex].tokenCategory.split(32)[0];
         bytes mintingCategory = tx.inputs[this.activeInputIndex].tokenCategory;
@@ -45,8 +48,8 @@ contract ReceiptMinter(bytes20 merchantPkh, pubkey merchantPk) {
         }
     }
 
-    function refund(sig merchantSig, int receiptInput) {
-        require(checkSig(merchantSig, merchantPk));
+    function refund(sig refundSig, int receiptInput) {
+        require(checkSig(refundSig, refundPk));
         require(this.activeInputIndex == 0);
         require(receiptInput != 0);
         bytes category = tx.inputs[0].tokenCategory.split(32)[0];
@@ -85,5 +88,9 @@ contract ReceiptMinter(bytes20 merchantPkh, pubkey merchantPk) {
                 require(kc.split(32)[0] != category);
             }
         }
+    }
+
+    function admin(sig ownerSig) {
+        require(checkSig(ownerSig, ownerPk));
     }
 }

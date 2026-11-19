@@ -9,7 +9,7 @@ import {
   lockingBytecodeToCashAddress, SigningSerializationFlag,
 } from "@bitauth/libauth";
 import { WalletConnectionManager } from "@wizardconnect/wallet";
-import { toUint8Array, toBigInt } from "@wizardconnect/core";
+import { toUint8Array, toBigInt, parseExtendedJson } from "@wizardconnect/core";
 
 const SIGHASH = SigningSerializationFlag.allOutputs | SigningSerializationFlag.utxos | SigningSerializationFlag.forkId; // 0x61
 
@@ -40,10 +40,13 @@ export function makeKeys(mnemonic, network = "chipnet") {
 
 const PATH_CHILD = { receive: 0, change: 1, defi: 7 };
 
-export function signP2pkhInputs(keys, wcTx, inputPaths) {
+export function signP2pkhInputs(keys, wireTx, inputPaths) {
+  // Decode the relay JSON the way a wallet does: extended-format bytes and bigints back to native.
+  const wcTx = parseExtendedJson(JSON.stringify(wireTx));
   const tx = typeof wcTx.transaction === "string" ? decodeTransactionBCH(hexToBin(wcTx.transaction)) : wcTx.transaction;
   if (typeof tx === "string") throw new Error(tx);
   const sourceOutputs = wcTx.sourceOutputs.map((o) => ({ lockingBytecode: toUint8Array(o.lockingBytecode), valueSatoshis: toBigInt(o.valueSatoshis), token: o.token }));
+  if (!tx.inputs[0].unlockingBytecode) for (const i of tx.inputs) i.unlockingBytecode ??= new Uint8Array();
   for (const [inputIndex, pathName, addressIndex] of inputPaths) {
     const child = typeof pathName === "number" ? pathName : PATH_CHILD[pathName];
     const n = keys.node(child, addressIndex);

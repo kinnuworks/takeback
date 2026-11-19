@@ -8,10 +8,20 @@
 set -euo pipefail
 cd "$(dirname "$0")"
 
-# For example:
-# npm run typecheck
-# npm test
-# npx playwright test e2e/demo-path.spec.ts   (with video: 'on')
+echo "== contract: compile ReceiptMinter (CashScript 0.14)"
+(cd app && npx --no-install cashc contracts/ReceiptMinter.cash -o contracts/ReceiptMinter.json)
+
+echo "== contract: evidence/attacks.json on the BCH 2026 VM (every attack rejected, every valid case accepted)"
+(cd app && node contracts/attacks.test.mjs | tail -2)
+
+echo "== flow: purchase + refund built by the app, signed by the headless wallet, verified on the VM"
+(cd app && node tests/flow.test.ts | tail -1)
+
+echo "== app: typecheck and build"
+(cd app && npm run --silent build >/dev/null && echo "build ok")
+
+echo "== wallet: WizardConnect pairing + signing over the real relay (headless test wallet)"
+(cd tools/wiz-harness && TEST_MNEMONIC="abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon about" perl -e 'alarm 90; exec @ARGV' node e2e-relay.mjs 2>&1 | grep -E "VM verify: PASS" || { echo "relay round trip failed"; exit 1; })
 
 # Evidence labels: once evidence/EVAL_PLAN.md exists, the public text (README, submission text,
 # video script) must label every evidence claim for its kind.
@@ -19,4 +29,4 @@ if [ -f evidence/EVAL_PLAN.md ] && [ -f evidence_lint.py ]; then
   python3 -I evidence_lint.py
 fi
 
-echo "check.sh: no checks yet"
+echo "check.sh: all checks passed"

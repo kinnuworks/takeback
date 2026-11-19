@@ -5,7 +5,7 @@
   "description": "Headless WizardConnect test wallet and dapp for end-to-end checks on chipnet",
   "scripts": {},
   "dependencies": {
-    "@bitauth/libauth": "^3.0.0",
+    "@bitauth/libauth": "^3.1.0-next.8",
     "@electrum-cash/network": "^4.4.8",
     "@wizardconnect/core": "^0.2.11",
     "@wizardconnect/dapp": "^0.2.8",
