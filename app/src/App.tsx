@@ -5,6 +5,8 @@ import { buildPurchase, relaySafe, decodeReceipt, isMinterUtxo, p2pkhAddress, ty
 import { loadShop } from "./lib/shop.ts";
 import { providerFor, shopLedger, sumLedger, txLink, shortTx, type LedgerRow, type Net } from "./lib/chain.ts";
 import { hexToBin } from "@bitauth/libauth";
+import contractSource from "../contracts/ReceiptMinter.cash?raw";
+import type { CaseResult } from "./lib/attacks.ts";
 import "./App.css";
 
 const params = new URLSearchParams(location.search);
@@ -120,6 +122,17 @@ export default function App() {
   };
 
   const totals = ledger ? sumLedger(ledger) : null;
+  const [breakResults, setBreakResults] = useState<CaseResult[] | null>(null);
+  const [breaking, setBreaking] = useState(false);
+  const sourceLines = contractSource.split("\n");
+  const runBreakTest = async () => {
+    setBreaking(true);
+    await new Promise((r) => setTimeout(r, 30));
+    const { runAll } = await import("./lib/attacks.ts");
+    setBreakResults(runAll());
+    setBreaking(false);
+  };
+  const lineText = (detail: string) => { const n = Number(detail.match(/line (\d+)/)?.[1]); return n ? sourceLines[n - 1]?.trim() : ""; };
 
   return (
     <div className="page">
@@ -200,6 +213,30 @@ export default function App() {
           </table>
         )}
         {shop && <p className="muted small">Minter contract: <code>{shop.minterAddress}</code> · receipt category <code>{shop.category.slice(0, 12)}…</code></p>}
+      </section>
+
+      <section>
+        <h2>Try to cheat the contract</h2>
+        <p>Thirty-four attacks we wrote before building it: over-refunds, second refunds, refunds to someone else, underpaid purchases that still get a receipt, extra minting tokens. Press the button and your browser runs each one against the real contract on a local copy of the BCH virtual machine. No wallet or money needed.</p>
+        <button onClick={runBreakTest} disabled={breaking}>{breaking ? "Running 37 cases…" : "Run the attacks"}</button>
+        {breakResults && (() => {
+          const attacks = breakResults.filter((r) => r.kind === "attack");
+          const rejected = attacks.filter((r) => r.outcome === "rejected").length;
+          const valid = breakResults.filter((r) => r.kind === "valid" && r.outcome !== "not-applicable");
+          return (
+            <>
+              <p className={rejected === attacks.length ? "ok" : "err"}><b>{rejected} of {attacks.length} attacks refused by the contract.</b> {valid.filter((r) => r.ok).length} of {valid.length} honest purchases and refunds went through.</p>
+              <table>
+                <thead><tr><th>Case</th><th>What it tries</th><th>Result</th><th>The rule that stopped it</th></tr></thead>
+                <tbody>
+                  {breakResults.map((r) => (
+                    <tr key={r.id}><td>{r.id}</td><td>{r.what}</td><td className={r.ok ? "ok" : "err"}>{r.outcome}</td><td><code>{r.outcome === "rejected" ? lineText(r.detail) : ""}</code></td></tr>
+                  ))}
+                </tbody>
+              </table>
+            </>
+          );
+        })()}
       </section>
 
       {wc.uri && wc.qrUri && (
