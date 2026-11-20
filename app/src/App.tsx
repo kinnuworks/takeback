@@ -131,9 +131,10 @@ export default function App() {
       const balance = async () => (await p.getUtxos(burner.address)).filter((u) => !u.token).reduce((s, u) => s + u.satoshis, 0n);
       if ((await balance()) < DEMO_FUNDS - 1_500n) { // enough for the dearest item after a buy-and-refund round trip
         const r = await fetch("/api/faucet", { method: "POST", headers: { "content-type": "application/json" }, body: JSON.stringify({ address: burner.address }) });
-        const j = await r.json();
-        if (!r.ok) throw new Error(j.error ?? "The demo faucet didn't answer");
-        for (let i = 0; i < 15 && (await balance()) < DEMO_FUNDS - 1_500n; i++) await sleep(1000);
+        const j = await r.json().catch(() => ({}));
+        // A wallet that already holds enough for a coffee carries on even if the faucet can't top it up.
+        if (!r.ok && (await balance()) < 13_500n) throw new Error(j.error ?? "The demo faucet didn't answer");
+        if (r.ok) for (let i = 0; i < 15 && (await balance()) < DEMO_FUNDS - 1_500n; i++) await sleep(1000);
       }
       return await scanWallet("demo");
     } catch (e) {
