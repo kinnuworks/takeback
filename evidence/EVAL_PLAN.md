@@ -73,3 +73,4 @@ Lists 1 and 2 are unchanged. Fuzz mutations come only from the seed and the gene
 
 ### Limits written in advance
 The model of the rules is written by the same team as the contract, so a misunderstanding shared by both would not show up. Chipnet coins have no monetary value. Mutation testing deletes whole checks only; it does not try subtler edits.
+- 2026-11-20 19:55 IST (real-node run, plan above): the first chipnet run of scripts/real-attacks.mjs built only 25 of the 46 attacks: our script's fee estimate used too low a fee for its own size check, and one server dropped connections. All 25 that reached the nodes were refused. We fixed the script (a larger fee for the size estimate, retries for unreachable servers) and reran the whole list once; evidence/real-node-chipnet.json is that second run (2026-11-20 19:51 IST). The attack definitions did not change between runs.
