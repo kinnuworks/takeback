@@ -1,11 +1,39 @@
 {
-  "about": "Fourth, labelled attack list: test gaps found by mutation testing on contract v2 (app/contracts/mutants.test.mjs, first run 2026-11-20 20:40 IST). Deleting `require(this.activeInputIndex == 0)` from any path left every earlier attack refused, so no test proved that check matters. These attacks would get through without it. Written before any run of this list; lists 1-3 are unchanged. Every attack must be rejected.",
+  "about": "Fourth, labelled attack list: test gaps found by mutation testing on contract v2 (app/contracts/mutants.test.mjs, first run 2026-11-20 20:03 IST). Deleting `require(this.activeInputIndex == 0)` from any path left every earlier attack refused, so no test proved that check matters. These attacks would get through without it. Written before any run of this list; lists 1-3 are unchanged. Every attack must be rejected.",
   "seed": 20261125,
   "valid": [],
   "attacks": [
-    { "id": "K01", "path": "pay", "what": "steal the shop's minting token: put the minter at input 1 behind the attacker's own coin at input 0, and send output 0 (the minting token) to the attacker's address, which matches input 0" },
-    { "id": "K02", "path": "refund", "what": "with the stolen hot refund key: minter at input 1, attacker's coin at input 0, and the minting token plus the whole float sent to the attacker at output 0" },
-    { "id": "K03", "path": "partialRefund", "what": "with the stolen hot refund key: the same input-order trick through the partial-refund path" },
-    { "id": "K04", "path": "admin", "what": "use the owner's admin path without the owner's key (signed by the hot refund key) to take the float" }
+    {
+      "id": "K01",
+      "path": "pay",
+      "what": "steal the shop's minting token: put the minter at input 1 behind the attacker's own coin at input 0, and send output 0 (the minting token) to the attacker's address, which matches input 0"
+    },
+    {
+      "id": "K02",
+      "path": "refund",
+      "what": "with the stolen hot refund key: minter at input 1, attacker's coin at input 0, and the minting token plus the whole float sent to the attacker at output 0"
+    },
+    {
+      "id": "K03",
+      "path": "partialRefund",
+      "what": "with the stolen hot refund key: the same input-order trick through the partial-refund path"
+    },
+    {
+      "id": "K04",
+      "path": "admin",
+      "what": "use the owner's admin path without the owner's key (signed by the hot refund key) to take the float"
+    },
+    {
+      "id": "K05",
+      "path": "refund",
+      "what": "with the stolen hot refund key: the attacker's own token category's minting token at input 0, the minter at input 1 and a fake receipt in the attacker's category at input 2, so the refund path reads the attacker's category; the shop's minting token and float go to the attacker",
+      "added": "2026-11-20 20:12 IST after the first mutation run with K01-K04: deleting the input-order check from refund and partialRefund still survived, and checking each survivor by hand showed this attack gets through without it"
+    },
+    {
+      "id": "K06",
+      "path": "partialRefund",
+      "what": "the same attacker-category trick through the partial-refund path",
+      "added": "2026-11-20 20:12 IST, same reason as K05"
+    }
   ]
 }

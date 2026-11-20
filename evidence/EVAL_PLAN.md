@@ -55,7 +55,7 @@ Then a short limits paragraph, in numbers: zero real users, the interval, the da
 - 2026-11-20 03:45 IST: a partial-refund path was added to the contract, with a second, labelled attack list (evidence/attacks-2.json, 12 attacks + 2 valid cases) committed (da8f0f3) before any run against it. The first list is unchanged.
 - 2026-11-20 03:50 IST: valid case PV2 (refund 1 sat) can't exist on chain: a 1-sat output is below the 546-sat dust limit. Kept as written and marked not applicable; PV3 (refund 546 sats) added as the smallest possible partial refund.
 
-## Second plan: real nodes, a differential fuzzer and mutation testing (written 2026-11-20 19:40 IST, before any run of these)
+## Second plan: real nodes, a differential fuzzer and mutation testing (written 2026-11-20 19:27 IST, before any run of these)
 This section was written and committed before any of the three runs below existed. Nothing above it changed.
 
 ### Question
@@ -73,4 +73,4 @@ Lists 1 and 2 are unchanged. Fuzz mutations come only from the seed and the gene
 
 ### Limits written in advance
 The model of the rules is written by the same team as the contract, so a misunderstanding shared by both would not show up. Chipnet coins have no monetary value. Mutation testing deletes whole checks only; it does not try subtler edits.
-- 2026-11-20 19:55 IST (real-node run, plan above): the first chipnet run of scripts/real-attacks.mjs built only 25 of the 46 attacks: our script's fee estimate used too low a fee for its own size check, and one server dropped connections. All 25 that reached the nodes were refused. We fixed the script (a larger fee for the size estimate, retries for unreachable servers) and reran the whole list once; evidence/real-node-chipnet.json is that second run (2026-11-20 19:51 IST). The attack definitions did not change between runs.
+- 2026-11-20 19:53 IST (real-node run, plan above): the first chipnet run of scripts/real-attacks.mjs built only 25 of the 46 attacks: our script's fee estimate used too low a fee for its own size check, and one server dropped connections. All 25 that reached the nodes were refused. We fixed the script (a larger fee for the size estimate, retries for unreachable servers) and reran the whole list once; evidence/real-node-chipnet.json is that second run (2026-11-20 19:51 IST). The attack definitions did not change between runs.

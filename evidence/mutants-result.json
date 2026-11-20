@@ -1,0 +1,630 @@
+{
+  "ranAt": "2026-11-20T14:41:23.186Z",
+  "fuzzCasesPerMutant": 5000,
+  "seed": 20261122,
+  "killed": 36,
+  "compiled": 48,
+  "total": 52,
+  "results": [
+    {
+      "line": 26,
+      "fn": "pay",
+      "check": "require(this.activeInputIndex == 0);",
+      "outcome": "killed",
+      "attacksThrough": [
+        "K01"
+      ],
+      "validRefused": [],
+      "holes": 0,
+      "tooStrict": 0,
+      "firstFuzz": ""
+    },
+    {
+      "line": 28,
+      "fn": "pay",
+      "check": "require(tx.outputs[0].lockingBytecode == tx.inputs[0].lockingBytecode);",
+      "outcome": "killed",
+      "attacksThrough": [
+        "A11",
+        "A12"
+      ],
+      "validRefused": [],
+      "holes": 28,
+      "tooStrict": 0,
+      "firstFuzz": "#250 pay [recipient] out0 must be the minter's script"
+    },
+    {
+      "line": 29,
+      "fn": "pay",
+      "check": "require(tx.outputs[0].tokenCategory == mintingCategory);",
+      "outcome": "killed",
+      "attacksThrough": [
+        "A13"
+      ],
+      "validRefused": [],
+      "holes": 75,
+      "tooStrict": 0,
+      "firstFuzz": "#95 pay [minterToken] out0 must carry the same minting token"
+    },
+    {
+      "line": 30,
+      "fn": "pay",
+      "check": "require(tx.outputs[0].tokenAmount == 0);",
+      "outcome": "survived",
+      "attacksThrough": [],
+      "validRefused": [],
+      "holes": 0,
+      "tooStrict": 0,
+      "firstFuzz": ""
+    },
+    {
+      "line": 31,
+      "fn": "pay",
+      "check": "require(tx.outputs[0].nftCommitment == tx.inputs[0].nftCommitment);",
+      "outcome": "killed",
+      "attacksThrough": [
+        "M01",
+        "M04"
+      ],
+      "validRefused": [],
+      "holes": 42,
+      "tooStrict": 0,
+      "firstFuzz": "#8 pay [minterToken] out0 must carry the same minting token"
+    },
+    {
+      "line": 32,
+      "fn": "pay",
+      "check": "require(tx.outputs[0].value >= tx.inputs[0].value);",
+      "outcome": "killed",
+      "attacksThrough": [
+        "A14"
+      ],
+      "validRefused": [],
+      "holes": 18,
+      "tooStrict": 0,
+      "firstFuzz": "#773 pay [amount,amount] pay: float reduced"
+    },
+    {
+      "line": 34,
+      "fn": "pay",
+      "check": "require(tx.outputs[2].tokenCategory == category);",
+      "outcome": "killed",
+      "attacksThrough": [
+        "A17",
+        "A18"
+      ],
+      "validRefused": [],
+      "holes": 0,
+      "tooStrict": 0,
+      "firstFuzz": ""
+    },
+    {
+      "line": 35,
+      "fn": "pay",
+      "check": "require(tx.outputs[2].tokenAmount == 0);",
+      "outcome": "survived",
+      "attacksThrough": [],
+      "validRefused": [],
+      "holes": 0,
+      "tooStrict": 0,
+      "firstFuzz": ""
+    },
+    {
+      "line": 37,
+      "fn": "pay",
+      "check": "require(receipt.length == 16);",
+      "outcome": "killed",
+      "attacksThrough": [
+        "A05",
+        "A06"
+      ],
+      "validRefused": [],
+      "holes": 0,
+      "tooStrict": 0,
+      "firstFuzz": ""
+    },
+    {
+      "line": 39,
+      "fn": "pay",
+      "check": "require(amount > 0);",
+      "outcome": "survived",
+      "attacksThrough": [],
+      "validRefused": [],
+      "holes": 0,
+      "tooStrict": 0,
+      "firstFuzz": ""
+    },
+    {
+      "line": 41,
+      "fn": "pay",
+      "check": "require(tx.outputs[1].lockingBytecode == new LockingBytecodeP2PKH(merchantPkh));",
+      "outcome": "killed",
+      "attacksThrough": [
+        "A04"
+      ],
+      "validRefused": [],
+      "holes": 29,
+      "tooStrict": 0,
+      "firstFuzz": "#193 pay [recipient] pay: out1 must pay the merchant"
+    },
+    {
+      "line": 42,
+      "fn": "pay",
+      "check": "require(tx.outputs[1].value == amount);",
+      "outcome": "killed",
+      "attacksThrough": [
+        "A01",
+        "A02",
+        "A03",
+        "A08"
+      ],
+      "validRefused": [],
+      "holes": 91,
+      "tooStrict": 0,
+      "firstFuzz": "#25 pay [amount] pay: merchant must get exactly the receipt amount"
+    },
+    {
+      "line": 43,
+      "fn": "pay",
+      "check": "require(tx.outputs[1].tokenCategory == 0x);",
+      "outcome": "killed",
+      "attacksThrough": [],
+      "validRefused": [],
+      "holes": 25,
+      "tooStrict": 0,
+      "firstFuzz": "#135 pay [token] pay: merchant output carries no token"
+    },
+    {
+      "line": 49,
+      "fn": "pay",
+      "check": "require(oc.split(32)[0] != category);",
+      "outcome": "does not compile",
+      "detail": "Final statement is expected to be a require() statement at Line 48, Column 31"
+    },
+    {
+      "line": 55,
+      "fn": "refund",
+      "check": "require(checkSig(refundSig, refundPk));",
+      "outcome": "killed",
+      "attacksThrough": [
+        "A20",
+        "A21"
+      ],
+      "validRefused": [],
+      "holes": 68,
+      "tooStrict": 0,
+      "firstFuzz": "#23 refund [amount,signer,signer] refund: needs the shop's refund key"
+    },
+    {
+      "line": 56,
+      "fn": "refund",
+      "check": "require(this.activeInputIndex == 0);",
+      "outcome": "killed",
+      "attacksThrough": [
+        "K05"
+      ],
+      "validRefused": [],
+      "holes": 0,
+      "tooStrict": 0,
+      "firstFuzz": ""
+    },
+    {
+      "line": 57,
+      "fn": "refund",
+      "check": "require(receiptInput != 0);",
+      "outcome": "survived",
+      "attacksThrough": [],
+      "validRefused": [],
+      "holes": 0,
+      "tooStrict": 0,
+      "firstFuzz": ""
+    },
+    {
+      "line": 61,
+      "fn": "refund",
+      "check": "require(tx.outputs[0].lockingBytecode == tx.inputs[0].lockingBytecode);",
+      "outcome": "killed",
+      "attacksThrough": [],
+      "validRefused": [],
+      "holes": 27,
+      "tooStrict": 0,
+      "firstFuzz": "#56 refund [recipient] out0 must be the minter's script"
+    },
+    {
+      "line": 62,
+      "fn": "refund",
+      "check": "require(tx.outputs[0].tokenCategory == mintingCategory);",
+      "outcome": "killed",
+      "attacksThrough": [
+        "A29"
+      ],
+      "validRefused": [],
+      "holes": 35,
+      "tooStrict": 0,
+      "firstFuzz": "#227 refund [minterToken] out0 must carry the same minting token"
+    },
+    {
+      "line": 63,
+      "fn": "refund",
+      "check": "require(tx.outputs[0].tokenAmount == 0);",
+      "outcome": "survived",
+      "attacksThrough": [],
+      "validRefused": [],
+      "holes": 0,
+      "tooStrict": 0,
+      "firstFuzz": ""
+    },
+    {
+      "line": 64,
+      "fn": "refund",
+      "check": "require(tx.outputs[0].nftCommitment == tx.inputs[0].nftCommitment);",
+      "outcome": "killed",
+      "attacksThrough": [
+        "M02"
+      ],
+      "validRefused": [],
+      "holes": 35,
+      "tooStrict": 0,
+      "firstFuzz": "#209 refund [addInput,minterToken] out0 must carry the same minting token"
+    },
+    {
+      "line": 67,
+      "fn": "refund",
+      "check": "require(tx.inputs[receiptInput].tokenCategory == category);",
+      "outcome": "killed",
+      "attacksThrough": [
+        "A25"
+      ],
+      "validRefused": [],
+      "holes": 23,
+      "tooStrict": 0,
+      "firstFuzz": "#115 refund [receiptToken] refund: the receipt must be an immutable NFT of this shop"
+    },
+    {
+      "line": 69,
+      "fn": "refund",
+      "check": "require(receipt.length == 16);",
+      "outcome": "killed",
+      "attacksThrough": [],
+      "validRefused": [],
+      "holes": 3,
+      "tooStrict": 0,
+      "firstFuzz": "#1395 refund [receiptToken] refund: receipt must be 16 bytes"
+    },
+    {
+      "line": 71,
+      "fn": "refund",
+      "check": "require(amount > 0);",
+      "outcome": "survived",
+      "attacksThrough": [],
+      "validRefused": [],
+      "holes": 0,
+      "tooStrict": 0,
+      "firstFuzz": ""
+    },
+    {
+      "line": 74,
+      "fn": "refund",
+      "check": "require(tx.outputs[0].value >= tx.inputs[0].value - amount);",
+      "outcome": "killed",
+      "attacksThrough": [
+        "A30"
+      ],
+      "validRefused": [],
+      "holes": 17,
+      "tooStrict": 0,
+      "firstFuzz": "#274 refund [amount] refund: float pays more than the receipt"
+    },
+    {
+      "line": 77,
+      "fn": "refund",
+      "check": "require(tx.outputs[1].lockingBytecode == tx.inputs[receiptInput].lockingBytecode);",
+      "outcome": "killed",
+      "attacksThrough": [
+        "A24"
+      ],
+      "validRefused": [],
+      "holes": 96,
+      "tooStrict": 0,
+      "firstFuzz": "#52 refund [recipient,addInput] refund: must pay the receipt's holder"
+    },
+    {
+      "line": 78,
+      "fn": "refund",
+      "check": "require(tx.outputs[1].value == amount);",
+      "outcome": "killed",
+      "attacksThrough": [
+        "A31"
+      ],
+      "validRefused": [],
+      "holes": 67,
+      "tooStrict": 0,
+      "firstFuzz": "#10 refund [addInput,swapOutputs,dropOutput] refund: must pay exactly the receipt amount"
+    },
+    {
+      "line": 79,
+      "fn": "refund",
+      "check": "require(tx.outputs[1].tokenCategory == 0x);",
+      "outcome": "survived",
+      "attacksThrough": [],
+      "validRefused": [],
+      "holes": 0,
+      "tooStrict": 0,
+      "firstFuzz": ""
+    },
+    {
+      "line": 85,
+      "fn": "refund",
+      "check": "require(ic.split(32)[0] != category);",
+      "outcome": "killed",
+      "attacksThrough": [
+        "A33",
+        "A34"
+      ],
+      "validRefused": [],
+      "holes": 14,
+      "tooStrict": 0,
+      "firstFuzz": "#348 refund [amount,addInput] refund: only one receipt per refund"
+    },
+    {
+      "line": 92,
+      "fn": "refund",
+      "check": "require(kc.split(32)[0] != category);",
+      "outcome": "does not compile",
+      "detail": "Final statement is expected to be a require() statement at Line 91, Column 31"
+    },
+    {
+      "line": 103,
+      "fn": "partialRefund",
+      "check": "require(checkSig(refundSig, refundPk));",
+      "outcome": "killed",
+      "attacksThrough": [
+        "P08"
+      ],
+      "validRefused": [],
+      "holes": 33,
+      "tooStrict": 0,
+      "firstFuzz": "#36 partialRefund [signer] refund: needs the shop's refund key"
+    },
+    {
+      "line": 104,
+      "fn": "partialRefund",
+      "check": "require(this.activeInputIndex == 0);",
+      "outcome": "killed",
+      "attacksThrough": [
+        "K06"
+      ],
+      "validRefused": [],
+      "holes": 0,
+      "tooStrict": 0,
+      "firstFuzz": ""
+    },
+    {
+      "line": 105,
+      "fn": "partialRefund",
+      "check": "require(receiptInput != 0);",
+      "outcome": "survived",
+      "attacksThrough": [],
+      "validRefused": [],
+      "holes": 0,
+      "tooStrict": 0,
+      "firstFuzz": ""
+    },
+    {
+      "line": 109,
+      "fn": "partialRefund",
+      "check": "require(tx.outputs[0].lockingBytecode == tx.inputs[0].lockingBytecode);",
+      "outcome": "killed",
+      "attacksThrough": [],
+      "validRefused": [],
+      "holes": 22,
+      "tooStrict": 0,
+      "firstFuzz": "#295 partialRefund [recipient] out0 must be the minter's script"
+    },
+    {
+      "line": 110,
+      "fn": "partialRefund",
+      "check": "require(tx.outputs[0].tokenCategory == mintingCategory);",
+      "outcome": "killed",
+      "attacksThrough": [],
+      "validRefused": [],
+      "holes": 29,
+      "tooStrict": 0,
+      "firstFuzz": "#40 partialRefund [minterToken] out0 must carry the same minting token"
+    },
+    {
+      "line": 111,
+      "fn": "partialRefund",
+      "check": "require(tx.outputs[0].tokenAmount == 0);",
+      "outcome": "survived",
+      "attacksThrough": [],
+      "validRefused": [],
+      "holes": 0,
+      "tooStrict": 0,
+      "firstFuzz": ""
+    },
+    {
+      "line": 112,
+      "fn": "partialRefund",
+      "check": "require(tx.outputs[0].nftCommitment == tx.inputs[0].nftCommitment);",
+      "outcome": "killed",
+      "attacksThrough": [
+        "M03"
+      ],
+      "validRefused": [],
+      "holes": 17,
+      "tooStrict": 0,
+      "firstFuzz": "#275 partialRefund [minterToken] out0 must carry the same minting token"
+    },
+    {
+      "line": 114,
+      "fn": "partialRefund",
+      "check": "require(tx.inputs[receiptInput].tokenCategory == category);",
+      "outcome": "killed",
+      "attacksThrough": [],
+      "validRefused": [],
+      "holes": 15,
+      "tooStrict": 0,
+      "firstFuzz": "#548 partialRefund [receiptToken] refund: the receipt must be an immutable NFT of this shop"
+    },
+    {
+      "line": 116,
+      "fn": "partialRefund",
+      "check": "require(receipt.length == 16);",
+      "outcome": "survived",
+      "attacksThrough": [],
+      "validRefused": [],
+      "holes": 0,
+      "tooStrict": 0,
+      "firstFuzz": ""
+    },
+    {
+      "line": 118,
+      "fn": "partialRefund",
+      "check": "require(refundAmount > 0);",
+      "outcome": "survived",
+      "attacksThrough": [],
+      "validRefused": [],
+      "holes": 0,
+      "tooStrict": 0,
+      "firstFuzz": ""
+    },
+    {
+      "line": 119,
+      "fn": "partialRefund",
+      "check": "require(refundAmount < amount);",
+      "outcome": "killed",
+      "attacksThrough": [
+        "P06"
+      ],
+      "validRefused": [],
+      "holes": 0,
+      "tooStrict": 0,
+      "firstFuzz": ""
+    },
+    {
+      "line": 121,
+      "fn": "partialRefund",
+      "check": "require(tx.outputs[0].value >= tx.inputs[0].value - refundAmount);",
+      "outcome": "killed",
+      "attacksThrough": [
+        "P11"
+      ],
+      "validRefused": [],
+      "holes": 12,
+      "tooStrict": 0,
+      "firstFuzz": "#141 partialRefund [amount,amount] partial: float pays more than the refund"
+    },
+    {
+      "line": 124,
+      "fn": "partialRefund",
+      "check": "require(tx.outputs[1].lockingBytecode == holder);",
+      "outcome": "killed",
+      "attacksThrough": [
+        "P09"
+      ],
+      "validRefused": [],
+      "holes": 17,
+      "tooStrict": 0,
+      "firstFuzz": "#195 partialRefund [recipient] partial: must pay the holder"
+    },
+    {
+      "line": 125,
+      "fn": "partialRefund",
+      "check": "require(tx.outputs[1].value == refundAmount);",
+      "outcome": "killed",
+      "attacksThrough": [],
+      "validRefused": [],
+      "holes": 17,
+      "tooStrict": 0,
+      "firstFuzz": "#486 partialRefund [amount,amount] partial: must pay exactly the refund amount"
+    },
+    {
+      "line": 126,
+      "fn": "partialRefund",
+      "check": "require(tx.outputs[1].tokenCategory == 0x);",
+      "outcome": "killed",
+      "attacksThrough": [],
+      "validRefused": [],
+      "holes": 17,
+      "tooStrict": 0,
+      "firstFuzz": "#235 partialRefund [token,amount] partial: refund output carries no token"
+    },
+    {
+      "line": 128,
+      "fn": "partialRefund",
+      "check": "require(tx.outputs[2].lockingBytecode == holder);",
+      "outcome": "killed",
+      "attacksThrough": [
+        "P02"
+      ],
+      "validRefused": [],
+      "holes": 20,
+      "tooStrict": 0,
+      "firstFuzz": "#19 partialRefund [recipient] partial: remainder receipt must go to the holder"
+    },
+    {
+      "line": 129,
+      "fn": "partialRefund",
+      "check": "require(tx.outputs[2].tokenCategory == category);",
+      "outcome": "killed",
+      "attacksThrough": [
+        "P03"
+      ],
+      "validRefused": [],
+      "holes": 0,
+      "tooStrict": 0,
+      "firstFuzz": ""
+    },
+    {
+      "line": 130,
+      "fn": "partialRefund",
+      "check": "require(tx.outputs[2].tokenAmount == 0);",
+      "outcome": "survived",
+      "attacksThrough": [],
+      "validRefused": [],
+      "holes": 0,
+      "tooStrict": 0,
+      "firstFuzz": ""
+    },
+    {
+      "line": 131,
+      "fn": "partialRefund",
+      "check": "require(tx.outputs[2].nftCommitment == toPaddedBytes(amount - refundAmount, 8) + receipt.split(8)[1]);",
+      "outcome": "killed",
+      "attacksThrough": [
+        "P01",
+        "P04"
+      ],
+      "validRefused": [],
+      "holes": 69,
+      "tooStrict": 0,
+      "firstFuzz": "#216 partialRefund [flipByte] partial: remainder receipt must say exactly what's left, same order id"
+    },
+    {
+      "line": 136,
+      "fn": "partialRefund",
+      "check": "require(ic.split(32)[0] != category);",
+      "outcome": "killed",
+      "attacksThrough": [],
+      "validRefused": [],
+      "holes": 17,
+      "tooStrict": 0,
+      "firstFuzz": "#158 partialRefund [addInput] refund: only one receipt per refund"
+    },
+    {
+      "line": 142,
+      "fn": "partialRefund",
+      "check": "require(kc.split(32)[0] != category);",
+      "outcome": "does not compile",
+      "detail": "Final statement is expected to be a require() statement at Line 141, Column 31"
+    },
+    {
+      "line": 148,
+      "fn": "admin",
+      "check": "require(checkSig(ownerSig, ownerPk));",
+      "outcome": "does not compile",
+      "detail": "Function admin contains no statements at Line 147, Column 4"
+    }
+  ]
+}

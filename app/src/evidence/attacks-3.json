@@ -1,5 +1,5 @@
 {
-  "about": "Third, labelled attack list: attacks found by the differential fuzzer's counted run on contract v1 (evidence/fuzz-result-v1.json, seed 20261122). Written 2026-11-20 20:15 IST before the contract fix (v2) and before any run of this list. Every attack must be rejected; the lists above are unchanged.",
+  "about": "Third, labelled attack list: attacks found by the differential fuzzer's counted run on contract v1 (evidence/fuzz-result-v1.json, seed 20261122). Written 2026-11-20 19:57 IST before the contract fix (v2) and before any run of this list. Every attack must be rejected; the lists above are unchanged.",
   "seed": 20261124,
   "valid": [],
   "attacks": [

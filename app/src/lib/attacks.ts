@@ -9,9 +9,11 @@ import {
 import attackSpec from "../evidence/attacks.json" with { type: "json" };
 import attackSpec2 from "../evidence/attacks-2.json" with { type: "json" };
 import attackSpec3 from "../evidence/attacks-3.json" with { type: "json" };
+import attackSpec4 from "../evidence/attacks-4.json" with { type: "json" };
 import { minterContract } from "./takeback.ts";
 
 export const spec2 = attackSpec2 as { seed: number; valid: { id: string; path: string; what: string }[]; attacks: { id: string; path: string; what: string }[] };
+export const spec4 = attackSpec4 as { seed: number; valid: { id: string; path: string; what: string }[]; attacks: { id: string; path: string; what: string }[] };
 export const spec3 = attackSpec3 as { seed: number; valid: { id: string; path: string; what: string }[]; attacks: { id: string; path: string; what: string }[] };
 export const spec = attackSpec as { seed: number; valid: { id: string; path: string; what: string }[]; attacks: { id: string; path: string; what: string }[] };
 
@@ -111,6 +113,63 @@ function partial(opts: {
   };
 }
 
+// List 4 (found by mutation testing): the minter sits at input 1 behind the attacker's own coin, and
+// output 0 (the minting token and the float) goes to the attacker's address, which matches input 0.
+function minterSecond(path: "pay" | "refund" | "partial") {
+  return () => {
+    const c = setup();
+    const lure: SpendableUtxo = { ...randomUtxo({ satoshis: 3_000n }), lockingBytecode: lbHex(c.attacker.addr) };
+    c.provider.addUtxo(c.attacker.addr, lure);
+    const tb = new TransactionBuilder({ provider: c.provider }).addInput(lure, c.attacker.sig.unlockP2PKH());
+    if (path === "pay") {
+      tb.addInput(c.baton, c.minter.unlock.pay()).addInput(c.coins, c.customer.sig.unlockP2PKH());
+      tb.addOutput({ to: c.attacker.addr, amount: 50_000n, token: nft(c.category, "minting", "") } as never);
+      tb.addOutput({ to: c.merchant.addr, amount: 5_000n });
+      tb.addOutput({ to: c.customer.addr, amount: 1_000n, token: nft(c.category, "none", commit(5_000n)) } as never);
+      tb.addOutput({ to: c.customer.addr, amount: 35_000n });
+      return tb.debug();
+    }
+    const receipt: SpendableUtxo = { ...randomUtxo({ satoshis: 2_000n, token: nft(c.category, "none", commit(5_000n, 7n)) }), lockingBytecode: lbHex(c.customer.addr) };
+    c.provider.addUtxo(c.customer.addr, receipt);
+    tb.addInput(c.baton, path === "refund" ? c.minter.unlock.refund(c.merchant.sig, 2n) : c.minter.unlock.partialRefund(c.merchant.sig, 2n, 2_000n));
+    tb.addInput(receipt, c.customer.sig.unlockP2PKH());
+    tb.addOutput({ to: c.attacker.addr, amount: 45_000n, token: nft(c.category, "minting", "") } as never);
+    tb.addOutput({ to: c.customer.addr, amount: path === "refund" ? 5_000n : 2_000n });
+    if (path === "partial") tb.addOutput({ to: c.customer.addr, amount: 1_000n, token: nft(c.category, "none", commit(3_000n, 7n)) } as never);
+    tb.addOutput({ to: c.attacker.addr, amount: path === "refund" ? 2_500n : 4_500n });
+    return tb.debug();
+  };
+}
+// K05/K06: the attacker's own category's minting token at input 0, so the path reads the attacker's
+// category; a fake receipt in that category at input 2; the shop's minting token leaves at output 2/3.
+function foreignFirst(path: "refund" | "partial") {
+  return () => {
+    const c = setup();
+    const F = "cd".repeat(32);
+    const lure: SpendableUtxo = { ...randomUtxo({ satoshis: 3_000n, token: nft(F, "minting", "") }), lockingBytecode: lbHex(c.attacker.addr) };
+    const fake: SpendableUtxo = { ...randomUtxo({ satoshis: 2_000n, token: nft(F, "none", commit(5_000n, 7n)) }), lockingBytecode: lbHex(c.attacker.addr) };
+    c.provider.addUtxo(c.attacker.addr, lure); c.provider.addUtxo(c.attacker.addr, fake);
+    const tb = new TransactionBuilder({ provider: c.provider })
+      .addInput(lure, c.attacker.sig.unlockP2PKH())
+      .addInput(c.baton, path === "refund" ? c.minter.unlock.refund(c.merchant.sig, 2n) : c.minter.unlock.partialRefund(c.merchant.sig, 2n, 2_000n))
+      .addInput(fake, c.attacker.sig.unlockP2PKH());
+    tb.addOutput({ to: c.attacker.addr, amount: 3_000n, token: nft(F, "minting", "") } as never);
+    tb.addOutput({ to: c.attacker.addr, amount: path === "refund" ? 5_000n : 2_000n });
+    if (path === "partial") tb.addOutput({ to: c.attacker.addr, amount: 1_000n, token: nft(F, "none", commit(3_000n, 7n)) } as never);
+    tb.addOutput({ to: c.attacker.addr, amount: path === "refund" ? 45_000n : 47_000n, token: nft(c.category, "minting", "") } as never);
+    return tb.debug();
+  };
+}
+function adminWithoutOwner() {
+  return () => {
+    const c = setup();
+    return new TransactionBuilder({ provider: c.provider })
+      .addInput(c.baton, c.minter.unlock.admin(c.merchant.sig))
+      .addOutput({ to: c.attacker.addr, amount: 49_000n, token: nft(c.category, "minting", "") } as never)
+      .debug();
+  };
+}
+
 const setAmount = (i: number, amount: bigint) => (_c: Ctx, o: Out[]) => o.map((x, j) => (j === i ? { ...x, amount } : x));
 const setTo = (i: number, f: (c: Ctx) => string) => (c: Ctx, o: Out[]) => o.map((x, j) => (j === i ? { ...x, to: f(c) } : x));
 const setToken = (i: number, f: (c: Ctx) => Out["token"]) => (c: Ctx, o: Out[]) => o.map((x, j) => (j === i ? { ...x, token: f(c) } : x));
@@ -177,6 +236,13 @@ Object.assign(cases, {
   M02: refund({ outs: setToken(0, (c) => nft(c.category, "minting", "01")) }),
   M03: partial({ outs: setToken(0, (c) => nft(c.category, "minting", "01")) }),
   M04: purchase(setToken(0, (c) => nft(c.category, "minting", "ab".repeat(40)))),
+  // List 4 (found by mutation testing).
+  K01: minterSecond("pay"),
+  K02: minterSecond("refund"),
+  K03: minterSecond("partial"),
+  K04: adminWithoutOwner(),
+  K05: foreignFirst("refund"),
+  K06: foreignFirst("partial"),
 });
 
 export interface CaseResult { id: string; what: string; kind: "valid" | "attack"; expected: "accept" | "reject"; outcome: "accepted" | "rejected" | "not-applicable" | "setup-error"; ok: boolean; detail: string }
@@ -199,8 +265,8 @@ export function runCase(id: string, what: string, kind: "valid" | "attack"): Cas
   }
 }
 
-export function runAll(list: 1 | 2 | 3 | "both" | "all" = "all"): CaseResult[] {
-  const specs = list === 1 ? [spec] : list === 2 ? [spec2] : list === 3 ? [spec3] : list === "both" ? [spec, spec2] : [spec, spec2, spec3];
+export function runAll(list: 1 | 2 | 3 | 4 | "both" | "all" = "all"): CaseResult[] {
+  const specs = list === 1 ? [spec] : list === 2 ? [spec2] : list === 3 ? [spec3] : list === 4 ? [spec4] : list === "both" ? [spec, spec2] : [spec, spec2, spec3, spec4];
   return specs.flatMap((sp) => [
     ...sp.valid.map((v) => runCase(v.id, v.what, "valid")),
     ...sp.attacks.map((a) => runCase(a.id, a.what, "attack")),
