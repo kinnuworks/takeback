@@ -5,9 +5,9 @@
 import { execFileSync } from "node:child_process";
 import { runAll } from "../src/lib/attacks.ts";
 
-const list = process.argv[2] === "2" ? 2 : 1;
+const list = process.argv[2] === "2" ? 2 : process.argv[2] === "3" ? 3 : 1;
 const results = runAll(list);
-console.log(`list ${list}: ${list === 1 ? "evidence/attacks.json" : "evidence/attacks-2.json (second, labelled list)"}`);
+console.log(`list ${list}: ${list === 1 ? "evidence/attacks.json" : list === 2 ? "evidence/attacks-2.json (second, labelled list)" : "evidence/attacks-3.json (third, labelled list: found by the fuzzer)"}`);
 for (const r of results) console.log(r.ok ? "PASS" : r.outcome === "not-applicable" ? "N/A " : "FAIL", r.id, r.what, "->", r.detail);
 const valid = results.filter((r) => r.kind === "valid" && r.outcome !== "not-applicable");
 const na = results.filter((r) => r.outcome === "not-applicable").map((r) => r.id);

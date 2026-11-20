@@ -1,10 +1,12 @@
 pragma cashscript ^0.14.0;
 
-// Takeback receipt minter for one shop.
+// Takeback receipt minter for one shop. Version 2: v1 didn't check the minting token's
+// commitment on out[0]; our differential fuzzer found it (evidence/fuzz-result-v1.json).
 // The minter UTXO holds the shop's minting NFT (its receipt category) and a refund float.
 //
 // pay(): one transaction pays the merchant and mints the customer's receipt.
-//   out[0]  the minter again: same script, same minting token, float not reduced
+//   out[0]  the minter again: same script, same minting token (category, capability and
+//           commitment), float not reduced
 //   out[1]  the merchant's P2PKH, paid exactly the receipt amount
 //   out[2]  the receipt: an immutable NFT of the category, commitment = amount (8 bytes LE) + order id (8 bytes)
 //   out[3+] anything else (customer change) but never a token of this category
@@ -26,6 +28,7 @@ contract ReceiptMinter(bytes20 merchantPkh, pubkey refundPk, pubkey ownerPk) {
         require(tx.outputs[0].lockingBytecode == tx.inputs[0].lockingBytecode);
         require(tx.outputs[0].tokenCategory == mintingCategory);
         require(tx.outputs[0].tokenAmount == 0);
+        require(tx.outputs[0].nftCommitment == tx.inputs[0].nftCommitment);
         require(tx.outputs[0].value >= tx.inputs[0].value);
 
         require(tx.outputs[2].tokenCategory == category);
@@ -58,6 +61,7 @@ contract ReceiptMinter(bytes20 merchantPkh, pubkey refundPk, pubkey ownerPk) {
         require(tx.outputs[0].lockingBytecode == tx.inputs[0].lockingBytecode);
         require(tx.outputs[0].tokenCategory == mintingCategory);
         require(tx.outputs[0].tokenAmount == 0);
+        require(tx.outputs[0].nftCommitment == tx.inputs[0].nftCommitment);
 
         // The receipt: an immutable NFT of exactly this category.
         require(tx.inputs[receiptInput].tokenCategory == category);
@@ -105,6 +109,7 @@ contract ReceiptMinter(bytes20 merchantPkh, pubkey refundPk, pubkey ownerPk) {
         require(tx.outputs[0].lockingBytecode == tx.inputs[0].lockingBytecode);
         require(tx.outputs[0].tokenCategory == mintingCategory);
         require(tx.outputs[0].tokenAmount == 0);
+        require(tx.outputs[0].nftCommitment == tx.inputs[0].nftCommitment);
 
         require(tx.inputs[receiptInput].tokenCategory == category);
         bytes receipt = tx.inputs[receiptInput].nftCommitment;

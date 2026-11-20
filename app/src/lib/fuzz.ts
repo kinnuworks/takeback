@@ -86,7 +86,7 @@ function template(r: R): FuzzCase {
 // ---------- mutations ----------
 const OWNERS: Owner[] = ["minter", "merchant", "customer", "attacker"];
 const hasF = (c: FuzzCase) => c.ins.some((i) => i.token?.category === F);
-function randomCommitment(r: R, c: FuzzCase, current?: string): string {
+function randomCommitment(r: R, _c: FuzzCase, current?: string): string {
   const order = r.big(1n, 1_000_000n);
   const v = r.int(0, 8);
   if (v === 0) return "";
@@ -136,7 +136,7 @@ const MUTATIONS: Record<string, (r: R, c: FuzzCase) => boolean> = {
     if (rc.token.category === F && !hasF(c)) c.ins.push({ owner: "customer", value: 1_000n, token: nft(F, "minting", ""), role: "extra" });
     return true;
   },
-  receiptHolder: (r, c) => { const rc = c.ins.find((i) => i.role === "receipt"); if (!rc) return false; rc.owner = "attacker"; return true; },
+  receiptHolder: (_r, c) => { const rc = c.ins.find((i) => i.role === "receipt"); if (!rc) return false; rc.owner = "attacker"; return true; },
   function: (r, c) => { const fn = r.pick((["pay", "refund", "partialRefund"] as const).filter((f) => f !== c.fn)); c.fn = fn; if (fn === "partialRefund" && c.r === 0n) c.r = r.big(546n, 20_000n); return true; },
   minterToken: (r, c) => { if (!c.outs[0]?.token) return false; const v = r.int(0, 2); c.outs[0].token = v === 0 ? nft(C, "minting", "01") : v === 1 ? nft(C, "mutable", "") : nft(C, "none", ""); return true; },
 };

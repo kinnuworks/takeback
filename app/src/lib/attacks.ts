@@ -8,9 +8,11 @@ import {
 } from "@bitauth/libauth";
 import attackSpec from "../evidence/attacks.json" with { type: "json" };
 import attackSpec2 from "../evidence/attacks-2.json" with { type: "json" };
+import attackSpec3 from "../evidence/attacks-3.json" with { type: "json" };
 import { minterContract } from "./takeback.ts";
 
 export const spec2 = attackSpec2 as { seed: number; valid: { id: string; path: string; what: string }[]; attacks: { id: string; path: string; what: string }[] };
+export const spec3 = attackSpec3 as { seed: number; valid: { id: string; path: string; what: string }[]; attacks: { id: string; path: string; what: string }[] };
 export const spec = attackSpec as { seed: number; valid: { id: string; path: string; what: string }[]; attacks: { id: string; path: string; what: string }[] };
 
 type Key = { pub: Uint8Array; sig: SignatureTemplate; addr: string };
@@ -170,6 +172,11 @@ Object.assign(cases, {
   P10: partial({ outs: (_c, o) => [o[0], o[1]] }),
   P11: partial({ outs: (c, o) => add((cc) => ({ to: cc.attacker.addr, amount: 5_000n }))(c, setAmount(0, 43_000n)(c, o)) }),
   P12: partial({ refundAmount: 6_000n, outs: setToken(2, (c) => nft(c.category, "none", commit(1n, 7n))) }),
+  // List 3 (found by the fuzzer on v1): the minter's own minting token must keep its commitment.
+  M01: purchase(setToken(0, (c) => nft(c.category, "minting", "01"))),
+  M02: refund({ outs: setToken(0, (c) => nft(c.category, "minting", "01")) }),
+  M03: partial({ outs: setToken(0, (c) => nft(c.category, "minting", "01")) }),
+  M04: purchase(setToken(0, (c) => nft(c.category, "minting", "ab".repeat(40)))),
 });
 
 export interface CaseResult { id: string; what: string; kind: "valid" | "attack"; expected: "accept" | "reject"; outcome: "accepted" | "rejected" | "not-applicable" | "setup-error"; ok: boolean; detail: string }
@@ -192,8 +199,8 @@ export function runCase(id: string, what: string, kind: "valid" | "attack"): Cas
   }
 }
 
-export function runAll(list: 1 | 2 | "both" = "both"): CaseResult[] {
-  const specs = list === 1 ? [spec] : list === 2 ? [spec2] : [spec, spec2];
+export function runAll(list: 1 | 2 | 3 | "both" | "all" = "all"): CaseResult[] {
+  const specs = list === 1 ? [spec] : list === 2 ? [spec2] : list === 3 ? [spec3] : list === "both" ? [spec, spec2] : [spec, spec2, spec3];
   return specs.flatMap((sp) => [
     ...sp.valid.map((v) => runCase(v.id, v.what, "valid")),
     ...sp.attacks.map((a) => runCase(a.id, a.what, "attack")),

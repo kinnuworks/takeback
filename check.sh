@@ -9,7 +9,7 @@ set -euo pipefail
 cd "$(dirname "$0")"
 
 echo "== evidence: the app's copies of the attack lists match evidence/ exactly"
-cmp evidence/attacks.json app/src/evidence/attacks.json && cmp evidence/attacks-2.json app/src/evidence/attacks-2.json && echo "attack lists in sync"
+cmp evidence/attacks.json app/src/evidence/attacks.json && cmp evidence/attacks-2.json app/src/evidence/attacks-2.json && cmp evidence/attacks-3.json app/src/evidence/attacks-3.json && echo "attack lists in sync"
 
 echo "== contract: compile ReceiptMinter (CashScript 0.14)"
 (cd app && npx --no-install cashc contracts/ReceiptMinter.cash -o contracts/ReceiptMinter.json)
@@ -19,6 +19,12 @@ echo "== contract: evidence/attacks.json on the BCH 2026 VM (every attack reject
 
 echo "== contract: evidence/attacks-2.json, the second labelled list (partial refunds)"
 (cd app && node contracts/attacks.test.mjs 2 | tail -2)
+
+echo "== contract: evidence/attacks-3.json, the third labelled list (found by the fuzzer on v1)"
+(cd app && node contracts/attacks.test.mjs 3 | tail -2)
+
+echo "== contract: differential fuzzer, 20,000 random transactions (seed 20261122), zero security holes"
+(cd app && node contracts/fuzz.test.mjs 20000 20261122 | head -5)
 
 echo "== flow: purchase + refund built by the app, signed by the headless wallet, verified on the VM"
 (cd app && node tests/flow.test.ts | tail -1)
