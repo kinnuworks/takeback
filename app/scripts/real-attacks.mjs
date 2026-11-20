@@ -5,6 +5,7 @@
 // The valid cases run too, as real transactions, so the same run shows the honest paths still work.
 //
 // Run:     node --env-file=../tools/wiz-harness/.env.local scripts/real-attacks.mjs chipnet
+// Verify:  node scripts/real-attacks.mjs chipnet --verify   (no keys: reruns each saved tx on the VM against the coins it spent)
 // Replay:  node scripts/real-attacks.mjs chipnet --replay   (no keys: rebroadcasts the saved hex)
 import { readFileSync, writeFileSync } from "node:fs";
 import { ElectrumNetworkProvider, TransactionBuilder, SignatureTemplate } from "cashscript";
@@ -55,17 +56,49 @@ function why(replies) {
 }
 
 if (process.argv.includes("--replay")) {
+  // Rebroadcast the saved signed transactions. Once the shop's coins move on, a node answers
+  // "missing inputs" before it runs any script, so those are counted apart, never as refusals.
   const saved = JSON.parse(readFileSync(OUT, "utf8"));
-  let refused = 0, n = 0;
+  const tally = {};
+  let n = 0;
   for (const c of saved.cases.filter((c) => c.kind === "attack" && c.rawTx)) {
     n++;
     const replies = await broadcastAll(c.rawTx);
-    const ok = replies.every((x) => !x.accepted);
-    if (ok) refused++;
-    console.log(ok ? "REFUSED" : "ACCEPTED", c.id, "->", why(replies), "|", replies[0].reply.slice(0, 120));
+    const r = replies.some((x) => x.accepted) ? "ACCEPTED" : why(replies);
+    tally[r] = (tally[r] ?? 0) + 1;
+    console.log(r === "ACCEPTED" ? "ACCEPTED" : "REFUSED ", c.id, "->", r);
   }
-  console.log(`replay: ${refused} of ${n} saved attack transactions refused again`);
-  process.exit(refused === n ? 0 : 1);
+  console.log(`replay of ${n} saved attacks:`, Object.entries(tally).map(([k, v]) => `${v} ${k}`).join("; "));
+  console.log("(a cheat whose coins were spent since can't be rechecked by a node; use --verify to rerun each one on the VM against the coins it spent)");
+  process.exit(tally.ACCEPTED ? 1 : 0);
+}
+
+if (process.argv.includes("--verify")) {
+  // No keys and no broadcast: for each saved transaction, fetch the real coins it spent from the
+  // chain and run the whole transaction through the BCH 2026 VM, as a node would have when it ran.
+  const { createVirtualMachineBch2026, decodeTransactionBCH: decode } = await import("@bitauth/libauth");
+  const vm = createVirtualMachineBch2026();
+  const saved = JSON.parse(readFileSync(OUT, "utf8"));
+  const prev = new Map();
+  const fetchTx = async (txid) => {
+    if (!prev.has(txid)) {
+      for (let i = 0; ; i++) { try { prev.set(txid, decode(hexToBin(await provider.getRawTransaction(txid)))); break; } catch (e) { if (i > 4) throw e; await new Promise((r) => setTimeout(r, 1500)); } }
+    }
+    return prev.get(txid);
+  };
+  let refused = 0, attacks = 0, honest = 0, valid = 0;
+  for (const c of saved.cases.filter((c) => c.rawTx)) {
+    const tx = decode(hexToBin(c.rawTx));
+    const sourceOutputs = [];
+    for (const i of tx.inputs) sourceOutputs.push((await fetchTx(binToHex(i.outpointTransactionHash))).outputs[i.outpointIndex]);
+    const res = vm.verify({ transaction: tx, sourceOutputs });
+    const ok = res === true;
+    if (c.kind === "attack") { attacks++; if (!ok) refused++; }
+    else { valid++; if (ok) honest++; }
+    console.log(c.kind === "attack" ? (ok ? "ACCEPTED" : "REFUSED ") : ok ? "VALID   " : "INVALID ", c.id, "->", ok ? "verifies" : String(res).split("\n")[0].slice(0, 110));
+  }
+  console.log(`VM check of the saved transactions against the real coins they spent: ${refused} of ${attacks} attacks refused; ${honest} of ${valid} honest transactions verify`);
+  process.exit(refused === attacks && honest === valid ? 0 : 1);
 }
 
 // ---------- keys and coins ----------

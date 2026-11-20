@@ -42,7 +42,7 @@ require(tx.outputs[1].value == amount);               // the shop got exactly th
 
 No keys or test coins are needed for any of these: from a fresh clone, `cd app && npm install`, then the commands below.
 
-- **Real nodes:** every attack below, built from the shop's real chipnet coins and signed with real keys, sent to two chipnet servers. Each node reply and signed transaction is in [`evidence/real-node-chipnet.json`](evidence/real-node-chipnet.json). Rebroadcast the saved transactions yourself with `cd app && node scripts/real-attacks.mjs chipnet --replay` (no keys; a cheat whose coins were spent since comes back as missing inputs).
+- **Real nodes:** every attack below, built from the shop's real chipnet coins and signed with real keys, sent to two chipnet servers. Each node reply and signed transaction is in [`evidence/real-node-chipnet.json`](evidence/real-node-chipnet.json). Check them yourself with no keys: `cd app && node scripts/real-attacks.mjs chipnet --verify` fetches the real coins each saved transaction spent and reruns it on the BCH 2026 VM (56 of 56 attacks refused, 5 of 5 honest transactions verify). `--replay` rebroadcasts them, but once the shop's coins have moved on, a node answers "missing inputs" before it runs the contract.
 - **The attack lists** and the code that runs them: [`evidence/attacks.json`](evidence/attacks.json), [`attacks-2.json`](evidence/attacks-2.json), [`attacks-3.json`](evidence/attacks-3.json), [`attacks-4.json`](evidence/attacks-4.json), [`app/src/lib/attacks.ts`](app/src/lib/attacks.ts). Rerun: `cd app && npm install && node contracts/attacks.test.mjs 1` (and `2`, `3`, `4`).
 - **The fuzzer:** [`app/src/lib/fuzz.ts`](app/src/lib/fuzz.ts) and the model of the rules it checks against, [`rules-model.ts`](app/src/lib/rules-model.ts). Rerun: `cd app && node contracts/fuzz.test.mjs 20000 20261122`.
 - **The mutation test:** [`app/contracts/mutants.test.mjs`](app/contracts/mutants.test.mjs), results in [`evidence/mutants-result.json`](evidence/mutants-result.json).
@@ -58,7 +58,7 @@ Evidence, stated plainly: no real users yet; it was built for this hackathon. In
 > Evidence type: Test transactions from wallets we control (chipnet, no monetary value), not real users.
 > Data: lists 1 to 4 (56 attacks), built from the shop's real chipnet coins and signed with real keys, the shop's hot refund key included; sent to chipnet.bch.ninja and chipnet.imaginary.cash on 2026-11-20.
 > Result: 56 of 56 refused by both servers (55 by the contract, 1 by consensus token rules; 95% interval 93.6% to 100.0%); 5 of 5 honest purchases and refunds accepted in the same run.
-> Rerun: the keyless replay above, or a fresh run with your own chipnet test wallets (`scripts/real-attacks.mjs chipnet` reads the seeds from an env file). Limits: chipnet, not mainnet; the attacks are ours.
+> Rerun: the keyless `--verify` above, or a fresh run with your own chipnet test wallets (`scripts/real-attacks.mjs chipnet` reads the seeds from an env file). Limits: chipnet, not mainnet; the attacks are ours.
 
 > Claim: random rule-breaking transactions are refused and allowed ones go through.
 > Evidence type: Our own break test (we tried to make it fail), not real users.
@@ -92,5 +92,7 @@ Limits, in numbers: zero real users and zero mainnet transactions so far; all ch
 ```bash
 cd app && npm install && npm run dev
 ```
+
+The purchase-and-refund flow test also uses the headless test wallet in `tools/wiz-harness`: run `npm install` there too.
 
 `./check.sh` runs the four attack lists, the 20,000-case fuzzer, the purchase and refund flow test, the build, a browser walk of the demo path and a WizardConnect round trip.
