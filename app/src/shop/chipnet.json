@@ -1,9 +1,9 @@
 {
   "network": "chipnet",
   "name": "Kopi Blaze",
-  "category": "14ff2ee3ec348be271958148665dfa81e9c6bb5dbc828c1f8d237e8529bbe171",
-  "minterAddress": "bchtest:pd2ygpvw3cz967yzjs9tqz8hr6n9fljw26j4gdqeyxs8hugex8ndx6dw0wdt0",
-  "minterTokenAddress": "bchtest:rd2ygpvw3cz967yzjs9tqz8hr6n9fljw26j4gdqeyxs8hugex8ndxg7jwhvjy",
+  "category": "ebef9a8f0693ed7d8f765d8f537cfcc920b5e9a6668423d5c5265781bf9c7dd3",
+  "minterAddress": "bchtest:pvmqapfxjwqwf0tnzacu9gj35799ervjj2hmpudxrdry6hecw8eez4fue7szl",
+  "minterTokenAddress": "bchtest:rvmqapfxjwqwf0tnzacu9gj35799ervjj2hmpudxrdry6hecw8eez86qc83m5",
   "merchantAddress": "bchtest:qzu4vmef4g96v9k08dfgeq8mmsj9m46qsywntvcqjq",
   "merchantPkh": "b9566f29aa0ba616cf3b528c80fbdc245dd74081",
   "refundPk": "02ede52e8b2384e4ff3ed8b20f403d310b003cc0f31030a44b0a4aae3b53cc1113",
@@ -11,6 +11,6 @@
   "minters": 3,
   "floatEach": "100000",
   "bcmrUrl": "https://takeback-bch.vercel.app/bcmr-chipnet.json",
-  "bcmrHash": "dbe671b7e6c4d33daaf43a84992a279aa7478f9f7e9b3815db1b4af7b22782ad",
-  "genesisTxid": "f910d432f5f666530265e904714497bb500327b0501aa966dc0b3223c91796f8"
+  "bcmrHash": "6714e45822e68e014699fa4628f2650660975a133140d5f68a5012bd04fe8a4b",
+  "genesisTxid": "13f39d1ae6350b3b4a15250b9e77af965101942bd28a42944ce3b6769e64d081"
 }
