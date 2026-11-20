@@ -1,0 +1,39 @@
+# Reruns Takeback's proof on every push, on GitHub's machines: the contract compiles to the committed
+# artifact, every attack in the four lists is refused, the 20,000-case fuzzer finds no hole, every
+# check that guards money is caught by a test when deleted, wallets can parse the receipts, and the
+# purchase and refund flow passes. No keys or network access needed.
+name: proof
+on:
+  push:
+  workflow_dispatch:
+defaults:
+  run:
+    shell: bash
+    working-directory: app
+jobs:
+  proof:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+      - name: Install
+        run: npm ci && (cd ../tools/wiz-harness && npm ci)
+      - name: The committed contract artifact matches the source
+        run: |
+          npx cashc contracts/ReceiptMinter.cash -o /tmp/ReceiptMinter.json
+          node -e "const a=require('./contracts/ReceiptMinter.json'),b=require('/tmp/ReceiptMinter.json'); if (a.bytecode!==b.bytecode) { console.error('artifact differs from source'); process.exit(1) } console.log('artifact matches source')"
+      - name: Attack lists 1-4 (every attack refused, every valid case accepted)
+        run: for l in 1 2 3 4; do node contracts/attacks.test.mjs $l | tail -2; done
+      - name: Differential fuzzer, 20,000 transactions (seed 20261122)
+        run: node contracts/fuzz.test.mjs 20000 20261122 | head -6
+      - name: Mutation test (each check deleted in turn)
+        run: node contracts/mutants.test.mjs | tail -1
+      - name: Wallets can parse the receipts (BCMR)
+        run: node contracts/bcmr-parse.test.mjs | tail -1
+      - name: Purchase and refund flow, signed like a WizardConnect wallet
+        run: node tests/flow.test.ts | tail -1
+      - name: Build
+        run: npm run build

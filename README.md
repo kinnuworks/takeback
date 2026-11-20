@@ -27,6 +27,8 @@ It needs Bitcoin Cash because the receipt is a CashToken minted by a covenant in
 
 ## Check it yourself
 
+[![proof](https://github.com/kinnuworks/takeback/actions/workflows/proof.yml/badge.svg)](https://github.com/kinnuworks/takeback/actions/workflows/proof.yml) GitHub reruns the attack lists, the fuzzer, the mutation test and the flow test on every push ([`.github/workflows/proof.yml`](.github/workflows/proof.yml)).
+
 - **Real nodes:** every attack below, built from the shop's real chipnet coins and signed with real keys, sent to two chipnet servers. Each node reply and signed transaction is in [`evidence/real-node-chipnet.json`](evidence/real-node-chipnet.json). Rerun: `cd app && node scripts/real-attacks.mjs chipnet --replay` (no keys needed).
 - **The attack lists** and the code that runs them: [`evidence/attacks.json`](evidence/attacks.json), [`attacks-2.json`](evidence/attacks-2.json), [`attacks-3.json`](evidence/attacks-3.json), [`attacks-4.json`](evidence/attacks-4.json), [`app/src/lib/attacks.ts`](app/src/lib/attacks.ts). Rerun: `cd app && npm install && node contracts/attacks.test.mjs 1` (and `2`, `3`, `4`).
 - **The fuzzer:** [`app/src/lib/fuzz.ts`](app/src/lib/fuzz.ts) and the model of the rules it checks against, [`rules-model.ts`](app/src/lib/rules-model.ts). Rerun: `cd app && node contracts/fuzz.test.mjs 20000 20261122`.
