@@ -5,10 +5,10 @@
    "chipnet.bch.ninja",
    "chipnet.imaginary.cash"
   ],
-  "ranAt": "2026-11-20T14:39:43.629Z",
-  "built": 50,
-  "refused": 50,
-  "byContract": 49,
+  "ranAt": "2026-11-20T15:09:01.351Z",
+  "built": 56,
+  "refused": 56,
+  "byContract": 55,
   "byConsensus": 1,
   "validAccepted": 5,
   "validRun": 5,
@@ -19,8 +19,8 @@
     "what": "pay 1 sat over the minimum dust-safe amount with a matching receipt",
     "outcome": "accepted",
     "reason": "accepted",
-    "reply": "a7ec2f711853c4bd28b70f3e7bd582b9690f36fe6da08c8867c72cc25d3b5ae5",
-    "txid": "a7ec2f711853c4bd28b70f3e7bd582b9690f36fe6da08c8867c72cc25d3b5ae5"
+    "reply": "e4388c0961c4c9d66d2f155866d89701e049a3b77059955c417d6b0864c037e1",
+    "txid": "e4388c0961c4c9d66d2f155866d89701e049a3b77059955c417d6b0864c037e1"
    },
    {
     "id": "V1",
@@ -28,8 +28,8 @@
     "what": "pay 5,000 sats, mint one immutable 16-byte receipt for 5,000",
     "outcome": "accepted",
     "reason": "accepted",
-    "reply": "3c2d98fa18fe2d238f7a4c1c5a7c92e2d585e4d158724ef1f80159d44330205f",
-    "txid": "3c2d98fa18fe2d238f7a4c1c5a7c92e2d585e4d158724ef1f80159d44330205f"
+    "reply": "f9c1a6b35017ffc1cb41a7cf1a10c4bfb164ac36d2d68a6f8e45709addcc2cc7",
+    "txid": "f9c1a6b35017ffc1cb41a7cf1a10c4bfb164ac36d2d68a6f8e45709addcc2cc7"
    },
    {
     "id": "A01",
@@ -38,7 +38,7 @@
     "outcome": "refused",
     "reason": "contract (script failed)",
     "reply": "Script failed an OP_NUMEQUALVERIFY operation",
-    "txid": "457b88e5f2aa23d6fb96754eaf7f78e378986246b0f1332b3abb78b4d0cb11f2"
+    "txid": "06f20ae8b374a402281e5d38eda1d047430a326cb4f031e2ffb3605b4432e0cc"
    },
    {
     "id": "A02",
@@ -47,7 +47,7 @@
     "outcome": "refused",
     "reason": "contract (script failed)",
     "reply": "Script failed an OP_NUMEQUALVERIFY operation",
-    "txid": "d6230a202daaabdfe52a7ce469088ecb0f49b180f90685ab9514b90f9caa0a03"
+    "txid": "c131825790c9d7c48293b419bf659774532c8dc5b74d46dd82c5e6c124c39634"
    },
    {
     "id": "A03",
@@ -56,7 +56,7 @@
     "outcome": "refused",
     "reason": "contract (script failed)",
     "reply": "Script failed an OP_NUMEQUALVERIFY operation",
-    "txid": "b26eeccf942ff991a2cc2ce49b8c974da62fcf2729dbed7876df5c2abc627adf"
+    "txid": "9121b06f08a3c54a8edda98c95056c3518af327828c535896434944f2ccf9df1"
    },
    {
     "id": "A04",
@@ -65,7 +65,7 @@
     "outcome": "refused",
     "reason": "contract (script failed)",
     "reply": "Script failed an OP_EQUALVERIFY operation",
-    "txid": "0eb9ad2a902009496ef63032fb2b26199baafc27b31028bf529c4be2b6027db9"
+    "txid": "93950fc4e45941cc624ac5116e19a7898e9583e060c6bd978ce4e5569f92c5e3"
    },
    {
     "id": "A05",
@@ -74,7 +74,7 @@
     "outcome": "refused",
     "reason": "contract (script failed)",
     "reply": "Script failed an OP_NUMEQUALVERIFY operation",
-    "txid": "28a499632fe70243e2666fa2314c9b853a3f6e6ed24a186c72a0ebd1dad54d7c"
+    "txid": "f879349d0ebc94f680cefeed8657e05d24a03984d2bb72d7c7db80f767e6de1a"
    },
    {
     "id": "A06",
@@ -83,7 +83,7 @@
     "outcome": "refused",
     "reason": "contract (script failed)",
     "reply": "Script failed an OP_NUMEQUALVERIFY operation",
-    "txid": "70663bafb8c82787b509d9d7d84985dfac60df825d4696cd877f3a28856139f4"
+    "txid": "500ee661cb43a1918abc52734bb297890c788d838c4fede6a6b1fad1007eca00"
    },
    {
     "id": "A07",
@@ -92,7 +92,7 @@
     "outcome": "refused",
     "reason": "contract (script failed)",
     "reply": "Script failed an OP_VERIFY operation",
-    "txid": "4d0da1809b2783139db26210ca0bf0507fa9a4d1df5abc54d4973a08c60a5c4e"
+    "txid": "e54b517376d3d28c764243ccbdf401a12a292a26f49682ff1dc47428d0a8a483"
    },
    {
     "id": "A08",
@@ -101,7 +101,7 @@
     "outcome": "refused",
     "reason": "contract (script failed)",
     "reply": "Script failed an OP_NUMEQUALVERIFY operation",
-    "txid": "f5b92678e0f4b3c1b0e0afab9308a2259badda36a91753bfd8cbce215774e225"
+    "txid": "e2b31722da7efe7431f1ad6523fa3c351baca520a92485596d1b575addb17426"
    },
    {
     "id": "A10",
@@ -110,7 +110,7 @@
     "outcome": "refused",
     "reason": "contract (script failed)",
     "reply": "Script failed an OP_EQUALVERIFY operation",
-    "txid": "d856241c60ef2bb77b7d8086fcdfcf652c9fb85bc46933f06d8eac7082b6d923"
+    "txid": "b7089a3ee9cd46ffe1be2ff9587cb011e4211c45dca458e4ab53ac02e69d19fa"
    },
    {
     "id": "A11",
@@ -119,7 +119,7 @@
     "outcome": "refused",
     "reason": "contract (script failed)",
     "reply": "Script failed an OP_EQUALVERIFY operation",
-    "txid": "9b522b0bd54d61b671aa6a6866b2da672682cc9b85b4c778b0f0b4a04ae441ca"
+    "txid": "0d3ca953eb1bc6da21b0cfb763d53f25843caed25c1e6d93232f2abcbfa82456"
    },
    {
     "id": "A12",
@@ -128,7 +128,7 @@
     "outcome": "refused",
     "reason": "contract (script failed)",
     "reply": "Script failed an OP_EQUALVERIFY operation",
-    "txid": "7dfd9110b55d2cc6831c887c6cdaa084a3504018649ed18690795fa132508f18"
+    "txid": "a65b9bbd0741b95c42786ab8a0b9f5d2aea4f38f369ba04937c35e6d3cc6b897"
    },
    {
     "id": "A13",
@@ -137,7 +137,7 @@
     "outcome": "refused",
     "reason": "contract (script failed)",
     "reply": "Script failed an OP_EQUALVERIFY operation",
-    "txid": "e2f72d1fb2450d09ab8cd5ea991e05fbbb2e356472ed0a835019bcd10f023b79"
+    "txid": "6786ce6e7c97966081b4b547770e768fe52d48742ab0a22fc8d41b5f88b26466"
    },
    {
     "id": "A14",
@@ -146,7 +146,7 @@
     "outcome": "refused",
     "reason": "contract (script failed)",
     "reply": "Script failed an OP_VERIFY operation",
-    "txid": "703000ba3442b51f9ea430031d2f6c6745f6c1c08db3550fd27576238e6f06eb"
+    "txid": "6b0af7f59e9cb98afc6c308afe5564ff2b519bcf2ee6ea5b6db8d40ccc4fe20f"
    },
    {
     "id": "A15",
@@ -155,7 +155,7 @@
     "outcome": "refused",
     "reason": "contract (script failed)",
     "reply": "Script failed an OP_VERIFY operation",
-    "txid": "ec37ee95cfa8d9e63a478f9b767a1fca8fcd4e62a545eeef708b7db895baf324"
+    "txid": "a8a6f9ba711e5b43c476be74155c6123d931d7a15370356aed263dc8e862a1f6"
    },
    {
     "id": "A16",
@@ -164,7 +164,7 @@
     "outcome": "refused",
     "reason": "contract (script failed)",
     "reply": "Script failed an OP_VERIFY operation",
-    "txid": "efec9b8817f0a7927606da86d21a375c641f13e2928a786e212ae5169cdd9b11"
+    "txid": "8592e279d9e0c959cd2e67b00047c0c3f62b4a0ef0114e59823efe7abdf94cda"
    },
    {
     "id": "A17",
@@ -173,7 +173,7 @@
     "outcome": "refused",
     "reason": "contract (script failed)",
     "reply": "Script failed an OP_EQUALVERIFY operation",
-    "txid": "85dd88f38e6256075de814ff02a1d67f59beb8a93dd46df43d003977f2c1018e"
+    "txid": "869c052e432ea4d8adb64686f903454527cd5d2d17e2d5663ceebf45dd77e298"
    },
    {
     "id": "A18",
@@ -182,7 +182,7 @@
     "outcome": "refused",
     "reason": "contract (script failed)",
     "reply": "Script failed an OP_EQUALVERIFY operation",
-    "txid": "164f2573409265925764450958314bf3f172ef60dcf581df12957393dfb8718f"
+    "txid": "40b66ac15b95196b77e75d4c1c5a0e10801f722ac6ce36c030738e33e477cad3"
    },
    {
     "id": "A19",
@@ -191,7 +191,7 @@
     "outcome": "refused",
     "reason": "consensus token rules",
     "reply": "token::OutputData(id=ebef9a8f0693ed7d8f765d8f537cfc, bitfield=10, amount=1000, commitment=",
-    "txid": "6235032b364c1eb3fddb61b5ba6dc584d3997c8f2b05d38292f49ed847f61fb5"
+    "txid": "868591ad9a6e8289a846303d75e9f018b467f04ce48025d41a862e1dc354214c"
    },
    {
     "id": "M01",
@@ -200,7 +200,7 @@
     "outcome": "refused",
     "reason": "contract (script failed)",
     "reply": "Script failed an OP_EQUALVERIFY operation",
-    "txid": "d1bc4f416255322a5415394e815833de7f3b6a4bb4d92a4b8697f760a568e948"
+    "txid": "ba7bc1dae1aadc1e25025479510b4dba3d0d238f5b492d9897842e1b17ed84a4"
    },
    {
     "id": "M04",
@@ -209,7 +209,7 @@
     "outcome": "refused",
     "reason": "contract (script failed)",
     "reply": "Script failed an OP_EQUALVERIFY operation",
-    "txid": "9e29003d96b5dbe81417787114174b69ad04a6ec2461066616176e979ad696ad"
+    "txid": "fa9092a917d232063204f8d10f06e871837c8e6295d1657f312ecf2dd4471094"
    },
    {
     "id": "A09",
@@ -218,7 +218,7 @@
     "outcome": "refused",
     "reason": "contract (script failed)",
     "reply": "Script failed an OP_EQUALVERIFY operation",
-    "txid": "2c2bc81b7388e82232c4ff8714ee91dc75e5411e37da304fcedc92bbd50a592e"
+    "txid": "9db2f16b6678ed99e907e0de8ba30e37e1adfd01d8a47063981fe034f6d6d4e8"
    },
    {
     "id": "A20",
@@ -227,7 +227,7 @@
     "outcome": "refused",
     "reason": "contract (script failed)",
     "reply": "Signature must be zero for failed CHECK(MULTI",
-    "txid": "ef2ebdd997d50112fe1d316b279427b2b6a9d5543cd06f9c8443bf8035f061b3"
+    "txid": "68f5f63c3203cfc0f81994df85471cfb8dca8d5a8e840110c4d60a762c6a457f"
    },
    {
     "id": "A21",
@@ -236,7 +236,7 @@
     "outcome": "refused",
     "reason": "contract (script failed)",
     "reply": "Signature must be zero for failed CHECK(MULTI",
-    "txid": "7bd5fa274de551c01fc314dd6ae694a6cb6ca5697fb2e79c361b8d3f5e1e9404"
+    "txid": "7c9219d3e6a6ffae5d3e9dcbfcadac0a10d48365eea1abc285cbfca5d6657ece"
    },
    {
     "id": "A22",
@@ -245,7 +245,7 @@
     "outcome": "refused",
     "reason": "contract (script failed)",
     "reply": "Script failed an OP_VERIFY operation",
-    "txid": "418de8e62a558028e4cc975bab98a1b1832dd10ed657daf79ab097519ff49937"
+    "txid": "ecab2522fc539f30372afcced75638e17827680e635d00f3c5ce01857b66a31a"
    },
    {
     "id": "A23",
@@ -254,7 +254,7 @@
     "outcome": "refused",
     "reason": "contract (script failed)",
     "reply": "Script failed an OP_VERIFY operation",
-    "txid": "ed800f757eb2f9b0f8ffb07116cee5da903cac7dbe2fb1ea495227721a0ad05e"
+    "txid": "3dda8ce05e12c2c19b9546bf0bcc9cf6594040bd9688773256009521498a3f29"
    },
    {
     "id": "A24",
@@ -263,7 +263,7 @@
     "outcome": "refused",
     "reason": "contract (script failed)",
     "reply": "Script failed an OP_EQUALVERIFY operation",
-    "txid": "1b597553b12b43a439c35d965019ef1b45a36c81f148b9ab5caf5ec05a3edf28"
+    "txid": "92d21bc15167b1de511dad30ca5806d4b888d3262735387ad5fb93a314e34459"
    },
    {
     "id": "A25",
@@ -272,7 +272,7 @@
     "outcome": "refused",
     "reason": "contract (script failed)",
     "reply": "Script failed an OP_EQUALVERIFY operation",
-    "txid": "9bdbfd372daf9b3795923e675cba4a63a5ef87dde2ed2f3b78073e22ce3c98fe"
+    "txid": "b4735589298154512d19eb202a7ab6ca4cfd9099c998bcbe98293c8189ac72a6"
    },
    {
     "id": "A26",
@@ -281,7 +281,7 @@
     "outcome": "refused",
     "reason": "contract (script failed)",
     "reply": "Script failed an OP_VERIFY operation",
-    "txid": "bc3356e4249f96919f3fe07413b76cba4ea8de029d8415ad6edcc58f695464a8"
+    "txid": "bef195575787c2033a96454c29702ed89457087f058af60b0c3b2801f4334d2b"
    },
    {
     "id": "A27",
@@ -290,7 +290,7 @@
     "outcome": "refused",
     "reason": "contract (script failed)",
     "reply": "Script failed an OP_EQUALVERIFY operation",
-    "txid": "0141efc84b38ac1d28617fbca3feb3585e894402b827ef6076f2cf6c70896c95"
+    "txid": "187fa946bc6b9c078d525890d121c4e00bc5f1bafa83978f7bc06c5f734c1a2f"
    },
    {
     "id": "A28",
@@ -299,7 +299,7 @@
     "outcome": "refused",
     "reason": "contract (script failed)",
     "reply": "Script failed an OP_VERIFY operation",
-    "txid": "08d9aed6b8302355965387f5066ef3b8579e40847371f042c219bfaad077d312"
+    "txid": "bd23040f53954b20e9d162e55ed0f856b70a92f35ec825e583bdfbfed5817e1d"
    },
    {
     "id": "A29",
@@ -308,7 +308,7 @@
     "outcome": "refused",
     "reason": "contract (script failed)",
     "reply": "Script failed an OP_EQUALVERIFY operation",
-    "txid": "2a3e74cf1307109b2cfeb5115295a0a525b69ac2beff4a76503775a80ebd4520"
+    "txid": "3b04b27eb5bb23c7fe60fd20dae95264b3807890040ce160d7650ae98bfce162"
    },
    {
     "id": "A30",
@@ -317,7 +317,7 @@
     "outcome": "refused",
     "reason": "contract (script failed)",
     "reply": "Script failed an OP_VERIFY operation",
-    "txid": "72ac7cbb12425e691437a5f33797614b70f1d2bae0222cf467e6999cdc5f2724"
+    "txid": "611f4161b4b96530e7ff8421dfe1192e2aa78d81ded20e604d3d2fd19add3c47"
    },
    {
     "id": "A31",
@@ -326,7 +326,7 @@
     "outcome": "refused",
     "reason": "contract (script failed)",
     "reply": "Script failed an OP_NUMEQUALVERIFY operation",
-    "txid": "f57cccd25f0913923ee550d902a62080f282696858455272a99c0f5229110e80"
+    "txid": "572b6a5aa119d969a812457874f14efad694143bbc560648d354af6a3732bbaf"
    },
    {
     "id": "A32",
@@ -335,7 +335,7 @@
     "outcome": "refused",
     "reason": "contract (script failed)",
     "reply": "Script failed an OP_VERIFY operation",
-    "txid": "047d3d06df39da4aded3bacc77de6be38a21b4f32ee4f661688c2b39db39e725"
+    "txid": "a7e3e8af5fe41f125af5dc336de2f6db98ed8f53cf579ae4f89c071e32c8aa07"
    },
    {
     "id": "A33",
@@ -344,7 +344,7 @@
     "outcome": "refused",
     "reason": "contract (script failed)",
     "reply": "Script failed an OP_VERIFY operation",
-    "txid": "9255d0873ad347ab0d5e8a857bf22f77f6a1a7ddb9346a79194346b196045075"
+    "txid": "f74c4c688be95eea87a22079c0dca01cf547f4578b79023b157dd4c4ab2621ee"
    },
    {
     "id": "A34",
@@ -353,7 +353,7 @@
     "outcome": "refused",
     "reason": "contract (script failed)",
     "reply": "Script failed an OP_VERIFY operation",
-    "txid": "fa24a69943928b4512b8270cc9e3a8c22c0197dc951dee30ad622da58bd3e895"
+    "txid": "0af5dff0de5f2422c0a0c6bb9f1220e4506d44f2e6d969bdffb33e4c738fcaf7"
    },
    {
     "id": "M02",
@@ -362,7 +362,7 @@
     "outcome": "refused",
     "reason": "contract (script failed)",
     "reply": "Script failed an OP_EQUALVERIFY operation",
-    "txid": "87b9091056ab3e60262bad06300cf6034793af8efd3541b04173e02326f2315a"
+    "txid": "8f340924755c061e351e99bb23fc9a0951de63b4d6621885f2a8b22629927567"
    },
    {
     "id": "P01",
@@ -371,7 +371,7 @@
     "outcome": "refused",
     "reason": "contract (script failed)",
     "reply": "Script failed an OP_EQUALVERIFY operation",
-    "txid": "ca819ef22e056ebd7fdd97b6ef35ce59739892ecd5200a836d519fecad39d09e"
+    "txid": "ac3f8f121b5189a3c082811b4d64c26f9c249eafa2b1c506c3ed3351eb9ab3be"
    },
    {
     "id": "P02",
@@ -380,7 +380,7 @@
     "outcome": "refused",
     "reason": "contract (script failed)",
     "reply": "Script failed an OP_EQUALVERIFY operation",
-    "txid": "2dfe36c9e5e453567622dfdbe35236cfdd4322e6daf1d697a0348cc3c1a661f2"
+    "txid": "ec4fa4dba1c4f85b266f44470986f5fd0bd06c20749a2c2be79db83cba076292"
    },
    {
     "id": "P03",
@@ -389,7 +389,7 @@
     "outcome": "refused",
     "reason": "contract (script failed)",
     "reply": "Script failed an OP_EQUALVERIFY operation",
-    "txid": "9c1a58c9e0439ea13a6594e7bb4a78679eb0d982378836cb31a322041ca9eadb"
+    "txid": "2b1f2b8e78c145c93c3af97f429b94ec89c784ba3d15211bfe6eb0c79e99b09a"
    },
    {
     "id": "P04",
@@ -398,7 +398,7 @@
     "outcome": "refused",
     "reason": "contract (script failed)",
     "reply": "Script failed an OP_EQUALVERIFY operation",
-    "txid": "fc565d911ed4541e098e7ecb23c631f8272b831dbd152b5a8c36a008d7f2f69e"
+    "txid": "e6ed83fe92f1ce8b8767ecb970ab2e93241ed69778f93db5bd90982ca2277a08"
    },
    {
     "id": "P05",
@@ -407,7 +407,7 @@
     "outcome": "refused",
     "reason": "contract (script failed)",
     "reply": "Script failed an OP_VERIFY operation",
-    "txid": "1ec2e8065c487528f1371c8d4f524149e625f6af328e2b8ab224d9dd7c1ea4df"
+    "txid": "8d8c2c91488159bc7ebbc219b357c75497f15d775b9ec17fdbf6513d2cf48236"
    },
    {
     "id": "P06",
@@ -416,7 +416,7 @@
     "outcome": "refused",
     "reason": "contract (script failed)",
     "reply": "Script failed an OP_VERIFY operation",
-    "txid": "c0c48f0878c3eac52818487038abb30bf5ec3cf10c89a8a21adef027314c643b"
+    "txid": "cb0dce68a7bff80d3a937020f298e58ab96a6216f609fbb0f60e26186771c7a4"
    },
    {
     "id": "P07",
@@ -425,7 +425,7 @@
     "outcome": "refused",
     "reason": "contract (script failed)",
     "reply": "Script failed an OP_VERIFY operation",
-    "txid": "0748748ca160de6a85782586da544d0539162875f2b16a1cffc42753a4d5a05b"
+    "txid": "479975901f6aa97d6728a28280401b50cd83c4427bb36d47e1a0c884afc72585"
    },
    {
     "id": "P08",
@@ -434,7 +434,7 @@
     "outcome": "refused",
     "reason": "contract (script failed)",
     "reply": "Signature must be zero for failed CHECK(MULTI",
-    "txid": "1dad59d35c6d0db6b25c9e12fa489b8653df7651e1c17b470f1b0a6b49b1365f"
+    "txid": "0c279f21c2c93bfd31f23f82a4711646f9660b5d1f45476031482b134d2e4e8a"
    },
    {
     "id": "P09",
@@ -443,7 +443,7 @@
     "outcome": "refused",
     "reason": "contract (script failed)",
     "reply": "Script failed an OP_EQUALVERIFY operation",
-    "txid": "362e2861a7085af9f73fd921002a576057457e89295f7a15544595b06063b0b8"
+    "txid": "27e060a1b88df2f765f3ea9f8f1f7fff0d23e23fd15d9782a55dbb788ab1b3ff"
    },
    {
     "id": "P10",
@@ -452,7 +452,7 @@
     "outcome": "refused",
     "reason": "contract (script failed)",
     "reply": "Script failed an OP_EQUALVERIFY operation",
-    "txid": "f500cfd194a6e71b102e3c0fc8d33e471f24b30c98337dbd1e97d9ad244d9e1a"
+    "txid": "164cc990a220a818ed5309fe784aeae56710c044bdd104d29382aa832db881a9"
    },
    {
     "id": "P11",
@@ -461,7 +461,7 @@
     "outcome": "refused",
     "reason": "contract (script failed)",
     "reply": "Script failed an OP_VERIFY operation",
-    "txid": "5efae334a1deb084b4cd8620e07d01499e0b6ea13043d7566c65483495ae332a"
+    "txid": "6a553bfe95c82efc0472c88ed7db72cd19509893bab8f81a5376745ac5fdf658"
    },
    {
     "id": "P12",
@@ -470,7 +470,7 @@
     "outcome": "refused",
     "reason": "contract (script failed)",
     "reply": "Script failed an OP_VERIFY operation",
-    "txid": "e272331b600fc9c9cb03e11326a59ad88d8c73e569c3150396cb6260f4834e8e"
+    "txid": "c60d477dea2d73b767c79a867829e16a0cc3ab788c5d4266ccc16d9221e3c930"
    },
    {
     "id": "M03",
@@ -479,7 +479,61 @@
     "outcome": "refused",
     "reason": "contract (script failed)",
     "reply": "Script failed an OP_EQUALVERIFY operation",
-    "txid": "c2fc36a6dd8e1afca7b24859ee448a76b80c08593a5b296c26929e78ec775514"
+    "txid": "45bab8c91dcc9523563fe14105e541a4c6b29f7929b0315dcb48728f0b543b47"
+   },
+   {
+    "id": "K01",
+    "kind": "attack",
+    "what": "steal the shop's minting token: put the minter at input 1 behind the attacker's own coin at input 0, and send output 0 (the minting token) to the attacker's address, which matches input 0",
+    "outcome": "refused",
+    "reason": "contract (script failed)",
+    "reply": "Script failed an OP_NUMEQUALVERIFY operation",
+    "txid": "ae4630278095421e579b2c43c0430ce6812dbde4a7d8dcd09b119c2a420482c9"
+   },
+   {
+    "id": "K02",
+    "kind": "attack",
+    "what": "with the stolen hot refund key: minter at input 1, attacker's coin at input 0, and the minting token plus the whole float sent to the attacker at output 0",
+    "outcome": "refused",
+    "reason": "contract (script failed)",
+    "reply": "Script failed an OP_NUMEQUALVERIFY operation",
+    "txid": "682745ad1aa3ea5582549f8424afb4b0e829bb60d9d946890fe65e9a63466603"
+   },
+   {
+    "id": "K03",
+    "kind": "attack",
+    "what": "with the stolen hot refund key: the same input-order trick through the partial-refund path",
+    "outcome": "refused",
+    "reason": "contract (script failed)",
+    "reply": "Script failed an OP_NUMEQUALVERIFY operation",
+    "txid": "9f4dfa9bb640844170123551f5ac77ef876035c81b411791998c536a8fb9a9cf"
+   },
+   {
+    "id": "K04",
+    "kind": "attack",
+    "what": "use the owner's admin path without the owner's key (signed by the hot refund key) to take the float",
+    "outcome": "refused",
+    "reason": "contract (script failed)",
+    "reply": "Signature must be zero for failed CHECK(MULTI",
+    "txid": "537e55efc5fc744d329a56dd074449d396c79fc0c9fcfa61daa4e72b64d4ec57"
+   },
+   {
+    "id": "K05",
+    "kind": "attack",
+    "what": "with the stolen hot refund key: the attacker's own token category's minting token at input 0, the minter at input 1 and a fake receipt in the attacker's category at input 2, so the refund path reads the attacker's category; the shop's minting token and float go to the attacker",
+    "outcome": "refused",
+    "reason": "contract (script failed)",
+    "reply": "Script failed an OP_NUMEQUALVERIFY operation",
+    "txid": "e526fbb9d1f16ea3bd593981966bd59134ec3e22bbd39b746797f6ae197bf119"
+   },
+   {
+    "id": "K06",
+    "kind": "attack",
+    "what": "the same attacker-category trick through the partial-refund path",
+    "outcome": "refused",
+    "reason": "contract (script failed)",
+    "reply": "Script failed an OP_NUMEQUALVERIFY operation",
+    "txid": "5c9c033ebd83c93907d46e3a92e769462071ce3de1d4d63f4d96f6f84e943011"
    },
    {
     "id": "V3",
@@ -487,8 +541,8 @@
     "what": "refund exactly the receipt amount to the receipt holder, receipt burned, merchant signed",
     "outcome": "accepted",
     "reason": "accepted",
-    "reply": "7a4117fbbd1a11f70c5f43fd214d7f6e3180e0943fa56df630792c6a8b225481",
-    "txid": "7a4117fbbd1a11f70c5f43fd214d7f6e3180e0943fa56df630792c6a8b225481"
+    "reply": "c1f7fcf24b9caabc3abed82610f173efd8727c10e418c875f96b8dec19b6a913",
+    "txid": "c1f7fcf24b9caabc3abed82610f173efd8727c10e418c875f96b8dec19b6a913"
    },
    {
     "id": "PV1",
@@ -496,8 +550,8 @@
     "what": "refund 2,000 of a 5,000 receipt; the holder gets 2,000 and a new receipt for 3,000 with the same order id",
     "outcome": "accepted",
     "reason": "accepted",
-    "reply": "38d601cc59f357d0f7fd5ac67a2cb00c7c7b0538f929e0546acba4d73464e298",
-    "txid": "38d601cc59f357d0f7fd5ac67a2cb00c7c7b0538f929e0546acba4d73464e298"
+    "reply": "c1d7460c0f229d277f55ad7f3186dc063bc77c0e850b982f272b964f272e8fd8",
+    "txid": "c1d7460c0f229d277f55ad7f3186dc063bc77c0e850b982f272b964f272e8fd8"
    },
    {
     "id": "PV3",
@@ -505,8 +559,8 @@
     "what": "refund 546 sats (the dust minimum) of a 5,000 receipt with a 4,454 remainder receipt",
     "outcome": "accepted",
     "reason": "accepted",
-    "reply": "99b471ad8d67a1519b9171c18de68bb90f65b530795e90e736b73d829c7d809d",
-    "txid": "99b471ad8d67a1519b9171c18de68bb90f65b530795e90e736b73d829c7d809d"
+    "reply": "9fa7bdd3d499f1eb66cc6c715742f4afa202aac044f52bfe6f58a788dde31a2e",
+    "txid": "9fa7bdd3d499f1eb66cc6c715742f4afa202aac044f52bfe6f58a788dde31a2e"
    }
   ]
  },

@@ -7,11 +7,11 @@ It needs Bitcoin Cash because the receipt is a CashToken minted by a covenant in
 **Live demo:** https://takeback-bch.vercel.app
 
 **Try it in 30 seconds**
-1. Open the link on a laptop and press **Connect wallet to buy**.
-2. Scan the QR code with Paytaca or Selene (WizardConnect).
-3. Buy a coffee from the Kopi Blaze demo shop. Approve in your wallet.
-4. The receipt shows up under **Your receipts**. Press **Refund**, approve, and the same amount comes back.
-5. No wallet handy? Press **Run the attacks** to watch the contract refuse 46 ways of cheating it.
+1. Open https://takeback-bch.vercel.app/?net=chipnet and press **Try it now, no wallet needed**. A demo wallet is made in your browser and gets free test coins (chipnet, the test network).
+2. Buy a coffee from the Kopi Blaze demo shop. The receipt shows up under **Your receipts**.
+3. Press **Refund**. The same amount comes back, the receipt burns, and the page shows how many seconds it took.
+4. Press **Send 5 cheats to chipnet** and watch a real node refuse each one.
+5. With a phone wallet: open the live link, press **Connect wallet**, scan with Paytaca or Selene (WizardConnect), and do the same with real BCH.
 
 ## How it uses Bitcoin Cash
 
@@ -19,33 +19,48 @@ It needs Bitcoin Cash because the receipt is a CashToken minted by a covenant in
 - **Refunds follow the receipt, not an address the customer types.** The `refund` path pays exactly the receipt's amount to the address that held the receipt, and the receipt is burned in the same transaction. A second refund of the same receipt has nothing to spend.
 - **Partial refunds keep the rest owed.** The `partialRefund` path pays part of the receipt and, in the same transaction, gives the holder a new receipt for exactly the remainder with the same order id.
 - **Two keys, so a stolen server key can't drain the shop.** A hot refund key on the server ([`api/refund.ts`](app/api/refund.ts)) can only co-sign refunds the contract allows. A cold owner key administers the minter.
-- **Wallets connect through WizardConnect.** The page builds the transaction ([`takeback.ts`](app/src/lib/takeback.ts)), the phone wallet signs its own inputs, and the minter input needs no signature for a purchase.
+- **Wallets connect through WizardConnect.** The page builds the transaction ([`takeback.ts`](app/src/lib/takeback.ts)), the phone wallet signs its own inputs, and the minter input needs no signature for a purchase. The no-wallet demo signs the same transactions in the browser ([`burner.ts`](app/src/lib/burner.ts)).
 - **The books come from the chain.** Every purchase and refund spends a minter UTXO, so the page rebuilds sales, refunds and net from the minter's history ([`chain.ts`](app/src/lib/chain.ts)).
 - **CashScript 0.14 on the 2026 VM.** The contract uses the loops from the May 2026 upgrade to check every other input and output for the shop's token category.
 
 ## Check it yourself
 
-- The attack list and the code that runs it: [`evidence/attacks.json`](evidence/attacks.json), [`app/src/lib/attacks.ts`](app/src/lib/attacks.ts). Rerun with `cd app && npm install && node contracts/attacks.test.mjs`.
-- Chipnet (test network) transactions from our own test wallets, made through the live page and WizardConnect: [shop setup](https://chipnet.imaginary.cash/tx/f910d432f5f666530265e904714497bb500327b0501aa966dc0b3223c91796f8), [a purchase that minted a 10,000-sat receipt](https://chipnet.imaginary.cash/tx/96b0663ac8678d2a69f0a73adc0ee24295142a0d5b834744f91ee1204e067b1f), and [its refund](https://chipnet.imaginary.cash/tx/4353aae77fe5e0e7474c43c580a7f3dede7b07245b37a0ae6d759262cb079b0c), which paid back 10,000 sats and burned the receipt. Open https://takeback-bch.vercel.app/?net=chipnet to see the shop's books rebuilt from the chain.
-- Mainnet transactions: not yet. The mainnet shop goes on chain once its float is funded.
+- **Real nodes:** every attack below, built from the shop's real chipnet coins and signed with real keys, sent to two chipnet servers. Each node reply and signed transaction is in [`evidence/real-node-chipnet.json`](evidence/real-node-chipnet.json). Rerun: `cd app && node scripts/real-attacks.mjs chipnet --replay` (no keys needed).
+- **The attack lists** and the code that runs them: [`evidence/attacks.json`](evidence/attacks.json), [`attacks-2.json`](evidence/attacks-2.json), [`attacks-3.json`](evidence/attacks-3.json), [`attacks-4.json`](evidence/attacks-4.json), [`app/src/lib/attacks.ts`](app/src/lib/attacks.ts). Rerun: `cd app && npm install && node contracts/attacks.test.mjs 1` (and `2`, `3`, `4`).
+- **The fuzzer:** [`app/src/lib/fuzz.ts`](app/src/lib/fuzz.ts) and the model of the rules it checks against, [`rules-model.ts`](app/src/lib/rules-model.ts). Rerun: `cd app && node contracts/fuzz.test.mjs 20000 20261122`.
+- **The mutation test:** [`app/contracts/mutants.test.mjs`](app/contracts/mutants.test.mjs), results in [`evidence/mutants-result.json`](evidence/mutants-result.json).
+- **Chipnet shop (contract v2):** [shop setup](https://chipnet.imaginary.cash/tx/13f39d1ae6350b3b4a15250b9e77af965101942bd28a42944ce3b6769e64d081). Open https://takeback-bch.vercel.app/?net=chipnet to see its books rebuilt from the chain.
+- **Mainnet:** not yet. The mainnet shop goes on chain once its float is funded.
 
 ## Evidence
 
-Evidence, stated plainly: no real users yet; it was built for this hackathon. Instead: our own break test of the refund rules, and test transactions from wallets we control once the shop is on mainnet. Each one reruns from the repo with one command.
+Evidence, stated plainly: no real users yet; it was built for this hackathon. Instead: our own break test of the refund rules (written attack lists, a fuzzer and a mutation test), and test transactions from wallets we control on chipnet, including every attack sent to real nodes. Each one reruns from the repo with one command.
+
+> Claim: real Bitcoin Cash nodes refuse every attack on the receipt contract, not only our local copy of the VM.
+> Evidence type: Test transactions from wallets we control (chipnet, no monetary value), not real users.
+> Data: lists 1 to 4 (56 attacks), built from the shop's real chipnet coins and signed with real keys, the shop's hot refund key included; sent to chipnet.bch.ninja and chipnet.imaginary.cash on 2026-11-20.
+> Result: 56 of 56 refused by both servers (55 by the contract, 1 by consensus token rules; 95% interval 93.6% to 100.0%); 5 of 5 honest purchases and refunds accepted in the same run.
+> Rerun: `cd app && node --env-file=<env with test seeds> scripts/real-attacks.mjs chipnet`, or the keyless replay above. Limits: chipnet, not mainnet; the attacks are ours.
+
+> Claim: random rule-breaking transactions are refused and allowed ones go through.
+> Evidence type: Our own break test (we tried to make it fail), not real users.
+> Data: 20,000 transactions from seed 20261122 (fixed in [`evidence/EVAL_PLAN.md`](evidence/EVAL_PLAN.md) before the run), each a valid purchase, refund or partial refund with one to three random changes, judged by the BCH 2026 VM and by a separate model of our written rules.
+> Result: on contract v1 the fuzzer found one kind of gap, 333 cases where a purchase or refund could rewrite the shop's own minting token (no money at risk); we fixed it in v2. On v2: 18,714 of 18,714 rule-breaking transactions refused (95% interval 99.98% to 100%), 1,286 of 1,286 allowed ones accepted, zero disagreements.
+> Rerun: `cd app && node contracts/fuzz.test.mjs 20000 20261122`. Limits: the model of the rules is written by the same team as the contract, so a misunderstanding we share wouldn't show.
 
 > Claim: the receipt contract refuses rule-breaking purchases and refunds.
 > Evidence type: Our own break test (we tried to make it fail), not real users.
-> Data: 34 attacks and 3 valid cases written before the contract's final version ([`evidence/attacks.json`](evidence/attacks.json), committed in fb142c6), run on the BCH 2026 virtual machine.
-> Result: 34 of 34 attacks rejected by the contract (95% interval 89.8% to 100.0%); 3 of 3 valid cases accepted.
-> Rerun: `cd app && node contracts/attacks.test.mjs 1` at commit 0901f1e. Limits: we wrote the attacks ourselves; this runs on a local copy of the VM, not as mainnet broadcasts.
+> Data: 34 attacks and 3 valid cases written before the contract's final version ([`evidence/attacks.json`](evidence/attacks.json), committed in fb142c6), plus three labelled lists added later: 12 partial-refund attacks, 4 found by the fuzzer, 6 found by the mutation test.
+> Result: 56 of 56 attacks rejected by the contract (95% interval 93.6% to 100.0%); every valid case accepted.
+> Rerun: `cd app && node contracts/attacks.test.mjs 1` (and `2`, `3`, `4`). Limits: we wrote the attacks ourselves.
 
-> Claim: the partial-refund path refuses rule-breaking partial refunds.
+> Claim: every check in the contract that guards money is needed.
 > Evidence type: Our own break test (we tried to make it fail), not real users.
-> Data: a second, labelled list of 12 attacks and 3 valid cases ([`evidence/attacks-2.json`](evidence/attacks-2.json), committed in da8f0f3 before any run against the new path), BCH 2026 virtual machine.
-> Result: 12 of 12 attacks rejected by the contract (95% interval 75.8% to 100.0%); 2 of 2 possible valid cases accepted (one valid case, a 1-sat refund, can't exist on chain: it's below the 546-sat dust limit).
-> Rerun: `cd app && node contracts/attacks.test.mjs 2`. Limits: as above, and only 12 cases.
+> Data: each of the contract's 52 checks deleted one at a time (48 mutants compile), each mutant run against the attack lists and 5,000 fuzz cases.
+> Result: 36 of 48 mutants let an attack through, so a test catches each of those deletions. The other 12 are checks another rule or consensus already covers, listed with the reason on the live page. The first run showed three input-order checks no test covered; list 4 now covers them.
+> Rerun: `cd app && node contracts/mutants.test.mjs`. Limits: it deletes whole checks only.
 
-Limits, in numbers: zero real users and zero mainnet transactions so far (3 test purchases and 2 test refunds on chipnet, all from our own wallets); 34 attacks, all ours; the interval's low end is 89.8% because 34 cases can't rule out a rarer hole. The next real test is a mainnet purchase and refund from a wallet we control, which passes if the holder gets back exactly the receipt amount and the receipt is gone.
+Limits, in numbers: zero real users and zero mainnet transactions so far; all chipnet transactions come from our own wallets and from visitors' demo wallets with test coins; 56 hand-written attacks; the fuzzer's model shares our understanding of the rules. The next real test is a mainnet purchase and refund from a wallet we control, which passes if the holder gets back exactly the receipt amount and the receipt is gone.
 
 ## What doesn't work yet
 
@@ -60,4 +75,4 @@ Limits, in numbers: zero real users and zero mainnet transactions so far (3 test
 cd app && npm install && npm run dev
 ```
 
-`./check.sh` runs the contract attack list, the purchase and refund flow test, the build, a browser walk of the demo path and a WizardConnect round trip.
+`./check.sh` runs the four attack lists, the 20,000-case fuzzer, the purchase and refund flow test, the build, a browser walk of the demo path and a WizardConnect round trip.
