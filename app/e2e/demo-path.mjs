@@ -23,16 +23,18 @@ const fail = async (msg) => {
   await cleanup(); process.exit(1);
 };
 let browser;
-async function cleanup() { try { await browser?.close(); } catch {} if (server) server.kill(); }
+async function cleanup() { try { await browser?.close(); } catch {} if (server) { try { process.kill(-server.pid); } catch { server.kill(); } } }
 
 if (!url) {
-  server = spawn("npx", ["vite", "preview", "--port", "5192", "--strictPort"], { stdio: "pipe" });
-  await new Promise((resolve, reject) => {
-    server.stdout.on("data", (d) => /5192/.test(String(d)) && resolve());
+  // Any free port: a server left behind by a killed run must not block the next one.
+  server = spawn("npx", ["vite", "preview", "--port", "5192"], { stdio: "pipe", detached: true });
+  url = await new Promise((resolve, reject) => {
+    server.stdout.on("data", (d) => { const m = String(d).replace(/\x1b\[[0-9;]*m/g, "").match(/http:\/\/localhost:(\d+)\//); if (m) resolve(m[0]); });
     server.on("exit", (c) => reject(new Error("preview server exited " + c)));
     setTimeout(() => reject(new Error("preview server didn't start")), 30_000);
   });
-  url = "http://localhost:5192/";
+  // If this process is killed (check.sh's time limit), take the server down with it.
+  for (const sig of ["SIGTERM", "SIGALRM", "SIGINT"]) process.on(sig, () => { try { process.kill(-server.pid); } catch {} process.exit(1); });
 }
 mkdirSync("e2e/videos", { recursive: true });
 browser = await chromium.launch();
