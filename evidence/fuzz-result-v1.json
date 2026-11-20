@@ -1,0 +1,3525 @@
+{
+  "seed": 20261122,
+  "n": 20000,
+  "counts": {
+    "agree-refused": 18381,
+    "agree-accepted": 1286,
+    "hole": 333,
+    "too-strict": 0,
+    "setup": 0
+  },
+  "byRule": {
+    "out0 must carry the same minting token": 2952,
+    "partial: must pay the holder": 498,
+    "consensus: fungible tokens from nowhere": 506,
+    "refund: the receipt must be an immutable NFT of this shop": 1627,
+    "out0 must be the minter's script": 3909,
+    "partial: must pay exactly the refund amount": 294,
+    "pay: out2 must be an immutable receipt of this shop": 856,
+    "refund: must pay exactly the receipt amount": 489,
+    "refund: receipt amount must be positive": 78,
+    "minter must be input 0": 1430,
+    "partial: float pays more than the refund": 288,
+    "partial: remainder receipt must go to the holder": 141,
+    "refund: receipt input index out of range": 259,
+    "refund: needs the shop's refund key": 1175,
+    "pay: float reduced": 740,
+    "pay: merchant must get exactly the receipt amount": 429,
+    "partial: remainder must be an immutable receipt of this shop": 105,
+    "refund: must pay the receipt's holder": 594,
+    "pay: out1 must pay the merchant": 169,
+    "pay: no other output may carry the shop's tokens": 39,
+    "partial: must be less than the receipt": 289,
+    "refund: only one receipt per refund": 216,
+    "refund: receipt must be 16 bytes": 155,
+    "pay: merchant output carries no token": 105,
+    "refund: the receipt can't be input 0": 281,
+    "pay: receipt amount must be positive": 25,
+    "partial: remainder receipt must say exactly what's left, same order id": 228,
+    "partial: refund output carries no token": 66,
+    "refund: the receipt must be burned": 47,
+    "refund: float pays more than the receipt": 134,
+    "partial: no other output may carry the shop's tokens": 25,
+    "partial: refund must be positive": 136,
+    "pay: receipt must be 16 bytes": 9,
+    "refund: refund output carries no token": 87
+  },
+  "disagreements": [
+    {
+      "i": 8,
+      "outcome": "hole",
+      "model": "out0 must carry the same minting token",
+      "contract": "accepted",
+      "muts": [
+        "minterToken"
+      ],
+      "fn": "pay"
+    },
+    {
+      "i": 54,
+      "outcome": "hole",
+      "model": "out0 must carry the same minting token",
+      "contract": "accepted",
+      "muts": [
+        "minterToken"
+      ],
+      "fn": "pay"
+    },
+    {
+      "i": 124,
+      "outcome": "hole",
+      "model": "out0 must carry the same minting token",
+      "contract": "accepted",
+      "muts": [
+        "minterToken",
+        "minterToken"
+      ],
+      "fn": "pay"
+    },
+    {
+      "i": 209,
+      "outcome": "hole",
+      "model": "out0 must carry the same minting token",
+      "contract": "accepted",
+      "muts": [
+        "addInput",
+        "minterToken"
+      ],
+      "fn": "refund"
+    },
+    {
+      "i": 210,
+      "outcome": "hole",
+      "model": "out0 must carry the same minting token",
+      "contract": "accepted",
+      "muts": [
+        "minterToken",
+        "amount"
+      ],
+      "fn": "pay"
+    },
+    {
+      "i": 225,
+      "outcome": "hole",
+      "model": "out0 must carry the same minting token",
+      "contract": "accepted",
+      "muts": [
+        "minterToken",
+        "flipByte"
+      ],
+      "fn": "refund"
+    },
+    {
+      "i": 275,
+      "outcome": "hole",
+      "model": "out0 must carry the same minting token",
+      "contract": "accepted",
+      "muts": [
+        "minterToken"
+      ],
+      "fn": "partialRefund"
+    },
+    {
+      "i": 321,
+      "outcome": "hole",
+      "model": "out0 must carry the same minting token",
+      "contract": "accepted",
+      "muts": [
+        "minterToken"
+      ],
+      "fn": "pay"
+    },
+    {
+      "i": 352,
+      "outcome": "hole",
+      "model": "out0 must carry the same minting token",
+      "contract": "accepted",
+      "muts": [
+        "minterToken"
+      ],
+      "fn": "refund"
+    },
+    {
+      "i": 663,
+      "outcome": "hole",
+      "model": "out0 must carry the same minting token",
+      "contract": "accepted",
+      "muts": [
+        "minterToken"
+      ],
+      "fn": "refund"
+    },
+    {
+      "i": 670,
+      "outcome": "hole",
+      "model": "out0 must carry the same minting token",
+      "contract": "accepted",
+      "muts": [
+        "minterToken"
+      ],
+      "fn": "refund"
+    },
+    {
+      "i": 716,
+      "outcome": "hole",
+      "model": "out0 must carry the same minting token",
+      "contract": "accepted",
+      "muts": [
+        "minterToken"
+      ],
+      "fn": "partialRefund"
+    },
+    {
+      "i": 752,
+      "outcome": "hole",
+      "model": "out0 must carry the same minting token",
+      "contract": "accepted",
+      "muts": [
+        "minterToken",
+        "minterToken"
+      ],
+      "fn": "pay"
+    },
+    {
+      "i": 819,
+      "outcome": "hole",
+      "model": "out0 must carry the same minting token",
+      "contract": "accepted",
+      "muts": [
+        "minterToken"
+      ],
+      "fn": "pay"
+    },
+    {
+      "i": 1017,
+      "outcome": "hole",
+      "model": "out0 must carry the same minting token",
+      "contract": "accepted",
+      "muts": [
+        "token"
+      ],
+      "fn": "refund"
+    },
+    {
+      "i": 1036,
+      "outcome": "hole",
+      "model": "out0 must carry the same minting token",
+      "contract": "accepted",
+      "muts": [
+        "minterToken"
+      ],
+      "fn": "pay"
+    },
+    {
+      "i": 1053,
+      "outcome": "hole",
+      "model": "out0 must carry the same minting token",
+      "contract": "accepted",
+      "muts": [
+        "token",
+        "addInput"
+      ],
+      "fn": "refund"
+    },
+    {
+      "i": 1063,
+      "outcome": "hole",
+      "model": "out0 must carry the same minting token",
+      "contract": "accepted",
+      "muts": [
+        "minterToken"
+      ],
+      "fn": "partialRefund"
+    },
+    {
+      "i": 1209,
+      "outcome": "hole",
+      "model": "out0 must carry the same minting token",
+      "contract": "accepted",
+      "muts": [
+        "minterToken"
+      ],
+      "fn": "partialRefund"
+    },
+    {
+      "i": 1242,
+      "outcome": "hole",
+      "model": "out0 must carry the same minting token",
+      "contract": "accepted",
+      "muts": [
+        "minterToken"
+      ],
+      "fn": "refund"
+    },
+    {
+      "i": 1316,
+      "outcome": "hole",
+      "model": "out0 must carry the same minting token",
+      "contract": "accepted",
+      "muts": [
+        "minterToken"
+      ],
+      "fn": "refund"
+    },
+    {
+      "i": 1403,
+      "outcome": "hole",
+      "model": "out0 must carry the same minting token",
+      "contract": "accepted",
+      "muts": [
+        "minterToken"
+      ],
+      "fn": "pay"
+    },
+    {
+      "i": 1503,
+      "outcome": "hole",
+      "model": "out0 must carry the same minting token",
+      "contract": "accepted",
+      "muts": [
+        "token",
+        "recipient"
+      ],
+      "fn": "pay"
+    },
+    {
+      "i": 1537,
+      "outcome": "hole",
+      "model": "out0 must carry the same minting token",
+      "contract": "accepted",
+      "muts": [
+        "flipByte",
+        "minterToken"
+      ],
+      "fn": "pay"
+    },
+    {
+      "i": 1566,
+      "outcome": "hole",
+      "model": "out0 must carry the same minting token",
+      "contract": "accepted",
+      "muts": [
+        "addInput",
+        "minterToken"
+      ],
+      "fn": "partialRefund"
+    },
+    {
+      "i": 1598,
+      "outcome": "hole",
+      "model": "out0 must carry the same minting token",
+      "contract": "accepted",
+      "muts": [
+        "minterToken",
+        "minterToken"
+      ],
+      "fn": "refund"
+    },
+    {
+      "i": 1616,
+      "outcome": "hole",
+      "model": "out0 must carry the same minting token",
+      "contract": "accepted",
+      "muts": [
+        "minterToken"
+      ],
+      "fn": "refund"
+    },
+    {
+      "i": 1638,
+      "outcome": "hole",
+      "model": "out0 must carry the same minting token",
+      "contract": "accepted",
+      "muts": [
+        "minterToken"
+      ],
+      "fn": "refund"
+    },
+    {
+      "i": 1669,
+      "outcome": "hole",
+      "model": "out0 must carry the same minting token",
+      "contract": "accepted",
+      "muts": [
+        "minterToken",
+        "token"
+      ],
+      "fn": "pay"
+    },
+    {
+      "i": 1692,
+      "outcome": "hole",
+      "model": "out0 must carry the same minting token",
+      "contract": "accepted",
+      "muts": [
+        "minterToken",
+        "addInput"
+      ],
+      "fn": "pay"
+    },
+    {
+      "i": 1700,
+      "outcome": "hole",
+      "model": "out0 must carry the same minting token",
+      "contract": "accepted",
+      "muts": [
+        "minterToken",
+        "addInput",
+        "addInput"
+      ],
+      "fn": "partialRefund"
+    },
+    {
+      "i": 1709,
+      "outcome": "hole",
+      "model": "out0 must carry the same minting token",
+      "contract": "accepted",
+      "muts": [
+        "minterToken"
+      ],
+      "fn": "pay"
+    },
+    {
+      "i": 1760,
+      "outcome": "hole",
+      "model": "out0 must carry the same minting token",
+      "contract": "accepted",
+      "muts": [
+        "addInput",
+        "minterToken",
+        "flipByte"
+      ],
+      "fn": "refund"
+    },
+    {
+      "i": 1767,
+      "outcome": "hole",
+      "model": "out0 must carry the same minting token",
+      "contract": "accepted",
+      "muts": [
+        "token"
+      ],
+      "fn": "refund"
+    },
+    {
+      "i": 1792,
+      "outcome": "hole",
+      "model": "out0 must carry the same minting token",
+      "contract": "accepted",
+      "muts": [
+        "flipByte",
+        "minterToken"
+      ],
+      "fn": "pay"
+    },
+    {
+      "i": 1812,
+      "outcome": "hole",
+      "model": "out0 must carry the same minting token",
+      "contract": "accepted",
+      "muts": [
+        "minterToken",
+        "function",
+        "function"
+      ],
+      "fn": "pay"
+    },
+    {
+      "i": 1816,
+      "outcome": "hole",
+      "model": "out0 must carry the same minting token",
+      "contract": "accepted",
+      "muts": [
+        "minterToken"
+      ],
+      "fn": "partialRefund"
+    },
+    {
+      "i": 1850,
+      "outcome": "hole",
+      "model": "out0 must carry the same minting token",
+      "contract": "accepted",
+      "muts": [
+        "amount",
+        "minterToken",
+        "flipByte"
+      ],
+      "fn": "partialRefund"
+    },
+    {
+      "i": 2098,
+      "outcome": "hole",
+      "model": "out0 must carry the same minting token",
+      "contract": "accepted",
+      "muts": [
+        "token"
+      ],
+      "fn": "pay"
+    },
+    {
+      "i": 2107,
+      "outcome": "hole",
+      "model": "out0 must carry the same minting token",
+      "contract": "accepted",
+      "muts": [
+        "token"
+      ],
+      "fn": "pay"
+    },
+    {
+      "i": 2134,
+      "outcome": "hole",
+      "model": "out0 must carry the same minting token",
+      "contract": "accepted",
+      "muts": [
+        "token",
+        "addInput"
+      ],
+      "fn": "pay"
+    },
+    {
+      "i": 2143,
+      "outcome": "hole",
+      "model": "out0 must carry the same minting token",
+      "contract": "accepted",
+      "muts": [
+        "minterToken"
+      ],
+      "fn": "partialRefund"
+    },
+    {
+      "i": 2270,
+      "outcome": "hole",
+      "model": "out0 must carry the same minting token",
+      "contract": "accepted",
+      "muts": [
+        "minterToken",
+        "addInput",
+        "addInput"
+      ],
+      "fn": "refund"
+    },
+    {
+      "i": 2273,
+      "outcome": "hole",
+      "model": "out0 must carry the same minting token",
+      "contract": "accepted",
+      "muts": [
+        "minterToken"
+      ],
+      "fn": "partialRefund"
+    },
+    {
+      "i": 2299,
+      "outcome": "hole",
+      "model": "out0 must carry the same minting token",
+      "contract": "accepted",
+      "muts": [
+        "minterToken"
+      ],
+      "fn": "refund"
+    },
+    {
+      "i": 2304,
+      "outcome": "hole",
+      "model": "out0 must carry the same minting token",
+      "contract": "accepted",
+      "muts": [
+        "addInput",
+        "minterToken"
+      ],
+      "fn": "refund"
+    },
+    {
+      "i": 2367,
+      "outcome": "hole",
+      "model": "out0 must carry the same minting token",
+      "contract": "accepted",
+      "muts": [
+        "minterToken"
+      ],
+      "fn": "refund"
+    },
+    {
+      "i": 2453,
+      "outcome": "hole",
+      "model": "out0 must carry the same minting token",
+      "contract": "accepted",
+      "muts": [
+        "minterToken",
+        "amount",
+        "token"
+      ],
+      "fn": "refund"
+    },
+    {
+      "i": 2454,
+      "outcome": "hole",
+      "model": "out0 must carry the same minting token",
+      "contract": "accepted",
+      "muts": [
+        "token"
+      ],
+      "fn": "pay"
+    },
+    {
+      "i": 2461,
+      "outcome": "hole",
+      "model": "out0 must carry the same minting token",
+      "contract": "accepted",
+      "muts": [
+        "minterToken"
+      ],
+      "fn": "refund"
+    },
+    {
+      "i": 2493,
+      "outcome": "hole",
+      "model": "out0 must carry the same minting token",
+      "contract": "accepted",
+      "muts": [
+        "token"
+      ],
+      "fn": "refund"
+    },
+    {
+      "i": 2500,
+      "outcome": "hole",
+      "model": "out0 must carry the same minting token",
+      "contract": "accepted",
+      "muts": [
+        "addInput",
+        "minterToken",
+        "swapInputs"
+      ],
+      "fn": "pay"
+    },
+    {
+      "i": 2512,
+      "outcome": "hole",
+      "model": "out0 must carry the same minting token",
+      "contract": "accepted",
+      "muts": [
+        "flipByte",
+        "token"
+      ],
+      "fn": "pay"
+    },
+    {
+      "i": 2543,
+      "outcome": "hole",
+      "model": "out0 must carry the same minting token",
+      "contract": "accepted",
+      "muts": [
+        "minterToken"
+      ],
+      "fn": "pay"
+    },
+    {
+      "i": 2666,
+      "outcome": "hole",
+      "model": "out0 must carry the same minting token",
+      "contract": "accepted",
+      "muts": [
+        "minterToken",
+        "addInput"
+      ],
+      "fn": "pay"
+    },
+    {
+      "i": 2692,
+      "outcome": "hole",
+      "model": "out0 must carry the same minting token",
+      "contract": "accepted",
+      "muts": [
+        "token"
+      ],
+      "fn": "refund"
+    },
+    {
+      "i": 2755,
+      "outcome": "hole",
+      "model": "out0 must carry the same minting token",
+      "contract": "accepted",
+      "muts": [
+        "minterToken"
+      ],
+      "fn": "refund"
+    },
+    {
+      "i": 2868,
+      "outcome": "hole",
+      "model": "out0 must carry the same minting token",
+      "contract": "accepted",
+      "muts": [
+        "minterToken"
+      ],
+      "fn": "partialRefund"
+    },
+    {
+      "i": 2898,
+      "outcome": "hole",
+      "model": "out0 must carry the same minting token",
+      "contract": "accepted",
+      "muts": [
+        "minterToken",
+        "token"
+      ],
+      "fn": "refund"
+    },
+    {
+      "i": 2993,
+      "outcome": "hole",
+      "model": "out0 must carry the same minting token",
+      "contract": "accepted",
+      "muts": [
+        "minterToken"
+      ],
+      "fn": "refund"
+    },
+    {
+      "i": 3023,
+      "outcome": "hole",
+      "model": "out0 must carry the same minting token",
+      "contract": "accepted",
+      "muts": [
+        "minterToken"
+      ],
+      "fn": "refund"
+    },
+    {
+      "i": 3204,
+      "outcome": "hole",
+      "model": "out0 must carry the same minting token",
+      "contract": "accepted",
+      "muts": [
+        "minterToken"
+      ],
+      "fn": "pay"
+    },
+    {
+      "i": 3219,
+      "outcome": "hole",
+      "model": "out0 must carry the same minting token",
+      "contract": "accepted",
+      "muts": [
+        "minterToken"
+      ],
+      "fn": "refund"
+    },
+    {
+      "i": 3222,
+      "outcome": "hole",
+      "model": "out0 must carry the same minting token",
+      "contract": "accepted",
+      "muts": [
+        "addInput",
+        "minterToken"
+      ],
+      "fn": "pay"
+    },
+    {
+      "i": 3324,
+      "outcome": "hole",
+      "model": "out0 must carry the same minting token",
+      "contract": "accepted",
+      "muts": [
+        "token"
+      ],
+      "fn": "refund"
+    },
+    {
+      "i": 3365,
+      "outcome": "hole",
+      "model": "out0 must carry the same minting token",
+      "contract": "accepted",
+      "muts": [
+        "minterToken"
+      ],
+      "fn": "pay"
+    },
+    {
+      "i": 3374,
+      "outcome": "hole",
+      "model": "out0 must carry the same minting token",
+      "contract": "accepted",
+      "muts": [
+        "token"
+      ],
+      "fn": "pay"
+    },
+    {
+      "i": 3487,
+      "outcome": "hole",
+      "model": "out0 must carry the same minting token",
+      "contract": "accepted",
+      "muts": [
+        "token",
+        "minterToken"
+      ],
+      "fn": "partialRefund"
+    },
+    {
+      "i": 3491,
+      "outcome": "hole",
+      "model": "out0 must carry the same minting token",
+      "contract": "accepted",
+      "muts": [
+        "minterToken",
+        "addInput"
+      ],
+      "fn": "partialRefund"
+    },
+    {
+      "i": 3506,
+      "outcome": "hole",
+      "model": "out0 must carry the same minting token",
+      "contract": "accepted",
+      "muts": [
+        "minterToken"
+      ],
+      "fn": "refund"
+    },
+    {
+      "i": 3552,
+      "outcome": "hole",
+      "model": "out0 must carry the same minting token",
+      "contract": "accepted",
+      "muts": [
+        "minterToken"
+      ],
+      "fn": "pay"
+    },
+    {
+      "i": 3752,
+      "outcome": "hole",
+      "model": "out0 must carry the same minting token",
+      "contract": "accepted",
+      "muts": [
+        "minterToken"
+      ],
+      "fn": "partialRefund"
+    },
+    {
+      "i": 3794,
+      "outcome": "hole",
+      "model": "out0 must carry the same minting token",
+      "contract": "accepted",
+      "muts": [
+        "minterToken"
+      ],
+      "fn": "refund"
+    },
+    {
+      "i": 3798,
+      "outcome": "hole",
+      "model": "out0 must carry the same minting token",
+      "contract": "accepted",
+      "muts": [
+        "minterToken"
+      ],
+      "fn": "refund"
+    },
+    {
+      "i": 3818,
+      "outcome": "hole",
+      "model": "out0 must carry the same minting token",
+      "contract": "accepted",
+      "muts": [
+        "recipient",
+        "minterToken"
+      ],
+      "fn": "pay"
+    },
+    {
+      "i": 3882,
+      "outcome": "hole",
+      "model": "out0 must carry the same minting token",
+      "contract": "accepted",
+      "muts": [
+        "token",
+        "token",
+        "minterToken"
+      ],
+      "fn": "refund"
+    },
+    {
+      "i": 3891,
+      "outcome": "hole",
+      "model": "out0 must carry the same minting token",
+      "contract": "accepted",
+      "muts": [
+        "token"
+      ],
+      "fn": "refund"
+    },
+    {
+      "i": 3942,
+      "outcome": "hole",
+      "model": "out0 must carry the same minting token",
+      "contract": "accepted",
+      "muts": [
+        "minterToken"
+      ],
+      "fn": "pay"
+    },
+    {
+      "i": 4017,
+      "outcome": "hole",
+      "model": "out0 must carry the same minting token",
+      "contract": "accepted",
+      "muts": [
+        "recipient",
+        "addInput",
+        "minterToken"
+      ],
+      "fn": "pay"
+    },
+    {
+      "i": 4232,
+      "outcome": "hole",
+      "model": "out0 must carry the same minting token",
+      "contract": "accepted",
+      "muts": [
+        "minterToken",
+        "amount"
+      ],
+      "fn": "pay"
+    },
+    {
+      "i": 4255,
+      "outcome": "hole",
+      "model": "out0 must carry the same minting token",
+      "contract": "accepted",
+      "muts": [
+        "minterToken"
+      ],
+      "fn": "pay"
+    },
+    {
+      "i": 4289,
+      "outcome": "hole",
+      "model": "out0 must carry the same minting token",
+      "contract": "accepted",
+      "muts": [
+        "minterToken"
+      ],
+      "fn": "refund"
+    },
+    {
+      "i": 4337,
+      "outcome": "hole",
+      "model": "out0 must carry the same minting token",
+      "contract": "accepted",
+      "muts": [
+        "token"
+      ],
+      "fn": "pay"
+    },
+    {
+      "i": 4353,
+      "outcome": "hole",
+      "model": "out0 must carry the same minting token",
+      "contract": "accepted",
+      "muts": [
+        "minterToken"
+      ],
+      "fn": "pay"
+    },
+    {
+      "i": 4358,
+      "outcome": "hole",
+      "model": "out0 must carry the same minting token",
+      "contract": "accepted",
+      "muts": [
+        "token",
+        "minterToken",
+        "amount"
+      ],
+      "fn": "pay"
+    },
+    {
+      "i": 4380,
+      "outcome": "hole",
+      "model": "out0 must carry the same minting token",
+      "contract": "accepted",
+      "muts": [
+        "addInput",
+        "minterToken",
+        "minterToken"
+      ],
+      "fn": "pay"
+    },
+    {
+      "i": 4431,
+      "outcome": "hole",
+      "model": "out0 must carry the same minting token",
+      "contract": "accepted",
+      "muts": [
+        "minterToken"
+      ],
+      "fn": "pay"
+    },
+    {
+      "i": 4436,
+      "outcome": "hole",
+      "model": "out0 must carry the same minting token",
+      "contract": "accepted",
+      "muts": [
+        "token"
+      ],
+      "fn": "pay"
+    },
+    {
+      "i": 4508,
+      "outcome": "hole",
+      "model": "out0 must carry the same minting token",
+      "contract": "accepted",
+      "muts": [
+        "minterToken"
+      ],
+      "fn": "pay"
+    },
+    {
+      "i": 4515,
+      "outcome": "hole",
+      "model": "out0 must carry the same minting token",
+      "contract": "accepted",
+      "muts": [
+        "token"
+      ],
+      "fn": "pay"
+    },
+    {
+      "i": 4529,
+      "outcome": "hole",
+      "model": "out0 must carry the same minting token",
+      "contract": "accepted",
+      "muts": [
+        "minterToken"
+      ],
+      "fn": "refund"
+    },
+    {
+      "i": 4538,
+      "outcome": "hole",
+      "model": "out0 must carry the same minting token",
+      "contract": "accepted",
+      "muts": [
+        "minterToken"
+      ],
+      "fn": "partialRefund"
+    },
+    {
+      "i": 4755,
+      "outcome": "hole",
+      "model": "out0 must carry the same minting token",
+      "contract": "accepted",
+      "muts": [
+        "minterToken"
+      ],
+      "fn": "partialRefund"
+    },
+    {
+      "i": 4929,
+      "outcome": "hole",
+      "model": "out0 must carry the same minting token",
+      "contract": "accepted",
+      "muts": [
+        "minterToken"
+      ],
+      "fn": "partialRefund"
+    },
+    {
+      "i": 5070,
+      "outcome": "hole",
+      "model": "out0 must carry the same minting token",
+      "contract": "accepted",
+      "muts": [
+        "minterToken",
+        "flipByte",
+        "minterToken"
+      ],
+      "fn": "refund"
+    },
+    {
+      "i": 5131,
+      "outcome": "hole",
+      "model": "out0 must carry the same minting token",
+      "contract": "accepted",
+      "muts": [
+        "token"
+      ],
+      "fn": "refund"
+    },
+    {
+      "i": 5182,
+      "outcome": "hole",
+      "model": "out0 must carry the same minting token",
+      "contract": "accepted",
+      "muts": [
+        "minterToken"
+      ],
+      "fn": "pay"
+    },
+    {
+      "i": 5204,
+      "outcome": "hole",
+      "model": "out0 must carry the same minting token",
+      "contract": "accepted",
+      "muts": [
+        "addOutput",
+        "recipient",
+        "minterToken"
+      ],
+      "fn": "refund"
+    },
+    {
+      "i": 5240,
+      "outcome": "hole",
+      "model": "out0 must carry the same minting token",
+      "contract": "accepted",
+      "muts": [
+        "token"
+      ],
+      "fn": "partialRefund"
+    },
+    {
+      "i": 5293,
+      "outcome": "hole",
+      "model": "out0 must carry the same minting token",
+      "contract": "accepted",
+      "muts": [
+        "minterToken"
+      ],
+      "fn": "partialRefund"
+    },
+    {
+      "i": 5420,
+      "outcome": "hole",
+      "model": "out0 must carry the same minting token",
+      "contract": "accepted",
+      "muts": [
+        "minterToken"
+      ],
+      "fn": "pay"
+    },
+    {
+      "i": 5474,
+      "outcome": "hole",
+      "model": "out0 must carry the same minting token",
+      "contract": "accepted",
+      "muts": [
+        "minterToken"
+      ],
+      "fn": "pay"
+    },
+    {
+      "i": 5525,
+      "outcome": "hole",
+      "model": "out0 must carry the same minting token",
+      "contract": "accepted",
+      "muts": [
+        "minterToken"
+      ],
+      "fn": "refund"
+    },
+    {
+      "i": 5597,
+      "outcome": "hole",
+      "model": "out0 must carry the same minting token",
+      "contract": "accepted",
+      "muts": [
+        "swapInputs",
+        "minterToken",
+        "swapInputs"
+      ],
+      "fn": "refund"
+    },
+    {
+      "i": 5790,
+      "outcome": "hole",
+      "model": "out0 must carry the same minting token",
+      "contract": "accepted",
+      "muts": [
+        "minterToken",
+        "flipByte"
+      ],
+      "fn": "pay"
+    },
+    {
+      "i": 5993,
+      "outcome": "hole",
+      "model": "out0 must carry the same minting token",
+      "contract": "accepted",
+      "muts": [
+        "minterToken",
+        "addOutput"
+      ],
+      "fn": "pay"
+    },
+    {
+      "i": 5997,
+      "outcome": "hole",
+      "model": "out0 must carry the same minting token",
+      "contract": "accepted",
+      "muts": [
+        "addInput",
+        "minterToken"
+      ],
+      "fn": "refund"
+    },
+    {
+      "i": 6048,
+      "outcome": "hole",
+      "model": "out0 must carry the same minting token",
+      "contract": "accepted",
+      "muts": [
+        "minterToken"
+      ],
+      "fn": "refund"
+    },
+    {
+      "i": 6103,
+      "outcome": "hole",
+      "model": "out0 must carry the same minting token",
+      "contract": "accepted",
+      "muts": [
+        "minterToken",
+        "addInput"
+      ],
+      "fn": "pay"
+    },
+    {
+      "i": 6218,
+      "outcome": "hole",
+      "model": "out0 must carry the same minting token",
+      "contract": "accepted",
+      "muts": [
+        "minterToken"
+      ],
+      "fn": "partialRefund"
+    },
+    {
+      "i": 6251,
+      "outcome": "hole",
+      "model": "out0 must carry the same minting token",
+      "contract": "accepted",
+      "muts": [
+        "amount",
+        "addInput",
+        "minterToken"
+      ],
+      "fn": "pay"
+    },
+    {
+      "i": 6262,
+      "outcome": "hole",
+      "model": "out0 must carry the same minting token",
+      "contract": "accepted",
+      "muts": [
+        "minterToken"
+      ],
+      "fn": "pay"
+    },
+    {
+      "i": 6371,
+      "outcome": "hole",
+      "model": "out0 must carry the same minting token",
+      "contract": "accepted",
+      "muts": [
+        "token"
+      ],
+      "fn": "pay"
+    },
+    {
+      "i": 6439,
+      "outcome": "hole",
+      "model": "out0 must carry the same minting token",
+      "contract": "accepted",
+      "muts": [
+        "minterToken"
+      ],
+      "fn": "pay"
+    },
+    {
+      "i": 6440,
+      "outcome": "hole",
+      "model": "out0 must carry the same minting token",
+      "contract": "accepted",
+      "muts": [
+        "token"
+      ],
+      "fn": "partialRefund"
+    },
+    {
+      "i": 6449,
+      "outcome": "hole",
+      "model": "out0 must carry the same minting token",
+      "contract": "accepted",
+      "muts": [
+        "minterToken"
+      ],
+      "fn": "refund"
+    },
+    {
+      "i": 6477,
+      "outcome": "hole",
+      "model": "out0 must carry the same minting token",
+      "contract": "accepted",
+      "muts": [
+        "minterToken"
+      ],
+      "fn": "pay"
+    },
+    {
+      "i": 6747,
+      "outcome": "hole",
+      "model": "out0 must carry the same minting token",
+      "contract": "accepted",
+      "muts": [
+        "minterToken",
+        "amount",
+        "addInput"
+      ],
+      "fn": "pay"
+    },
+    {
+      "i": 6786,
+      "outcome": "hole",
+      "model": "out0 must carry the same minting token",
+      "contract": "accepted",
+      "muts": [
+        "token",
+        "flipByte"
+      ],
+      "fn": "partialRefund"
+    },
+    {
+      "i": 6871,
+      "outcome": "hole",
+      "model": "out0 must carry the same minting token",
+      "contract": "accepted",
+      "muts": [
+        "minterToken"
+      ],
+      "fn": "pay"
+    },
+    {
+      "i": 6962,
+      "outcome": "hole",
+      "model": "out0 must carry the same minting token",
+      "contract": "accepted",
+      "muts": [
+        "token",
+        "minterToken"
+      ],
+      "fn": "refund"
+    },
+    {
+      "i": 6969,
+      "outcome": "hole",
+      "model": "out0 must carry the same minting token",
+      "contract": "accepted",
+      "muts": [
+        "minterToken"
+      ],
+      "fn": "partialRefund"
+    },
+    {
+      "i": 6985,
+      "outcome": "hole",
+      "model": "out0 must carry the same minting token",
+      "contract": "accepted",
+      "muts": [
+        "token"
+      ],
+      "fn": "pay"
+    },
+    {
+      "i": 7038,
+      "outcome": "hole",
+      "model": "out0 must carry the same minting token",
+      "contract": "accepted",
+      "muts": [
+        "minterToken"
+      ],
+      "fn": "pay"
+    },
+    {
+      "i": 7074,
+      "outcome": "hole",
+      "model": "out0 must carry the same minting token",
+      "contract": "accepted",
+      "muts": [
+        "minterToken"
+      ],
+      "fn": "partialRefund"
+    },
+    {
+      "i": 7103,
+      "outcome": "hole",
+      "model": "out0 must carry the same minting token",
+      "contract": "accepted",
+      "muts": [
+        "amount",
+        "minterToken"
+      ],
+      "fn": "pay"
+    },
+    {
+      "i": 7106,
+      "outcome": "hole",
+      "model": "out0 must carry the same minting token",
+      "contract": "accepted",
+      "muts": [
+        "minterToken",
+        "minterToken"
+      ],
+      "fn": "pay"
+    },
+    {
+      "i": 7237,
+      "outcome": "hole",
+      "model": "out0 must carry the same minting token",
+      "contract": "accepted",
+      "muts": [
+        "minterToken"
+      ],
+      "fn": "partialRefund"
+    },
+    {
+      "i": 7489,
+      "outcome": "hole",
+      "model": "out0 must carry the same minting token",
+      "contract": "accepted",
+      "muts": [
+        "minterToken"
+      ],
+      "fn": "pay"
+    },
+    {
+      "i": 7493,
+      "outcome": "hole",
+      "model": "out0 must carry the same minting token",
+      "contract": "accepted",
+      "muts": [
+        "minterToken",
+        "flipByte"
+      ],
+      "fn": "pay"
+    },
+    {
+      "i": 7632,
+      "outcome": "hole",
+      "model": "out0 must carry the same minting token",
+      "contract": "accepted",
+      "muts": [
+        "token"
+      ],
+      "fn": "refund"
+    },
+    {
+      "i": 7800,
+      "outcome": "hole",
+      "model": "out0 must carry the same minting token",
+      "contract": "accepted",
+      "muts": [
+        "minterToken"
+      ],
+      "fn": "pay"
+    },
+    {
+      "i": 7846,
+      "outcome": "hole",
+      "model": "out0 must carry the same minting token",
+      "contract": "accepted",
+      "muts": [
+        "token"
+      ],
+      "fn": "partialRefund"
+    },
+    {
+      "i": 7947,
+      "outcome": "hole",
+      "model": "out0 must carry the same minting token",
+      "contract": "accepted",
+      "muts": [
+        "minterToken",
+        "minterToken"
+      ],
+      "fn": "refund"
+    },
+    {
+      "i": 7981,
+      "outcome": "hole",
+      "model": "out0 must carry the same minting token",
+      "contract": "accepted",
+      "muts": [
+        "minterToken",
+        "addInput"
+      ],
+      "fn": "refund"
+    },
+    {
+      "i": 7991,
+      "outcome": "hole",
+      "model": "out0 must carry the same minting token",
+      "contract": "accepted",
+      "muts": [
+        "minterToken"
+      ],
+      "fn": "refund"
+    },
+    {
+      "i": 8027,
+      "outcome": "hole",
+      "model": "out0 must carry the same minting token",
+      "contract": "accepted",
+      "muts": [
+        "flipByte",
+        "minterToken"
+      ],
+      "fn": "pay"
+    },
+    {
+      "i": 8082,
+      "outcome": "hole",
+      "model": "out0 must carry the same minting token",
+      "contract": "accepted",
+      "muts": [
+        "minterToken",
+        "minterToken",
+        "flipByte"
+      ],
+      "fn": "pay"
+    },
+    {
+      "i": 8165,
+      "outcome": "hole",
+      "model": "out0 must carry the same minting token",
+      "contract": "accepted",
+      "muts": [
+        "minterToken"
+      ],
+      "fn": "partialRefund"
+    },
+    {
+      "i": 8383,
+      "outcome": "hole",
+      "model": "out0 must carry the same minting token",
+      "contract": "accepted",
+      "muts": [
+        "token"
+      ],
+      "fn": "refund"
+    },
+    {
+      "i": 8392,
+      "outcome": "hole",
+      "model": "out0 must carry the same minting token",
+      "contract": "accepted",
+      "muts": [
+        "minterToken"
+      ],
+      "fn": "partialRefund"
+    },
+    {
+      "i": 8828,
+      "outcome": "hole",
+      "model": "out0 must carry the same minting token",
+      "contract": "accepted",
+      "muts": [
+        "minterToken"
+      ],
+      "fn": "partialRefund"
+    },
+    {
+      "i": 8941,
+      "outcome": "hole",
+      "model": "out0 must carry the same minting token",
+      "contract": "accepted",
+      "muts": [
+        "amount",
+        "minterToken",
+        "amount"
+      ],
+      "fn": "pay"
+    },
+    {
+      "i": 8972,
+      "outcome": "hole",
+      "model": "out0 must carry the same minting token",
+      "contract": "accepted",
+      "muts": [
+        "minterToken"
+      ],
+      "fn": "partialRefund"
+    },
+    {
+      "i": 8982,
+      "outcome": "hole",
+      "model": "out0 must carry the same minting token",
+      "contract": "accepted",
+      "muts": [
+        "minterToken"
+      ],
+      "fn": "refund"
+    },
+    {
+      "i": 9015,
+      "outcome": "hole",
+      "model": "out0 must carry the same minting token",
+      "contract": "accepted",
+      "muts": [
+        "token"
+      ],
+      "fn": "partialRefund"
+    },
+    {
+      "i": 9035,
+      "outcome": "hole",
+      "model": "out0 must carry the same minting token",
+      "contract": "accepted",
+      "muts": [
+        "minterToken"
+      ],
+      "fn": "refund"
+    },
+    {
+      "i": 9065,
+      "outcome": "hole",
+      "model": "out0 must carry the same minting token",
+      "contract": "accepted",
+      "muts": [
+        "token",
+        "minterToken"
+      ],
+      "fn": "pay"
+    },
+    {
+      "i": 9116,
+      "outcome": "hole",
+      "model": "out0 must carry the same minting token",
+      "contract": "accepted",
+      "muts": [
+        "minterToken"
+      ],
+      "fn": "pay"
+    },
+    {
+      "i": 9155,
+      "outcome": "hole",
+      "model": "out0 must carry the same minting token",
+      "contract": "accepted",
+      "muts": [
+        "minterToken"
+      ],
+      "fn": "refund"
+    },
+    {
+      "i": 9259,
+      "outcome": "hole",
+      "model": "out0 must carry the same minting token",
+      "contract": "accepted",
+      "muts": [
+        "minterToken"
+      ],
+      "fn": "pay"
+    },
+    {
+      "i": 9312,
+      "outcome": "hole",
+      "model": "out0 must carry the same minting token",
+      "contract": "accepted",
+      "muts": [
+        "minterToken"
+      ],
+      "fn": "partialRefund"
+    },
+    {
+      "i": 9329,
+      "outcome": "hole",
+      "model": "out0 must carry the same minting token",
+      "contract": "accepted",
+      "muts": [
+        "addOutput",
+        "minterToken",
+        "flipByte"
+      ],
+      "fn": "refund"
+    },
+    {
+      "i": 9353,
+      "outcome": "hole",
+      "model": "out0 must carry the same minting token",
+      "contract": "accepted",
+      "muts": [
+        "minterToken",
+        "amount"
+      ],
+      "fn": "refund"
+    },
+    {
+      "i": 9365,
+      "outcome": "hole",
+      "model": "out0 must carry the same minting token",
+      "contract": "accepted",
+      "muts": [
+        "minterToken",
+        "flipByte"
+      ],
+      "fn": "pay"
+    },
+    {
+      "i": 9366,
+      "outcome": "hole",
+      "model": "out0 must carry the same minting token",
+      "contract": "accepted",
+      "muts": [
+        "amount",
+        "minterToken",
+        "flipByte"
+      ],
+      "fn": "pay"
+    },
+    {
+      "i": 9392,
+      "outcome": "hole",
+      "model": "out0 must carry the same minting token",
+      "contract": "accepted",
+      "muts": [
+        "token"
+      ],
+      "fn": "pay"
+    },
+    {
+      "i": 9402,
+      "outcome": "hole",
+      "model": "out0 must carry the same minting token",
+      "contract": "accepted",
+      "muts": [
+        "minterToken"
+      ],
+      "fn": "refund"
+    },
+    {
+      "i": 9487,
+      "outcome": "hole",
+      "model": "out0 must carry the same minting token",
+      "contract": "accepted",
+      "muts": [
+        "minterToken"
+      ],
+      "fn": "refund"
+    },
+    {
+      "i": 9488,
+      "outcome": "hole",
+      "model": "out0 must carry the same minting token",
+      "contract": "accepted",
+      "muts": [
+        "token"
+      ],
+      "fn": "partialRefund"
+    },
+    {
+      "i": 9492,
+      "outcome": "hole",
+      "model": "out0 must carry the same minting token",
+      "contract": "accepted",
+      "muts": [
+        "minterToken"
+      ],
+      "fn": "partialRefund"
+    },
+    {
+      "i": 9576,
+      "outcome": "hole",
+      "model": "out0 must carry the same minting token",
+      "contract": "accepted",
+      "muts": [
+        "minterToken"
+      ],
+      "fn": "refund"
+    },
+    {
+      "i": 9837,
+      "outcome": "hole",
+      "model": "out0 must carry the same minting token",
+      "contract": "accepted",
+      "muts": [
+        "minterToken"
+      ],
+      "fn": "pay"
+    },
+    {
+      "i": 9846,
+      "outcome": "hole",
+      "model": "out0 must carry the same minting token",
+      "contract": "accepted",
+      "muts": [
+        "minterToken"
+      ],
+      "fn": "partialRefund"
+    },
+    {
+      "i": 9928,
+      "outcome": "hole",
+      "model": "out0 must carry the same minting token",
+      "contract": "accepted",
+      "muts": [
+        "minterToken"
+      ],
+      "fn": "refund"
+    },
+    {
+      "i": 9936,
+      "outcome": "hole",
+      "model": "out0 must carry the same minting token",
+      "contract": "accepted",
+      "muts": [
+        "addInput",
+        "token"
+      ],
+      "fn": "pay"
+    },
+    {
+      "i": 10319,
+      "outcome": "hole",
+      "model": "out0 must carry the same minting token",
+      "contract": "accepted",
+      "muts": [
+        "minterToken"
+      ],
+      "fn": "partialRefund"
+    },
+    {
+      "i": 10440,
+      "outcome": "hole",
+      "model": "out0 must carry the same minting token",
+      "contract": "accepted",
+      "muts": [
+        "minterToken",
+        "addOutput"
+      ],
+      "fn": "pay"
+    },
+    {
+      "i": 10556,
+      "outcome": "hole",
+      "model": "out0 must carry the same minting token",
+      "contract": "accepted",
+      "muts": [
+        "flipByte",
+        "minterToken"
+      ],
+      "fn": "pay"
+    },
+    {
+      "i": 10569,
+      "outcome": "hole",
+      "model": "out0 must carry the same minting token",
+      "contract": "accepted",
+      "muts": [
+        "token",
+        "minterToken"
+      ],
+      "fn": "partialRefund"
+    },
+    {
+      "i": 10570,
+      "outcome": "hole",
+      "model": "out0 must carry the same minting token",
+      "contract": "accepted",
+      "muts": [
+        "minterToken"
+      ],
+      "fn": "refund"
+    },
+    {
+      "i": 10823,
+      "outcome": "hole",
+      "model": "out0 must carry the same minting token",
+      "contract": "accepted",
+      "muts": [
+        "minterToken",
+        "minterToken"
+      ],
+      "fn": "partialRefund"
+    },
+    {
+      "i": 11094,
+      "outcome": "hole",
+      "model": "out0 must carry the same minting token",
+      "contract": "accepted",
+      "muts": [
+        "minterToken"
+      ],
+      "fn": "partialRefund"
+    },
+    {
+      "i": 11103,
+      "outcome": "hole",
+      "model": "out0 must carry the same minting token",
+      "contract": "accepted",
+      "muts": [
+        "minterToken"
+      ],
+      "fn": "pay"
+    },
+    {
+      "i": 11119,
+      "outcome": "hole",
+      "model": "out0 must carry the same minting token",
+      "contract": "accepted",
+      "muts": [
+        "addInput",
+        "token"
+      ],
+      "fn": "pay"
+    },
+    {
+      "i": 11145,
+      "outcome": "hole",
+      "model": "out0 must carry the same minting token",
+      "contract": "accepted",
+      "muts": [
+        "token"
+      ],
+      "fn": "partialRefund"
+    },
+    {
+      "i": 11159,
+      "outcome": "hole",
+      "model": "out0 must carry the same minting token",
+      "contract": "accepted",
+      "muts": [
+        "minterToken"
+      ],
+      "fn": "pay"
+    },
+    {
+      "i": 11233,
+      "outcome": "hole",
+      "model": "out0 must carry the same minting token",
+      "contract": "accepted",
+      "muts": [
+        "minterToken"
+      ],
+      "fn": "partialRefund"
+    },
+    {
+      "i": 11429,
+      "outcome": "hole",
+      "model": "out0 must carry the same minting token",
+      "contract": "accepted",
+      "muts": [
+        "minterToken"
+      ],
+      "fn": "refund"
+    },
+    {
+      "i": 11520,
+      "outcome": "hole",
+      "model": "out0 must carry the same minting token",
+      "contract": "accepted",
+      "muts": [
+        "minterToken"
+      ],
+      "fn": "pay"
+    },
+    {
+      "i": 11550,
+      "outcome": "hole",
+      "model": "out0 must carry the same minting token",
+      "contract": "accepted",
+      "muts": [
+        "addInput",
+        "minterToken"
+      ],
+      "fn": "pay"
+    },
+    {
+      "i": 11595,
+      "outcome": "hole",
+      "model": "out0 must carry the same minting token",
+      "contract": "accepted",
+      "muts": [
+        "minterToken"
+      ],
+      "fn": "pay"
+    },
+    {
+      "i": 11686,
+      "outcome": "hole",
+      "model": "out0 must carry the same minting token",
+      "contract": "accepted",
+      "muts": [
+        "minterToken"
+      ],
+      "fn": "refund"
+    },
+    {
+      "i": 11799,
+      "outcome": "hole",
+      "model": "out0 must carry the same minting token",
+      "contract": "accepted",
+      "muts": [
+        "minterToken"
+      ],
+      "fn": "partialRefund"
+    },
+    {
+      "i": 11891,
+      "outcome": "hole",
+      "model": "out0 must carry the same minting token",
+      "contract": "accepted",
+      "muts": [
+        "minterToken"
+      ],
+      "fn": "partialRefund"
+    },
+    {
+      "i": 11912,
+      "outcome": "hole",
+      "model": "out0 must carry the same minting token",
+      "contract": "accepted",
+      "muts": [
+        "minterToken"
+      ],
+      "fn": "partialRefund"
+    },
+    {
+      "i": 11954,
+      "outcome": "hole",
+      "model": "out0 must carry the same minting token",
+      "contract": "accepted",
+      "muts": [
+        "minterToken"
+      ],
+      "fn": "refund"
+    },
+    {
+      "i": 12163,
+      "outcome": "hole",
+      "model": "out0 must carry the same minting token",
+      "contract": "accepted",
+      "muts": [
+        "flipByte",
+        "token"
+      ],
+      "fn": "pay"
+    },
+    {
+      "i": 12272,
+      "outcome": "hole",
+      "model": "out0 must carry the same minting token",
+      "contract": "accepted",
+      "muts": [
+        "minterToken"
+      ],
+      "fn": "partialRefund"
+    },
+    {
+      "i": 12363,
+      "outcome": "hole",
+      "model": "out0 must carry the same minting token",
+      "contract": "accepted",
+      "muts": [
+        "minterToken"
+      ],
+      "fn": "pay"
+    },
+    {
+      "i": 12498,
+      "outcome": "hole",
+      "model": "out0 must carry the same minting token",
+      "contract": "accepted",
+      "muts": [
+        "minterToken"
+      ],
+      "fn": "pay"
+    },
+    {
+      "i": 12541,
+      "outcome": "hole",
+      "model": "out0 must carry the same minting token",
+      "contract": "accepted",
+      "muts": [
+        "minterToken"
+      ],
+      "fn": "refund"
+    },
+    {
+      "i": 12560,
+      "outcome": "hole",
+      "model": "out0 must carry the same minting token",
+      "contract": "accepted",
+      "muts": [
+        "minterToken"
+      ],
+      "fn": "partialRefund"
+    },
+    {
+      "i": 12643,
+      "outcome": "hole",
+      "model": "out0 must carry the same minting token",
+      "contract": "accepted",
+      "muts": [
+        "minterToken",
+        "addInput"
+      ],
+      "fn": "pay"
+    },
+    {
+      "i": 12650,
+      "outcome": "hole",
+      "model": "out0 must carry the same minting token",
+      "contract": "accepted",
+      "muts": [
+        "token"
+      ],
+      "fn": "refund"
+    },
+    {
+      "i": 12674,
+      "outcome": "hole",
+      "model": "out0 must carry the same minting token",
+      "contract": "accepted",
+      "muts": [
+        "minterToken",
+        "flipByte",
+        "minterToken"
+      ],
+      "fn": "pay"
+    },
+    {
+      "i": 12687,
+      "outcome": "hole",
+      "model": "out0 must carry the same minting token",
+      "contract": "accepted",
+      "muts": [
+        "token"
+      ],
+      "fn": "refund"
+    },
+    {
+      "i": 12719,
+      "outcome": "hole",
+      "model": "out0 must carry the same minting token",
+      "contract": "accepted",
+      "muts": [
+        "minterToken"
+      ],
+      "fn": "pay"
+    },
+    {
+      "i": 12770,
+      "outcome": "hole",
+      "model": "out0 must carry the same minting token",
+      "contract": "accepted",
+      "muts": [
+        "addOutput",
+        "minterToken"
+      ],
+      "fn": "refund"
+    },
+    {
+      "i": 12778,
+      "outcome": "hole",
+      "model": "out0 must carry the same minting token",
+      "contract": "accepted",
+      "muts": [
+        "token"
+      ],
+      "fn": "pay"
+    },
+    {
+      "i": 12825,
+      "outcome": "hole",
+      "model": "out0 must carry the same minting token",
+      "contract": "accepted",
+      "muts": [
+        "minterToken"
+      ],
+      "fn": "pay"
+    },
+    {
+      "i": 12885,
+      "outcome": "hole",
+      "model": "out0 must carry the same minting token",
+      "contract": "accepted",
+      "muts": [
+        "minterToken",
+        "addInput"
+      ],
+      "fn": "pay"
+    },
+    {
+      "i": 13055,
+      "outcome": "hole",
+      "model": "out0 must carry the same minting token",
+      "contract": "accepted",
+      "muts": [
+        "minterToken"
+      ],
+      "fn": "refund"
+    },
+    {
+      "i": 13073,
+      "outcome": "hole",
+      "model": "out0 must carry the same minting token",
+      "contract": "accepted",
+      "muts": [
+        "minterToken"
+      ],
+      "fn": "refund"
+    },
+    {
+      "i": 13097,
+      "outcome": "hole",
+      "model": "out0 must carry the same minting token",
+      "contract": "accepted",
+      "muts": [
+        "minterToken"
+      ],
+      "fn": "refund"
+    },
+    {
+      "i": 13278,
+      "outcome": "hole",
+      "model": "out0 must carry the same minting token",
+      "contract": "accepted",
+      "muts": [
+        "minterToken",
+        "addInput"
+      ],
+      "fn": "pay"
+    },
+    {
+      "i": 13331,
+      "outcome": "hole",
+      "model": "out0 must carry the same minting token",
+      "contract": "accepted",
+      "muts": [
+        "token"
+      ],
+      "fn": "refund"
+    },
+    {
+      "i": 13348,
+      "outcome": "hole",
+      "model": "out0 must carry the same minting token",
+      "contract": "accepted",
+      "muts": [
+        "minterToken"
+      ],
+      "fn": "refund"
+    },
+    {
+      "i": 13377,
+      "outcome": "hole",
+      "model": "out0 must carry the same minting token",
+      "contract": "accepted",
+      "muts": [
+        "minterToken"
+      ],
+      "fn": "refund"
+    },
+    {
+      "i": 13597,
+      "outcome": "hole",
+      "model": "out0 must carry the same minting token",
+      "contract": "accepted",
+      "muts": [
+        "minterToken",
+        "flipByte"
+      ],
+      "fn": "pay"
+    },
+    {
+      "i": 13641,
+      "outcome": "hole",
+      "model": "out0 must carry the same minting token",
+      "contract": "accepted",
+      "muts": [
+        "recipient",
+        "minterToken"
+      ],
+      "fn": "pay"
+    },
+    {
+      "i": 13743,
+      "outcome": "hole",
+      "model": "out0 must carry the same minting token",
+      "contract": "accepted",
+      "muts": [
+        "minterToken"
+      ],
+      "fn": "partialRefund"
+    },
+    {
+      "i": 13809,
+      "outcome": "hole",
+      "model": "out0 must carry the same minting token",
+      "contract": "accepted",
+      "muts": [
+        "minterToken"
+      ],
+      "fn": "pay"
+    },
+    {
+      "i": 13845,
+      "outcome": "hole",
+      "model": "out0 must carry the same minting token",
+      "contract": "accepted",
+      "muts": [
+        "minterToken"
+      ],
+      "fn": "refund"
+    },
+    {
+      "i": 13864,
+      "outcome": "hole",
+      "model": "out0 must carry the same minting token",
+      "contract": "accepted",
+      "muts": [
+        "minterToken"
+      ],
+      "fn": "partialRefund"
+    },
+    {
+      "i": 13891,
+      "outcome": "hole",
+      "model": "out0 must carry the same minting token",
+      "contract": "accepted",
+      "muts": [
+        "minterToken"
+      ],
+      "fn": "pay"
+    },
+    {
+      "i": 13917,
+      "outcome": "hole",
+      "model": "out0 must carry the same minting token",
+      "contract": "accepted",
+      "muts": [
+        "minterToken"
+      ],
+      "fn": "refund"
+    },
+    {
+      "i": 13932,
+      "outcome": "hole",
+      "model": "out0 must carry the same minting token",
+      "contract": "accepted",
+      "muts": [
+        "minterToken"
+      ],
+      "fn": "pay"
+    },
+    {
+      "i": 14015,
+      "outcome": "hole",
+      "model": "out0 must carry the same minting token",
+      "contract": "accepted",
+      "muts": [
+        "minterToken"
+      ],
+      "fn": "partialRefund"
+    },
+    {
+      "i": 14031,
+      "outcome": "hole",
+      "model": "out0 must carry the same minting token",
+      "contract": "accepted",
+      "muts": [
+        "token"
+      ],
+      "fn": "pay"
+    },
+    {
+      "i": 14105,
+      "outcome": "hole",
+      "model": "out0 must carry the same minting token",
+      "contract": "accepted",
+      "muts": [
+        "minterToken"
+      ],
+      "fn": "pay"
+    },
+    {
+      "i": 14117,
+      "outcome": "hole",
+      "model": "out0 must carry the same minting token",
+      "contract": "accepted",
+      "muts": [
+        "addInput",
+        "minterToken"
+      ],
+      "fn": "partialRefund"
+    },
+    {
+      "i": 14159,
+      "outcome": "hole",
+      "model": "out0 must carry the same minting token",
+      "contract": "accepted",
+      "muts": [
+        "token",
+        "minterToken"
+      ],
+      "fn": "refund"
+    },
+    {
+      "i": 14168,
+      "outcome": "hole",
+      "model": "out0 must carry the same minting token",
+      "contract": "accepted",
+      "muts": [
+        "minterToken"
+      ],
+      "fn": "pay"
+    },
+    {
+      "i": 14194,
+      "outcome": "hole",
+      "model": "out0 must carry the same minting token",
+      "contract": "accepted",
+      "muts": [
+        "token",
+        "flipByte",
+        "addOutput"
+      ],
+      "fn": "refund"
+    },
+    {
+      "i": 14366,
+      "outcome": "hole",
+      "model": "out0 must carry the same minting token",
+      "contract": "accepted",
+      "muts": [
+        "minterToken"
+      ],
+      "fn": "partialRefund"
+    },
+    {
+      "i": 14511,
+      "outcome": "hole",
+      "model": "out0 must carry the same minting token",
+      "contract": "accepted",
+      "muts": [
+        "minterToken"
+      ],
+      "fn": "pay"
+    },
+    {
+      "i": 14556,
+      "outcome": "hole",
+      "model": "out0 must carry the same minting token",
+      "contract": "accepted",
+      "muts": [
+        "minterToken",
+        "amount"
+      ],
+      "fn": "pay"
+    },
+    {
+      "i": 14566,
+      "outcome": "hole",
+      "model": "out0 must carry the same minting token",
+      "contract": "accepted",
+      "muts": [
+        "addInput",
+        "minterToken"
+      ],
+      "fn": "pay"
+    },
+    {
+      "i": 14571,
+      "outcome": "hole",
+      "model": "out0 must carry the same minting token",
+      "contract": "accepted",
+      "muts": [
+        "minterToken"
+      ],
+      "fn": "partialRefund"
+    },
+    {
+      "i": 14573,
+      "outcome": "hole",
+      "model": "out0 must carry the same minting token",
+      "contract": "accepted",
+      "muts": [
+        "minterToken",
+        "addInput"
+      ],
+      "fn": "pay"
+    },
+    {
+      "i": 14585,
+      "outcome": "hole",
+      "model": "out0 must carry the same minting token",
+      "contract": "accepted",
+      "muts": [
+        "minterToken"
+      ],
+      "fn": "pay"
+    },
+    {
+      "i": 14597,
+      "outcome": "hole",
+      "model": "out0 must carry the same minting token",
+      "contract": "accepted",
+      "muts": [
+        "minterToken"
+      ],
+      "fn": "pay"
+    },
+    {
+      "i": 14687,
+      "outcome": "hole",
+      "model": "out0 must carry the same minting token",
+      "contract": "accepted",
+      "muts": [
+        "minterToken"
+      ],
+      "fn": "pay"
+    },
+    {
+      "i": 14729,
+      "outcome": "hole",
+      "model": "out0 must carry the same minting token",
+      "contract": "accepted",
+      "muts": [
+        "minterToken",
+        "token"
+      ],
+      "fn": "refund"
+    },
+    {
+      "i": 14902,
+      "outcome": "hole",
+      "model": "out0 must carry the same minting token",
+      "contract": "accepted",
+      "muts": [
+        "minterToken"
+      ],
+      "fn": "pay"
+    },
+    {
+      "i": 14929,
+      "outcome": "hole",
+      "model": "out0 must carry the same minting token",
+      "contract": "accepted",
+      "muts": [
+        "minterToken",
+        "token"
+      ],
+      "fn": "pay"
+    },
+    {
+      "i": 14958,
+      "outcome": "hole",
+      "model": "out0 must carry the same minting token",
+      "contract": "accepted",
+      "muts": [
+        "minterToken"
+      ],
+      "fn": "refund"
+    },
+    {
+      "i": 15019,
+      "outcome": "hole",
+      "model": "out0 must carry the same minting token",
+      "contract": "accepted",
+      "muts": [
+        "minterToken"
+      ],
+      "fn": "partialRefund"
+    },
+    {
+      "i": 15026,
+      "outcome": "hole",
+      "model": "out0 must carry the same minting token",
+      "contract": "accepted",
+      "muts": [
+        "minterToken"
+      ],
+      "fn": "refund"
+    },
+    {
+      "i": 15042,
+      "outcome": "hole",
+      "model": "out0 must carry the same minting token",
+      "contract": "accepted",
+      "muts": [
+        "minterToken"
+      ],
+      "fn": "refund"
+    },
+    {
+      "i": 15061,
+      "outcome": "hole",
+      "model": "out0 must carry the same minting token",
+      "contract": "accepted",
+      "muts": [
+        "token"
+      ],
+      "fn": "pay"
+    },
+    {
+      "i": 15066,
+      "outcome": "hole",
+      "model": "out0 must carry the same minting token",
+      "contract": "accepted",
+      "muts": [
+        "minterToken"
+      ],
+      "fn": "pay"
+    },
+    {
+      "i": 15080,
+      "outcome": "hole",
+      "model": "out0 must carry the same minting token",
+      "contract": "accepted",
+      "muts": [
+        "token"
+      ],
+      "fn": "pay"
+    },
+    {
+      "i": 15143,
+      "outcome": "hole",
+      "model": "out0 must carry the same minting token",
+      "contract": "accepted",
+      "muts": [
+        "minterToken"
+      ],
+      "fn": "partialRefund"
+    },
+    {
+      "i": 15200,
+      "outcome": "hole",
+      "model": "out0 must carry the same minting token",
+      "contract": "accepted",
+      "muts": [
+        "minterToken"
+      ],
+      "fn": "refund"
+    },
+    {
+      "i": 15301,
+      "outcome": "hole",
+      "model": "out0 must carry the same minting token",
+      "contract": "accepted",
+      "muts": [
+        "minterToken"
+      ],
+      "fn": "partialRefund"
+    },
+    {
+      "i": 15306,
+      "outcome": "hole",
+      "model": "out0 must carry the same minting token",
+      "contract": "accepted",
+      "muts": [
+        "minterToken"
+      ],
+      "fn": "partialRefund"
+    },
+    {
+      "i": 15333,
+      "outcome": "hole",
+      "model": "out0 must carry the same minting token",
+      "contract": "accepted",
+      "muts": [
+        "token"
+      ],
+      "fn": "refund"
+    },
+    {
+      "i": 15397,
+      "outcome": "hole",
+      "model": "out0 must carry the same minting token",
+      "contract": "accepted",
+      "muts": [
+        "minterToken"
+      ],
+      "fn": "refund"
+    },
+    {
+      "i": 15450,
+      "outcome": "hole",
+      "model": "out0 must carry the same minting token",
+      "contract": "accepted",
+      "muts": [
+        "addInput",
+        "addInput",
+        "token"
+      ],
+      "fn": "pay"
+    },
+    {
+      "i": 15478,
+      "outcome": "hole",
+      "model": "out0 must carry the same minting token",
+      "contract": "accepted",
+      "muts": [
+        "minterToken",
+        "addInput"
+      ],
+      "fn": "pay"
+    },
+    {
+      "i": 15479,
+      "outcome": "hole",
+      "model": "out0 must carry the same minting token",
+      "contract": "accepted",
+      "muts": [
+        "token"
+      ],
+      "fn": "partialRefund"
+    },
+    {
+      "i": 15651,
+      "outcome": "hole",
+      "model": "out0 must carry the same minting token",
+      "contract": "accepted",
+      "muts": [
+        "minterToken",
+        "flipByte"
+      ],
+      "fn": "pay"
+    },
+    {
+      "i": 15709,
+      "outcome": "hole",
+      "model": "out0 must carry the same minting token",
+      "contract": "accepted",
+      "muts": [
+        "minterToken",
+        "addInput"
+      ],
+      "fn": "pay"
+    },
+    {
+      "i": 15788,
+      "outcome": "hole",
+      "model": "out0 must carry the same minting token",
+      "contract": "accepted",
+      "muts": [
+        "minterToken"
+      ],
+      "fn": "refund"
+    },
+    {
+      "i": 15848,
+      "outcome": "hole",
+      "model": "out0 must carry the same minting token",
+      "contract": "accepted",
+      "muts": [
+        "token",
+        "addOutput",
+        "dropOutput"
+      ],
+      "fn": "refund"
+    },
+    {
+      "i": 15860,
+      "outcome": "hole",
+      "model": "out0 must carry the same minting token",
+      "contract": "accepted",
+      "muts": [
+        "minterToken"
+      ],
+      "fn": "pay"
+    },
+    {
+      "i": 15902,
+      "outcome": "hole",
+      "model": "out0 must carry the same minting token",
+      "contract": "accepted",
+      "muts": [
+        "minterToken"
+      ],
+      "fn": "partialRefund"
+    },
+    {
+      "i": 15998,
+      "outcome": "hole",
+      "model": "out0 must carry the same minting token",
+      "contract": "accepted",
+      "muts": [
+        "minterToken"
+      ],
+      "fn": "refund"
+    },
+    {
+      "i": 16029,
+      "outcome": "hole",
+      "model": "out0 must carry the same minting token",
+      "contract": "accepted",
+      "muts": [
+        "minterToken",
+        "addInput"
+      ],
+      "fn": "partialRefund"
+    },
+    {
+      "i": 16069,
+      "outcome": "hole",
+      "model": "out0 must carry the same minting token",
+      "contract": "accepted",
+      "muts": [
+        "minterToken"
+      ],
+      "fn": "pay"
+    },
+    {
+      "i": 16183,
+      "outcome": "hole",
+      "model": "out0 must carry the same minting token",
+      "contract": "accepted",
+      "muts": [
+        "minterToken",
+        "amount"
+      ],
+      "fn": "pay"
+    },
+    {
+      "i": 16235,
+      "outcome": "hole",
+      "model": "out0 must carry the same minting token",
+      "contract": "accepted",
+      "muts": [
+        "minterToken"
+      ],
+      "fn": "partialRefund"
+    },
+    {
+      "i": 16252,
+      "outcome": "hole",
+      "model": "out0 must carry the same minting token",
+      "contract": "accepted",
+      "muts": [
+        "minterToken"
+      ],
+      "fn": "partialRefund"
+    },
+    {
+      "i": 16307,
+      "outcome": "hole",
+      "model": "out0 must carry the same minting token",
+      "contract": "accepted",
+      "muts": [
+        "recipient",
+        "minterToken"
+      ],
+      "fn": "pay"
+    },
+    {
+      "i": 16325,
+      "outcome": "hole",
+      "model": "out0 must carry the same minting token",
+      "contract": "accepted",
+      "muts": [
+        "minterToken",
+        "minterToken"
+      ],
+      "fn": "pay"
+    },
+    {
+      "i": 16349,
+      "outcome": "hole",
+      "model": "out0 must carry the same minting token",
+      "contract": "accepted",
+      "muts": [
+        "minterToken"
+      ],
+      "fn": "refund"
+    },
+    {
+      "i": 16402,
+      "outcome": "hole",
+      "model": "out0 must carry the same minting token",
+      "contract": "accepted",
+      "muts": [
+        "minterToken",
+        "recipient"
+      ],
+      "fn": "pay"
+    },
+    {
+      "i": 16407,
+      "outcome": "hole",
+      "model": "out0 must carry the same minting token",
+      "contract": "accepted",
+      "muts": [
+        "minterToken"
+      ],
+      "fn": "refund"
+    },
+    {
+      "i": 16425,
+      "outcome": "hole",
+      "model": "out0 must carry the same minting token",
+      "contract": "accepted",
+      "muts": [
+        "minterToken"
+      ],
+      "fn": "partialRefund"
+    },
+    {
+      "i": 16457,
+      "outcome": "hole",
+      "model": "out0 must carry the same minting token",
+      "contract": "accepted",
+      "muts": [
+        "minterToken"
+      ],
+      "fn": "pay"
+    },
+    {
+      "i": 16528,
+      "outcome": "hole",
+      "model": "out0 must carry the same minting token",
+      "contract": "accepted",
+      "muts": [
+        "token",
+        "flipByte"
+      ],
+      "fn": "pay"
+    },
+    {
+      "i": 16695,
+      "outcome": "hole",
+      "model": "out0 must carry the same minting token",
+      "contract": "accepted",
+      "muts": [
+        "minterToken"
+      ],
+      "fn": "refund"
+    },
+    {
+      "i": 16846,
+      "outcome": "hole",
+      "model": "out0 must carry the same minting token",
+      "contract": "accepted",
+      "muts": [
+        "minterToken"
+      ],
+      "fn": "refund"
+    },
+    {
+      "i": 16849,
+      "outcome": "hole",
+      "model": "out0 must carry the same minting token",
+      "contract": "accepted",
+      "muts": [
+        "minterToken"
+      ],
+      "fn": "pay"
+    },
+    {
+      "i": 16985,
+      "outcome": "hole",
+      "model": "out0 must carry the same minting token",
+      "contract": "accepted",
+      "muts": [
+        "function",
+        "function",
+        "minterToken"
+      ],
+      "fn": "refund"
+    },
+    {
+      "i": 17112,
+      "outcome": "hole",
+      "model": "out0 must carry the same minting token",
+      "contract": "accepted",
+      "muts": [
+        "minterToken"
+      ],
+      "fn": "pay"
+    },
+    {
+      "i": 17116,
+      "outcome": "hole",
+      "model": "out0 must carry the same minting token",
+      "contract": "accepted",
+      "muts": [
+        "minterToken"
+      ],
+      "fn": "partialRefund"
+    },
+    {
+      "i": 17224,
+      "outcome": "hole",
+      "model": "out0 must carry the same minting token",
+      "contract": "accepted",
+      "muts": [
+        "token",
+        "flipByte"
+      ],
+      "fn": "refund"
+    },
+    {
+      "i": 17264,
+      "outcome": "hole",
+      "model": "out0 must carry the same minting token",
+      "contract": "accepted",
+      "muts": [
+        "minterToken"
+      ],
+      "fn": "partialRefund"
+    },
+    {
+      "i": 17265,
+      "outcome": "hole",
+      "model": "out0 must carry the same minting token",
+      "contract": "accepted",
+      "muts": [
+        "minterToken"
+      ],
+      "fn": "pay"
+    },
+    {
+      "i": 17317,
+      "outcome": "hole",
+      "model": "out0 must carry the same minting token",
+      "contract": "accepted",
+      "muts": [
+        "minterToken"
+      ],
+      "fn": "pay"
+    },
+    {
+      "i": 17427,
+      "outcome": "hole",
+      "model": "out0 must carry the same minting token",
+      "contract": "accepted",
+      "muts": [
+        "minterToken"
+      ],
+      "fn": "partialRefund"
+    },
+    {
+      "i": 17452,
+      "outcome": "hole",
+      "model": "out0 must carry the same minting token",
+      "contract": "accepted",
+      "muts": [
+        "minterToken"
+      ],
+      "fn": "partialRefund"
+    },
+    {
+      "i": 17464,
+      "outcome": "hole",
+      "model": "out0 must carry the same minting token",
+      "contract": "accepted",
+      "muts": [
+        "minterToken"
+      ],
+      "fn": "refund"
+    },
+    {
+      "i": 17546,
+      "outcome": "hole",
+      "model": "out0 must carry the same minting token",
+      "contract": "accepted",
+      "muts": [
+        "minterToken",
+        "minterToken"
+      ],
+      "fn": "refund"
+    },
+    {
+      "i": 17580,
+      "outcome": "hole",
+      "model": "out0 must carry the same minting token",
+      "contract": "accepted",
+      "muts": [
+        "token"
+      ],
+      "fn": "pay"
+    },
+    {
+      "i": 17598,
+      "outcome": "hole",
+      "model": "out0 must carry the same minting token",
+      "contract": "accepted",
+      "muts": [
+        "token",
+        "amount"
+      ],
+      "fn": "pay"
+    },
+    {
+      "i": 17609,
+      "outcome": "hole",
+      "model": "out0 must carry the same minting token",
+      "contract": "accepted",
+      "muts": [
+        "amount",
+        "minterToken"
+      ],
+      "fn": "pay"
+    },
+    {
+      "i": 17738,
+      "outcome": "hole",
+      "model": "out0 must carry the same minting token",
+      "contract": "accepted",
+      "muts": [
+        "minterToken"
+      ],
+      "fn": "refund"
+    },
+    {
+      "i": 17769,
+      "outcome": "hole",
+      "model": "out0 must carry the same minting token",
+      "contract": "accepted",
+      "muts": [
+        "minterToken",
+        "amount",
+        "minterToken"
+      ],
+      "fn": "pay"
+    },
+    {
+      "i": 17785,
+      "outcome": "hole",
+      "model": "out0 must carry the same minting token",
+      "contract": "accepted",
+      "muts": [
+        "minterToken"
+      ],
+      "fn": "partialRefund"
+    },
+    {
+      "i": 17794,
+      "outcome": "hole",
+      "model": "out0 must carry the same minting token",
+      "contract": "accepted",
+      "muts": [
+        "flipByte",
+        "flipByte",
+        "minterToken"
+      ],
+      "fn": "pay"
+    },
+    {
+      "i": 17847,
+      "outcome": "hole",
+      "model": "out0 must carry the same minting token",
+      "contract": "accepted",
+      "muts": [
+        "minterToken"
+      ],
+      "fn": "partialRefund"
+    },
+    {
+      "i": 17966,
+      "outcome": "hole",
+      "model": "out0 must carry the same minting token",
+      "contract": "accepted",
+      "muts": [
+        "token"
+      ],
+      "fn": "partialRefund"
+    },
+    {
+      "i": 18138,
+      "outcome": "hole",
+      "model": "out0 must carry the same minting token",
+      "contract": "accepted",
+      "muts": [
+        "token"
+      ],
+      "fn": "refund"
+    },
+    {
+      "i": 18191,
+      "outcome": "hole",
+      "model": "out0 must carry the same minting token",
+      "contract": "accepted",
+      "muts": [
+        "token",
+        "flipByte"
+      ],
+      "fn": "refund"
+    },
+    {
+      "i": 18243,
+      "outcome": "hole",
+      "model": "out0 must carry the same minting token",
+      "contract": "accepted",
+      "muts": [
+        "minterToken"
+      ],
+      "fn": "refund"
+    },
+    {
+      "i": 18294,
+      "outcome": "hole",
+      "model": "out0 must carry the same minting token",
+      "contract": "accepted",
+      "muts": [
+        "flipByte",
+        "minterToken"
+      ],
+      "fn": "pay"
+    },
+    {
+      "i": 18307,
+      "outcome": "hole",
+      "model": "out0 must carry the same minting token",
+      "contract": "accepted",
+      "muts": [
+        "minterToken"
+      ],
+      "fn": "partialRefund"
+    },
+    {
+      "i": 18478,
+      "outcome": "hole",
+      "model": "out0 must carry the same minting token",
+      "contract": "accepted",
+      "muts": [
+        "minterToken",
+        "flipByte",
+        "addInput"
+      ],
+      "fn": "pay"
+    },
+    {
+      "i": 18482,
+      "outcome": "hole",
+      "model": "out0 must carry the same minting token",
+      "contract": "accepted",
+      "muts": [
+        "token",
+        "token"
+      ],
+      "fn": "partialRefund"
+    },
+    {
+      "i": 18556,
+      "outcome": "hole",
+      "model": "out0 must carry the same minting token",
+      "contract": "accepted",
+      "muts": [
+        "minterToken"
+      ],
+      "fn": "refund"
+    },
+    {
+      "i": 18627,
+      "outcome": "hole",
+      "model": "out0 must carry the same minting token",
+      "contract": "accepted",
+      "muts": [
+        "minterToken"
+      ],
+      "fn": "refund"
+    },
+    {
+      "i": 18732,
+      "outcome": "hole",
+      "model": "out0 must carry the same minting token",
+      "contract": "accepted",
+      "muts": [
+        "minterToken"
+      ],
+      "fn": "pay"
+    },
+    {
+      "i": 18860,
+      "outcome": "hole",
+      "model": "out0 must carry the same minting token",
+      "contract": "accepted",
+      "muts": [
+        "minterToken"
+      ],
+      "fn": "pay"
+    },
+    {
+      "i": 18893,
+      "outcome": "hole",
+      "model": "out0 must carry the same minting token",
+      "contract": "accepted",
+      "muts": [
+        "minterToken",
+        "recipient",
+        "token"
+      ],
+      "fn": "pay"
+    },
+    {
+      "i": 18905,
+      "outcome": "hole",
+      "model": "out0 must carry the same minting token",
+      "contract": "accepted",
+      "muts": [
+        "minterToken"
+      ],
+      "fn": "refund"
+    },
+    {
+      "i": 18947,
+      "outcome": "hole",
+      "model": "out0 must carry the same minting token",
+      "contract": "accepted",
+      "muts": [
+        "minterToken"
+      ],
+      "fn": "pay"
+    },
+    {
+      "i": 19033,
+      "outcome": "hole",
+      "model": "out0 must carry the same minting token",
+      "contract": "accepted",
+      "muts": [
+        "minterToken"
+      ],
+      "fn": "refund"
+    },
+    {
+      "i": 19141,
+      "outcome": "hole",
+      "model": "out0 must carry the same minting token",
+      "contract": "accepted",
+      "muts": [
+        "minterToken",
+        "minterToken"
+      ],
+      "fn": "partialRefund"
+    },
+    {
+      "i": 19227,
+      "outcome": "hole",
+      "model": "out0 must carry the same minting token",
+      "contract": "accepted",
+      "muts": [
+        "minterToken"
+      ],
+      "fn": "refund"
+    },
+    {
+      "i": 19280,
+      "outcome": "hole",
+      "model": "out0 must carry the same minting token",
+      "contract": "accepted",
+      "muts": [
+        "minterToken"
+      ],
+      "fn": "partialRefund"
+    },
+    {
+      "i": 19301,
+      "outcome": "hole",
+      "model": "out0 must carry the same minting token",
+      "contract": "accepted",
+      "muts": [
+        "minterToken"
+      ],
+      "fn": "partialRefund"
+    },
+    {
+      "i": 19378,
+      "outcome": "hole",
+      "model": "out0 must carry the same minting token",
+      "contract": "accepted",
+      "muts": [
+        "minterToken"
+      ],
+      "fn": "pay"
+    },
+    {
+      "i": 19391,
+      "outcome": "hole",
+      "model": "out0 must carry the same minting token",
+      "contract": "accepted",
+      "muts": [
+        "minterToken"
+      ],
+      "fn": "partialRefund"
+    },
+    {
+      "i": 19424,
+      "outcome": "hole",
+      "model": "out0 must carry the same minting token",
+      "contract": "accepted",
+      "muts": [
+        "minterToken"
+      ],
+      "fn": "pay"
+    },
+    {
+      "i": 19482,
+      "outcome": "hole",
+      "model": "out0 must carry the same minting token",
+      "contract": "accepted",
+      "muts": [
+        "minterToken"
+      ],
+      "fn": "pay"
+    },
+    {
+      "i": 19495,
+      "outcome": "hole",
+      "model": "out0 must carry the same minting token",
+      "contract": "accepted",
+      "muts": [
+        "minterToken"
+      ],
+      "fn": "partialRefund"
+    },
+    {
+      "i": 19575,
+      "outcome": "hole",
+      "model": "out0 must carry the same minting token",
+      "contract": "accepted",
+      "muts": [
+        "minterToken"
+      ],
+      "fn": "partialRefund"
+    },
+    {
+      "i": 19585,
+      "outcome": "hole",
+      "model": "out0 must carry the same minting token",
+      "contract": "accepted",
+      "muts": [
+        "minterToken"
+      ],
+      "fn": "refund"
+    },
+    {
+      "i": 19632,
+      "outcome": "hole",
+      "model": "out0 must carry the same minting token",
+      "contract": "accepted",
+      "muts": [
+        "minterToken"
+      ],
+      "fn": "partialRefund"
+    },
+    {
+      "i": 19642,
+      "outcome": "hole",
+      "model": "out0 must carry the same minting token",
+      "contract": "accepted",
+      "muts": [
+        "minterToken"
+      ],
+      "fn": "partialRefund"
+    },
+    {
+      "i": 19694,
+      "outcome": "hole",
+      "model": "out0 must carry the same minting token",
+      "contract": "accepted",
+      "muts": [
+        "minterToken"
+      ],
+      "fn": "partialRefund"
+    },
+    {
+      "i": 19700,
+      "outcome": "hole",
+      "model": "out0 must carry the same minting token",
+      "contract": "accepted",
+      "muts": [
+        "minterToken",
+        "minterToken",
+        "flipByte"
+      ],
+      "fn": "pay"
+    },
+    {
+      "i": 19752,
+      "outcome": "hole",
+      "model": "out0 must carry the same minting token",
+      "contract": "accepted",
+      "muts": [
+        "minterToken"
+      ],
+      "fn": "pay"
+    },
+    {
+      "i": 19795,
+      "outcome": "hole",
+      "model": "out0 must carry the same minting token",
+      "contract": "accepted",
+      "muts": [
+        "minterToken"
+      ],
+      "fn": "pay"
+    },
+    {
+      "i": 19813,
+      "outcome": "hole",
+      "model": "out0 must carry the same minting token",
+      "contract": "accepted",
+      "muts": [
+        "amount",
+        "minterToken",
+        "flipByte"
+      ],
+      "fn": "pay"
+    },
+    {
+      "i": 19817,
+      "outcome": "hole",
+      "model": "out0 must carry the same minting token",
+      "contract": "accepted",
+      "muts": [
+        "minterToken",
+        "minterToken"
+      ],
+      "fn": "partialRefund"
+    },
+    {
+      "i": 19845,
+      "outcome": "hole",
+      "model": "out0 must carry the same minting token",
+      "contract": "accepted",
+      "muts": [
+        "minterToken"
+      ],
+      "fn": "pay"
+    },
+    {
+      "i": 19971,
+      "outcome": "hole",
+      "model": "out0 must carry the same minting token",
+      "contract": "accepted",
+      "muts": [
+        "minterToken",
+        "addInput",
+        "amount"
+      ],
+      "fn": "refund"
+    },
+    {
+      "i": 19984,
+      "outcome": "hole",
+      "model": "out0 must carry the same minting token",
+      "contract": "accepted",
+      "muts": [
+        "addInput",
+        "minterToken"
+      ],
+      "fn": "refund"
+    }
+  ],
+  "setups": [],
+  "ranAt": "2026-11-20T14:27:35.470Z",
+  "seconds": 10.26,
+  "interval": "18381 of 18714 = 98.2% (95% Wilson interval 98.0% to 98.4%)"
+}
