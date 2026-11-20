@@ -34,9 +34,14 @@ export async function shopLedger(shop: ShopConfig, limit = 40): Promise<LedgerRo
   const history = (await p.performRequest("blockchain.address.get_history", shop.minterAddress)) as { tx_hash: string; height: number }[];
   const recent = [...history].sort((a, b) => (b.height || 1e9) - (a.height || 1e9)).slice(0, limit);
   const rows: LedgerRow[] = [];
+  // Read the raw transactions six at a time (one by one took several seconds on a fresh page).
+  const todo = recent.map((h) => h.tx_hash).filter((t) => !rawCache.has(t));
+  await Promise.all(Array.from({ length: 6 }, async () => {
+    for (let t = todo.shift(); t; t = todo.shift()) rawCache.set(t, await p.getRawTransaction(t));
+  }));
   for (const h of recent) {
-    let raw = rawCache.get(h.tx_hash);
-    if (!raw) { raw = await p.getRawTransaction(h.tx_hash); rawCache.set(h.tx_hash, raw); }
+    const raw = rawCache.get(h.tx_hash);
+    if (!raw) continue;
     const tx = decodeTransactionBCH(hexToBin(raw));
     if (typeof tx === "string") continue;
     const outCat = (i: number) => (tx.outputs[i]?.token ? binToHex(tx.outputs[i].token!.category) : undefined);

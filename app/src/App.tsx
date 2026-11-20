@@ -73,9 +73,16 @@ export default function App() {
 
   const keys: ShopKeys | null = useMemo(() => shop ? { merchantPkh: hexToBin(shop.merchantPkh), refundPk: hexToBin(shop.refundPk), ownerPk: hexToBin(shop.ownerPk) } : null, []);
 
+  // First the server's cached read (instant), then the same history read again in this browser.
+  const [ledgerBy, setLedgerBy] = useState<"server" | "browser" | null>(null);
   const refreshLedger = useCallback(() => {
     if (!shop || PREVIEW) return;
-    shopLedger(shop, 80).then((r) => { setLedger(r); setLedgerErr(null); }).catch((e) => setLedgerErr(String(e?.message ?? e)));
+    fetch(`/api/books?net=${NET}`).then((r) => (r.ok ? r.json() : null)).then((j) => {
+      if (!j?.rows) return;
+      setLedgerBy((b) => (b === "browser" ? b : "server"));
+      setLedger((cur) => cur ?? j.rows.map((r: LedgerRow & { amount: string; orderId?: string }) => ({ ...r, amount: BigInt(r.amount), orderId: r.orderId ? BigInt(r.orderId) : undefined })));
+    }).catch(() => undefined);
+    shopLedger(shop, 60).then((r) => { setLedger(r); setLedgerBy("browser"); setLedgerErr(null); }).catch((e) => setLedgerErr(String(e?.message ?? e)));
   }, []);
   useEffect(() => { refreshLedger(); }, [refreshLedger]);
 
@@ -113,7 +120,7 @@ export default function App() {
   useEffect(() => { if (mode) scanWallet(mode); }, [mode, scanWallet]);
 
   // The instant demo: a test-network wallet made in this browser, topped up by the demo faucet.
-  const startDemo = useCallback(async () => {
+  const startDemo = useCallback(async (): Promise<WalletCoin[] | undefined> => {
     if (NET !== "chipnet") { location.href = `${location.pathname}?net=chipnet&demo=1`; return; }
     if (!burner) return;
     setMode("demo"); setBusy("faucet"); setMsg(null);
@@ -126,7 +133,7 @@ export default function App() {
         if (!r.ok) throw new Error(j.error ?? "The demo faucet didn't answer");
         for (let i = 0; i < 15 && (await balance()) < DEMO_FUNDS - 1_500n; i++) await sleep(1000);
       }
-      await scanWallet("demo");
+      return await scanWallet("demo");
     } catch (e) {
       setMsg({ kind: "err", text: String((e as Error).message ?? e) });
     } finally { setBusy(null); }
@@ -138,8 +145,18 @@ export default function App() {
     catch (e) { if (/already|txn-already|known/i.test(String(e))) return null; throw e; }
   };
 
-  const buy = async (item: (typeof MENU)[number]) => {
+  // Buy before connecting: on chipnet the demo wallet is made and funded first; on mainnet the
+  // WizardConnect QR opens.
+  const buyFirst = async (item: (typeof MENU)[number]) => {
+    if (connected) return buy(item);
+    if (NET !== "chipnet") { wc.connect(); return; }
+    const found = await startDemo();
+    if (found?.length) await buy(item, { coins: found, as: "demo" });
+  };
+
+  const buy = async (item: (typeof MENU)[number], opts: { coins?: WalletCoin[]; as?: "wc" | "demo" } = {}) => {
     if (!shop || !keys) return;
+    const as = opts.as ?? mode;
     const t0 = performance.now();
     setBusy(`buy-${item.id}`); setMsg(null);
     try {
@@ -147,11 +164,11 @@ export default function App() {
       const minters = (await p.getUtxos(shop.minterAddress)).filter((u) => isMinterUtxo(u) && u.token?.category === shop.category);
       if (!minters.length) throw new Error("The shop isn't open right now (no minter on chain)");
       const minterUtxo = minters[Math.floor(Math.random() * minters.length)];
-      const receiveAddr = mode === "demo" ? burner!.address : p2pkhAddress(hash160(wc.manager!.getPubkey(0, 0n)!), NET);
+      const receiveAddr = as === "demo" ? burner!.address : p2pkhAddress(hash160(wc.manager!.getPubkey(0, 0n)!), NET);
       const orderId = BigInt(Date.now()) * 10n + item.id;
-      const plan = buildPurchase({ provider: p, keys, network: NET, minterUtxo, coins, amount: item.sats, orderId, receiptTo: receiveAddr, changeTo: receiveAddr });
+      const plan = buildPurchase({ provider: p, keys, network: NET, minterUtxo, coins: opts.coins ?? coins, amount: item.sats, orderId, receiptTo: receiveAddr, changeTo: receiveAddr });
       let signed: string;
-      if (mode === "demo") signed = signWcInputs(relaySafe(plan.wc), plan.inputPaths.map((x) => x[0]), burner!);
+      if (as === "demo") signed = signWcInputs(relaySafe(plan.wc), plan.inputPaths.map((x) => x[0]), burner!);
       else {
         const res = await wc.manager!.signTransaction({ transaction: relaySafe(plan.wc) as never, inputPaths: plan.inputPaths });
         if (!res.signedTransaction) throw new Error(res.error ?? "The wallet didn't sign");
@@ -159,7 +176,7 @@ export default function App() {
       }
       const txid = (await broadcast(signed)) ?? "";
       setMsg({ kind: "ok", text: `Paid ${item.sats.toLocaleString()} sats for ${item.name}. Your receipt is in your wallet.`, txid, secs: (performance.now() - t0) / 1000, fee: feeOf(relaySafe(plan.wc)) });
-      setTimeout(() => { scanWallet(); refreshLedger(); }, 1200);
+      setTimeout(() => { scanWallet(as); refreshLedger(); }, 1200);
     } catch (e) {
       setMsg({ kind: "err", text: String((e as Error).message ?? e) });
     } finally { setBusy(null); }
@@ -331,7 +348,7 @@ export default function App() {
             <li key={String(m.id)}>
               <div><b>{m.name}</b> <span className="muted">{m.note}</span></div>
               <div>{m.sats.toLocaleString()} sats <span className="muted">{NET === "mainnet" ? fmtUsd(m.sats, usd) : "test coins"}</span></div>
-              <button disabled={viewState !== "connected" || !!busy || (!pv && !scanned)} onClick={() => buy(m)}>{busy === `buy-${m.id}` ? (viewMode === "demo" ? "Paying…" : "Waiting for your wallet…") : !pv && viewState === "connected" && !scanned ? "Reading your wallet…" : "Buy"}</button>
+              <button disabled={!!busy || (!pv && viewState === "connected" && !scanned) || (!pv && !shop)} onClick={() => buyFirst(m)}>{busy === `buy-${m.id}` ? (viewMode === "demo" ? "Paying…" : "Waiting for your wallet…") : busy === "faucet" ? "Getting test coins…" : !pv && viewState === "connected" && !scanned ? "Reading your wallet…" : "Buy"}</button>
             </li>
           ))}
         </ul>
@@ -391,7 +408,8 @@ export default function App() {
         {!shop && <p className="muted">The shop opens once its minter contract is on chain.</p>}
         {shop && !ledger && !ledgerErr && <p className="muted">Reading the minter's history…</p>}
         {totals && (
-          <p>{totals.sales} {totals.sales === 1 ? "sale" : "sales"} ({totals.salesSats.toLocaleString()} sats) · {totals.refunds} {totals.refunds === 1 ? "refund" : "refunds"} ({totals.refundSats.toLocaleString()} sats) · net {totals.netSats.toLocaleString()} sats{NET === "chipnet" ? " · all test transactions from our wallets and visitors' demo wallets" : ""}</p>
+          <p>{totals.sales} {totals.sales === 1 ? "sale" : "sales"} ({totals.salesSats.toLocaleString()} sats) · {totals.refunds} {totals.refunds === 1 ? "refund" : "refunds"} ({totals.refundSats.toLocaleString()} sats) · net {totals.netSats.toLocaleString()} sats in the latest {ledger?.length ?? 0} transactions{NET === "chipnet" ? " · all test transactions from our wallets and visitors' demo wallets" : ""}
+            {!pv && <span className="muted small"> · {ledgerBy === "browser" ? "read from the chain by this page" : "read from the chain by our server; rereading it in your browser…"}</span>}</p>
         )}
         {ledger && ledger.length > 0 && (
           <table>

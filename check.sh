@@ -48,6 +48,9 @@ curl -sf https://takeback-bch.vercel.app/slides.html | grep -q "The story of Tak
 echo "== live no-wallet demo on chipnet: faucet, buy, refund with timing, 5 cheats refused by a node, attacks and fuzz in the browser"
 (cd app && perl -e 'alarm 180; exec @ARGV' node e2e/demo-instant.mjs 2>&1 | grep -E "^(PASS|FAIL|INSTANT)" ; test "${PIPESTATUS[0]}" -eq 0)
 
+echo "== live one-click buy: Buy on a cold chipnet page makes and funds a demo wallet, pays, then refunds"
+(cd app && perl -e 'alarm 150; exec @ARGV' node e2e/demo-buy-first.mjs 2>&1 | grep -E "^(PASS|FAIL|BUY)" ; test "${PIPESTATUS[0]}" -eq 0)
+
 echo "== wallet: WizardConnect pairing + signing over the real relay (headless test wallet)"
 (cd tools/wiz-harness && TEST_MNEMONIC="abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon about" perl -e 'alarm 90; exec @ARGV' node e2e-relay.mjs 2>&1 | grep -E "VM verify: PASS" || { echo "relay round trip failed"; exit 1; })
 
