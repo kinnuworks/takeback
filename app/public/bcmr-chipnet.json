@@ -2,17 +2,17 @@
   "$schema": "https://cashtokens.org/bcmr-v2.schema.json",
   "version": {
     "major": 1,
-    "minor": 0,
+    "minor": 1,
     "patch": 0
   },
-  "latestRevision": "2026-11-20T14:30:41.169Z",
+  "latestRevision": "2026-11-20T16:47:41.107Z",
   "registryIdentity": {
     "name": "Takeback receipts",
     "description": "Receipts that refund. Each receipt NFT records the amount paid and an order id."
   },
   "identities": {
     "ebef9a8f0693ed7d8f765d8f537cfcc920b5e9a6668423d5c5265781bf9c7dd3": {
-      "2026-11-20T14:30:41.169Z": {
+      "2026-11-20T16:47:41.107Z": {
         "name": "Takeback receipt: Kopi Blaze",
         "description": "A refundable receipt from the Kopi Blaze demo shop. Hold it to get a refund of exactly the amount paid.",
         "token": {
@@ -20,14 +20,36 @@
           "symbol": "RCPT",
           "nfts": {
             "description": "Receipt: amount paid (8 bytes) and order id (8 bytes).",
+            "fields": {
+              "amount": {
+                "name": "Amount paid",
+                "description": "What the receipt refunds, in satoshis.",
+                "encoding": {
+                  "type": "number",
+                  "aggregate": "add",
+                  "unit": "sats"
+                }
+              },
+              "order": {
+                "name": "Order",
+                "description": "The shop's order id.",
+                "encoding": {
+                  "type": "number"
+                }
+              }
+            },
             "parse": {
+              "bytecode": "006b00cf587f7c816b816b",
               "types": {
                 "": {
                   "name": "Takeback receipt",
-                  "description": "Refundable receipt"
+                  "description": "Refundable: the shop refunds exactly the amount paid, once, to whoever holds it.",
+                  "fields": [
+                    "amount",
+                    "order"
+                  ]
                 }
-              },
-              "bytecode": ""
+              }
             }
           }
         },

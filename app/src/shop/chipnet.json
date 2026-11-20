@@ -11,6 +11,7 @@
   "minters": 3,
   "floatEach": "100000",
   "bcmrUrl": "https://takeback-bch.vercel.app/bcmr-chipnet.json",
-  "bcmrHash": "6714e45822e68e014699fa4628f2650660975a133140d5f68a5012bd04fe8a4b",
-  "genesisTxid": "13f39d1ae6350b3b4a15250b9e77af965101942bd28a42944ce3b6769e64d081"
+  "bcmrHash": "752f7758db06f478cd10bde647831e5bc1f9881c766616cf0f70e0a9b6ac1966",
+  "genesisTxid": "13f39d1ae6350b3b4a15250b9e77af965101942bd28a42944ce3b6769e64d081",
+  "bcmrUpdateTxid": "838b952e31274db008df1311f0875ca1e5e9eaf7bf4c30370c841b5a691f93f8"
 }

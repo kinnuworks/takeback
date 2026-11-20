@@ -30,6 +30,9 @@ echo "== contract: evidence/attacks-4.json, the fourth labelled list (found by m
 echo "== contract: differential fuzzer, 20,000 random transactions (seed 20261122), zero security holes"
 (cd app && node contracts/fuzz.test.mjs 20000 20261122 | head -5)
 
+echo "== wallets: the receipt registry's parse bytecode, run in the BCMR spec's parsing transaction, yields amount and order id"
+(cd app && node contracts/bcmr-parse.test.mjs | tail -1)
+
 echo "== flow: purchase + refund built by the app, signed by the headless wallet, verified on the VM"
 (cd app && node tests/flow.test.ts | tail -1)
 

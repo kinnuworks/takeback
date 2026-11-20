@@ -11,6 +11,7 @@ import { ElectrumNetworkProvider, MockNetworkProvider, TransactionBuilder, Signa
 import { sha256, binToHex, utf8ToBin, cashAddressToLockingBytecode } from "@bitauth/libauth";
 import { makeKeys } from "../../tools/wiz-harness/testwallet.mjs";
 import { minterContract, p2pkhAddress } from "../src/lib/takeback.ts";
+import { receiptRegistry } from "../src/lib/bcmr.ts";
 
 const network = process.argv[2];
 const send = process.argv.includes("--send");
@@ -58,29 +59,8 @@ if (!genesisCoin) {
 }
 const category = genesisCoin.txid;
 
-// BCMR registry for the receipt category. Wallets read the hash and URL from the OP_RETURN.
-const registry = {
-  $schema: "https://cashtokens.org/bcmr-v2.schema.json",
-  version: { major: 1, minor: 0, patch: 0 },
-  latestRevision: new Date().toISOString(),
-  registryIdentity: { name: "Takeback receipts", description: "Receipts that refund. Each receipt NFT records the amount paid and an order id." },
-  identities: {
-    [category]: {
-      [new Date().toISOString()]: {
-        name: "Takeback receipt: Kopi Blaze",
-        description: "A refundable receipt from the Kopi Blaze demo shop. Hold it to get a refund of exactly the amount paid.",
-        token: {
-          category, symbol: "RCPT",
-          nfts: {
-            description: "Receipt: amount paid (8 bytes) and order id (8 bytes).",
-            parse: { types: { "": { name: "Takeback receipt", description: "Refundable receipt" } }, bytecode: "" },
-          },
-        },
-        uris: { icon: `${SITE}/receipt-icon.png`, web: SITE },
-      },
-    },
-  },
-};
+// BCMR registry for the receipt category (with the receipt parser). Wallets read the hash and URL from the OP_RETURN.
+const registry = receiptRegistry({ category, shopName: "Kopi Blaze", site: SITE, at: new Date().toISOString() });
 const registryJson = JSON.stringify(registry, null, 2);
 const registryHash = binToHex(sha256.hash(utf8ToBin(registryJson)));
 const REGISTRY_PATH = chain === "mainnet" ? ".well-known/bitcoin-cash-metadata-registry.json" : `bcmr-${chain}.json`;
