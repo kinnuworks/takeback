@@ -271,3 +271,6 @@ code { overflow-wrap: anywhere; }
   .tb-top__slides { order: 0; }
   .tb-top__ember { order: 10; flex-basis: 100%; }
 }
+@media (max-width: 560px) {
+  .tb-hero__side::after { display: none; }
+}
