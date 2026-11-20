@@ -25,11 +25,24 @@ It needs Bitcoin Cash because the receipt is a CashToken minted by a covenant in
 - **The books come from the chain.** Every purchase and refund spends a minter UTXO, so the page rebuilds sales, refunds and net from the minter's history ([`chain.ts`](app/src/lib/chain.ts)).
 - **CashScript 0.14 on the 2026 VM.** The contract uses the loops from the May 2026 upgrade to check every other input and output for the shop's token category.
 
+The heart of the purchase rule, from [`ReceiptMinter.cash`](app/contracts/ReceiptMinter.cash):
+
+```solidity
+bytes receipt = tx.outputs[2].nftCommitment;          // the receipt minted in this payment
+require(receipt.length == 16);
+int amount = int(receipt.split(8)[0]);                // the amount written on it
+require(amount > 0);
+require(tx.outputs[1].lockingBytecode == new LockingBytecodeP2PKH(merchantPkh));
+require(tx.outputs[1].value == amount);               // the shop got exactly that amount
+```
+
 ## Check it yourself
 
 [![proof](https://github.com/kinnuworks/takeback/actions/workflows/proof.yml/badge.svg)](https://github.com/kinnuworks/takeback/actions/workflows/proof.yml) GitHub reruns the attack lists, the fuzzer, the mutation test and the flow test on every push ([`.github/workflows/proof.yml`](.github/workflows/proof.yml)).
 
-- **Real nodes:** every attack below, built from the shop's real chipnet coins and signed with real keys, sent to two chipnet servers. Each node reply and signed transaction is in [`evidence/real-node-chipnet.json`](evidence/real-node-chipnet.json). Rerun: `cd app && node scripts/real-attacks.mjs chipnet --replay` (no keys needed).
+No keys or test coins are needed for any of these: from a fresh clone, `cd app && npm install`, then the commands below.
+
+- **Real nodes:** every attack below, built from the shop's real chipnet coins and signed with real keys, sent to two chipnet servers. Each node reply and signed transaction is in [`evidence/real-node-chipnet.json`](evidence/real-node-chipnet.json). Rebroadcast the saved transactions yourself with `cd app && node scripts/real-attacks.mjs chipnet --replay` (no keys; a cheat whose coins were spent since comes back as missing inputs).
 - **The attack lists** and the code that runs them: [`evidence/attacks.json`](evidence/attacks.json), [`attacks-2.json`](evidence/attacks-2.json), [`attacks-3.json`](evidence/attacks-3.json), [`attacks-4.json`](evidence/attacks-4.json), [`app/src/lib/attacks.ts`](app/src/lib/attacks.ts). Rerun: `cd app && npm install && node contracts/attacks.test.mjs 1` (and `2`, `3`, `4`).
 - **The fuzzer:** [`app/src/lib/fuzz.ts`](app/src/lib/fuzz.ts) and the model of the rules it checks against, [`rules-model.ts`](app/src/lib/rules-model.ts). Rerun: `cd app && node contracts/fuzz.test.mjs 20000 20261122`.
 - **The mutation test:** [`app/contracts/mutants.test.mjs`](app/contracts/mutants.test.mjs), results in [`evidence/mutants-result.json`](evidence/mutants-result.json).
@@ -45,7 +58,7 @@ Evidence, stated plainly: no real users yet; it was built for this hackathon. In
 > Evidence type: Test transactions from wallets we control (chipnet, no monetary value), not real users.
 > Data: lists 1 to 4 (56 attacks), built from the shop's real chipnet coins and signed with real keys, the shop's hot refund key included; sent to chipnet.bch.ninja and chipnet.imaginary.cash on 2026-11-20.
 > Result: 56 of 56 refused by both servers (55 by the contract, 1 by consensus token rules; 95% interval 93.6% to 100.0%); 5 of 5 honest purchases and refunds accepted in the same run.
-> Rerun: `cd app && node --env-file=<env with test seeds> scripts/real-attacks.mjs chipnet`, or the keyless replay above. Limits: chipnet, not mainnet; the attacks are ours.
+> Rerun: the keyless replay above, or a fresh run with your own chipnet test wallets (`scripts/real-attacks.mjs chipnet` reads the seeds from an env file). Limits: chipnet, not mainnet; the attacks are ours.
 
 > Claim: random rule-breaking transactions are refused and allowed ones go through.
 > Evidence type: Our own break test (we tried to make it fail), not real users.
