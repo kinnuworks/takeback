@@ -26,7 +26,8 @@ It needs Bitcoin Cash because the receipt is a CashToken minted by a covenant in
 ## Check it yourself
 
 - The attack list and the code that runs it: [`evidence/attacks.json`](evidence/attacks.json), [`app/src/lib/attacks.ts`](app/src/lib/attacks.ts). Rerun with `cd app && npm install && node contracts/attacks.test.mjs`.
-- Mainnet transactions: not yet. The demo shop goes on chain once its float is funded, and its minter address and transaction links will be listed here.
+- Chipnet (test network) transactions from our own test wallets, made through the live page and WizardConnect: [shop setup](https://chipnet.imaginary.cash/tx/f910d432f5f666530265e904714497bb500327b0501aa966dc0b3223c91796f8), [a purchase that minted a 10,000-sat receipt](https://chipnet.imaginary.cash/tx/96b0663ac8678d2a69f0a73adc0ee24295142a0d5b834744f91ee1204e067b1f), and [its refund](https://chipnet.imaginary.cash/tx/4353aae77fe5e0e7474c43c580a7f3dede7b07245b37a0ae6d759262cb079b0c), which paid back 10,000 sats and burned the receipt. Open https://takeback-bch.vercel.app/?net=chipnet to see the shop's books rebuilt from the chain.
+- Mainnet transactions: not yet. The mainnet shop goes on chain once its float is funded.
 
 ## Evidence
 
@@ -44,11 +45,11 @@ Evidence, stated plainly: no real users yet; it was built for this hackathon. In
 > Result: 12 of 12 attacks rejected by the contract (95% interval 75.8% to 100.0%); 2 of 2 possible valid cases accepted (one valid case, a 1-sat refund, can't exist on chain: it's below the 546-sat dust limit).
 > Rerun: `cd app && node contracts/attacks.test.mjs 2`. Limits: as above, and only 12 cases.
 
-Limits, in numbers: zero real users and zero mainnet transactions so far; 34 attacks, all ours; the interval's low end is 89.8% because 34 cases can't rule out a rarer hole. The next real test is a mainnet purchase and refund from a wallet we control, which passes if the holder gets back exactly the receipt amount and the receipt is gone.
+Limits, in numbers: zero real users and zero mainnet transactions so far (3 test purchases and 2 test refunds on chipnet, all from our own wallets); 34 attacks, all ours; the interval's low end is 89.8% because 34 cases can't rule out a rarer hole. The next real test is a mainnet purchase and refund from a wallet we control, which passes if the holder gets back exactly the receipt amount and the receipt is gone.
 
 ## What doesn't work yet
 
-- The demo shop isn't on mainnet yet (waiting for its refund float).
+- The demo shop runs on chipnet (the test network). It isn't on mainnet yet (waiting for its refund float).
 - A remainder receipt from a partial refund can be refunded in full, but a second partial refund of it needs the holder to add a coin for the fee.
 - Prices are in BCH only. PUSD-priced items are planned.
 - The demo shop approves every valid refund automatically. A real shop would set its own policy.
