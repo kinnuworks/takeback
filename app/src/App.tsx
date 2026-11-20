@@ -44,6 +44,7 @@ export default function App() {
   const [coins, setCoins] = useState<WalletCoin[]>([]);
   const [receipts, setReceipts] = useState<HeldReceipt[]>([]);
   const [busy, setBusy] = useState<string | null>(null);
+  const [scanned, setScanned] = useState(false);
   const [msg, setMsg] = useState<{ kind: "ok" | "err"; text: string; txid?: string } | null>(null);
   const [ledger, setLedger] = useState<LedgerRow[] | null>(null);
   const [ledgerErr, setLedgerErr] = useState<string | null>(null);
@@ -77,9 +78,9 @@ export default function App() {
     };
     await scan(0, "receive", 8);
     await scan(1, "change", 4);
-    setCoins(found); setReceipts(held);
+    setCoins(found); setReceipts(held); setScanned(true);
   }, [wc.manager]);
-  useEffect(() => { if (wc.state === "connected") scanWallet(); }, [wc.state, scanWallet]);
+  useEffect(() => { if (wc.state === "connected") scanWallet(); else setScanned(false); }, [wc.state, scanWallet]);
 
   const broadcast = async (signedHex: string) => {
     try { return await providerFor(NET).sendRawTransaction(signedHex); }
@@ -195,7 +196,7 @@ export default function App() {
             <li key={String(m.id)}>
               <div><b>{m.name}</b> <span className="muted">{m.note}</span></div>
               <div>{m.sats.toLocaleString()} sats <span className="muted">{fmtUsd(m.sats, usd)}</span></div>
-              <button disabled={viewState !== "connected" || !!busy} onClick={() => buy(m)}>{busy === `buy-${m.id}` ? "Waiting for your wallet…" : "Buy"}</button>
+              <button disabled={viewState !== "connected" || !!busy || (!pv && !scanned)} onClick={() => buy(m)}>{busy === `buy-${m.id}` ? "Waiting for your wallet…" : !pv && viewState === "connected" && !scanned ? "Reading your wallet…" : "Buy"}</button>
             </li>
           ))}
         </ul>
