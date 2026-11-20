@@ -12,7 +12,7 @@ export default async function handler(req: Req, res: Res) {
   const shop = loadShop(net);
   if (!shop) { res.setHeader("Cache-Control", "public, s-maxage=60"); return res.status(503).json({ error: `No ${net} shop is set up yet` }); }
   try {
-    const rows = await shopLedger(shop, 60);
+    const rows = await shopLedger(shop, 2000);
     res.setHeader("Cache-Control", "public, s-maxage=20, stale-while-revalidate=600");
     return res.status(200).json({ net, readAt: new Date().toISOString(), rows: rows.map((r) => ({ ...r, amount: r.amount.toString(), orderId: r.orderId?.toString() })) });
   } catch (e) {

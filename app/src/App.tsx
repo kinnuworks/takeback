@@ -84,7 +84,7 @@ export default function App() {
       setLedgerBy((b) => (b === "browser" ? b : "server"));
       setLedger((cur) => cur ?? j.rows.map((r: LedgerRow & { amount: string; orderId?: string }) => ({ ...r, amount: BigInt(r.amount), orderId: r.orderId ? BigInt(r.orderId) : undefined })));
     }).catch(() => undefined);
-    shopLedger(shop, 60).then((r) => { setLedger(r); setLedgerBy("browser"); setLedgerErr(null); }).catch((e) => setLedgerErr(String(e?.message ?? e)));
+    shopLedger(shop, 2000).then((r) => { setLedger(r); setLedgerBy("browser"); setLedgerErr(null); }).catch((e) => setLedgerErr(String(e?.message ?? e)));
   }, []);
   useEffect(() => { refreshLedger(); }, [refreshLedger]);
 
@@ -488,7 +488,7 @@ export default function App() {
             {!shop && <p className="tb-muted">The shop opens once its minter contract is on chain.</p>}
             {shop && !ledger && !ledgerErr && <p className="tb-muted">Reading the minter's history…</p>}
             {totals && (
-              <p>{totals.sales} {totals.sales === 1 ? "sale" : "sales"} ({totals.salesSats.toLocaleString()} sats) · {totals.refunds} {totals.refunds === 1 ? "refund" : "refunds"} ({totals.refundSats.toLocaleString()} sats) · net {totals.netSats.toLocaleString()} sats in the latest {ledger?.length ?? 0} transactions{NET === "chipnet" ? " · all test transactions from our wallets and visitors' demo wallets" : ""}
+              <p>{totals.sales} {totals.sales === 1 ? "sale" : "sales"} ({totals.salesSats.toLocaleString()} sats) · {totals.refunds} {totals.refunds === 1 ? "refund" : "refunds"} ({totals.refundSats.toLocaleString()} sats) · net {totals.netSats.toLocaleString()} sats across all {ledger?.length ?? 0} of the shop's transactions{NET === "chipnet" ? " · all test transactions from our wallets and visitors' demo wallets" : ""}
                 {!pv && <span className="tb-muted tb-small"> · {ledgerBy === "browser" ? "read from the chain by this page" : "read from the chain by our server; rereading it in your browser…"}</span>}</p>
             )}
           </div>
