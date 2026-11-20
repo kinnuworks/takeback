@@ -18,7 +18,7 @@ import { minterContract, encodeReceipt, decodeReceipt, isMinterUtxo } from "../s
 const network = process.argv[2];
 if (!["chipnet", "mainnet"].includes(network)) { console.error("network: chipnet | mainnet"); process.exit(2); }
 const OUT = new URL(`../../evidence/real-node-${network}${process.env.REAL_NODE_SUFFIX ?? ""}.json`, import.meta.url).pathname;
-const SERVERS = network === "chipnet" ? ["chipnet.bch.ninja", "chipnet.imaginary.cash"] : ["bch.imaginary.cash", "electrum.imaginary.cash"];
+const SERVERS = network === "chipnet" ? ["chipnet.bch.ninja", "chipnet.imaginary.cash"] : ["bch.imaginary.cash", "bch.loping.net"]; // two independent operators
 const providers = SERVERS.map((hostname) => new ElectrumNetworkProvider(network, { hostname }));
 const provider = providers[0];
 const txidOf = (hex) => swapEndianness(binToHex(hash256(hexToBin(hex))));
