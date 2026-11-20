@@ -216,6 +216,14 @@ code { overflow-wrap: anywhere; }
   mask: conic-gradient(from -45deg at bottom, #0000, #000 1deg 89deg, #0000 90deg) 50% / calc(2 * var(--z)) 100%; }
 
 /* ---------- Tablets and phones ---------- */
+/* Mid widths (a laptop with the window not maximised): drop the decorative sidebar so the menu keeps room. */
+@media (min-width: 961px) and (max-width: 1340px) {
+  .tb-window__body { grid-template-columns: minmax(0, 1fr) minmax(280px, 340px); }
+  .tb-side { display: none; }
+}
+@media (min-width: 961px) and (max-width: 1100px) {
+  .tb-window__body { grid-template-columns: minmax(0, 1fr); }
+}
 @media (max-width: 960px) {
   .tb { margin-inline: 22px; }
   .tb-preview { margin-inline: -22px; }

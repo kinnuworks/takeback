@@ -425,6 +425,7 @@ export default function App() {
                     {slip.mode === "refunded" && <span className="slip__stamp" aria-hidden="true">Refunded</span>}
                   </div>
                   {slip.held && canRefund(slip.held) && slip.mode !== "refunded" && <div className="slip__actions">{refundButtons(slip.held)}</div>}
+                  {slip.held && canRefund(slip.held) && slip.mode !== "refunded" && <p className="slip__note">You press Refund. The shop's server co-signs right away, and the contract fixes the amount and who gets it.</p>}
                   {slip.mode === "paid" && !slip.held && viewState === "connected" && <p className="slip__note">Reading your wallet…</p>}
                 </article>
                 {msg && (
