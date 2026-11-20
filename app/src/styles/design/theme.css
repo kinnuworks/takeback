@@ -1,0 +1,36 @@
+/* Takeback theme: built on Operate's system (operate.so), measured 2026-11-20.
+   Green binder field, light sheet, green type and lines, Courier for the printed receipt. */
+:root {
+  --frame-bg: #005c00;
+  --paper: #ebebeb; --sheet: #ffffff; --sheet-2: #f7f7f7;
+  --ink: #117025; --ink-2: #29211e; --ink-3: #4f5d5b;
+  --deck-color: #117025;
+  --rule: #d9dedd; --rule-strong: #29211e; --frame-line: #29211e; --card-edge: #e0e5e5;
+  --act: #117025; --on-act: #ececec; --act-ink: #117025; --focus: #117025;
+  --mark: #cfe6d3; --on-mark: #12391b;
+  --ok: #117025; --ok-bg: #e3f1e5;
+  --bad: #b42318; --bad-bg: #fbe9e7;
+  --warn: #7a5200; --warn-bg: #fff1cc;
+  --btn-bg: #117025; --btn-fg: #ececec; --btn-border: #117025;
+  --ghost-bg: transparent; --ghost-fg: #117025; --ghost-border: #117025;
+  --btn-radius: 12px; --h-control: 38px; --pad-control: 15px; --btn-fs: 17px; --btn-weight: 400;
+  --font-display: "Hanken Grotesk", system-ui, sans-serif; --font-heading: var(--font-display);
+  --font-ui: "Hanken Grotesk", system-ui, sans-serif; --font-body: var(--font-ui);
+  --font-mono: "Courier Prime", "Courier New", monospace;
+  --fs-display: clamp(34px, calc(34px + 14 * ((100vw - 375px) / 1065)), 48px);
+  --lh-display: 1.17; --track-display: 0; --weight-display: 600;
+  --fs-h2: clamp(26px, 2.4vw, 32px); --fs-h3: 17px; --weight-heading: 600; --lh-heading: 1.13; --track-heading: 0;
+  --fs-body: 17px; --lh-body: 1.4; --fs-deck: 18px; --lh-deck: 1.4; --fs-small: 14px;
+  --r-control: 12px; --r-window: 16px; --r-card: 8px; --shadow-window: none;
+  --page-max: 1216px; --gap-section: clamp(48px, 6vw, 72px);
+  --slip-font: "Courier Prime", "Courier New", monospace; --slip-ink: #29211e; --stamp: #117025;
+  --slip-shadow: 0 8px 22px rgb(0 0 0 / 0.14);
+  --mark-color: #117025; --h1-max: 17ch;
+  --link-line: currentColor;
+}
+body {
+  background-color: #005c00;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='224' height='224'%3E%3Cg stroke='%23338f3d' stroke-width='1.2' fill='none'%3E%3Cpath stroke-dasharray='3 6' d='M14 0V224M42 0V224M70 0V224M98 0V224M126 0V224M154 0V224M182 0V224M210 0V224'/%3E%3Ccircle cx='42' cy='60' r='6'/%3E%3Ccircle cx='154' cy='28' r='4'/%3E%3Ccircle cx='98' cy='150' r='7'/%3E%3Ccircle cx='182' cy='188' r='5'/%3E%3Ccircle cx='14' cy='206' r='3'/%3E%3Ccircle cx='126' cy='96' r='3' fill='%23338f3d'/%3E%3Cpath d='M196 98l8 8m0-8l-8 8M200 96v12M194 102h12'/%3E%3C/g%3E%3C/svg%3E");
+}
+a { text-decoration-style: dotted; text-decoration-thickness: 1px; }
+a:hover { text-decoration-style: solid; }

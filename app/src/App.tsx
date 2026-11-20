@@ -20,7 +20,9 @@ const REPO_URL = (import.meta.env.VITE_REPO_URL as string | undefined) ?? "https
 const EMBER_ADDRESS = import.meta.env.VITE_EMBER_ADDRESS as string | undefined;
 const STRIPE_REFUNDS = "https://docs.stripe.com/refunds";
 // ?state=<name> previews one UI state with sample data, for design work. Labelled on screen.
-const PREVIEW = params.get("state");
+const PREVIEW_ALIAS: Record<string, string> = { result: "paid", empty: "idle", loading: "paying" };
+const PREVIEW = params.get("state") ? (PREVIEW_ALIAS[params.get("state")!] ?? params.get("state")) : null;
+
 export const PREVIEW_STATES = ["idle", "connecting", "connected-empty", "connected", "paying", "paid", "refunding", "refunded", "error", "ledger-empty", "break-test", "demo-funding", "network-cheats"] as const;
 const SAMPLE_TX = "3f1a9c2e7b6d4f0a8e5c1b2d9f7a6e4c3b2a1908f7e6d5c4b3a291807f6e5d4c";
 const DEMO_FUNDS = 25_000n;
@@ -32,7 +34,7 @@ const MENU = [
 ];
 
 interface HeldReceipt { txid: string; vout: number; amount: bigint; orderId: bigint; address: string; path: "receive" | "change"; index: number }
-interface Msg { kind: "ok" | "err"; text: string; txid?: string; secs?: number; fee?: bigint; refund?: boolean }
+interface Msg { kind: "ok" | "err"; text: string; txid?: string; secs?: number; fee?: bigint; refund?: boolean; amount?: bigint; orderId?: bigint; part?: boolean }
 interface Cheat { id: string; what: string; outcome?: "refused" | "accepted"; reply?: string }
 
 function useBchUsd() {
@@ -175,7 +177,7 @@ export default function App() {
         signed = res.signedTransaction;
       }
       const txid = (await broadcast(signed)) ?? "";
-      setMsg({ kind: "ok", text: `Paid ${item.sats.toLocaleString()} sats for ${item.name}. Your receipt is in your wallet.`, txid, secs: (performance.now() - t0) / 1000, fee: feeOf(relaySafe(plan.wc)) });
+      setMsg({ kind: "ok", text: `Paid ${item.sats.toLocaleString()} sats for ${item.name}. Your receipt is in your wallet.`, txid, secs: (performance.now() - t0) / 1000, fee: feeOf(relaySafe(plan.wc)), amount: item.sats, orderId });
       setTimeout(() => { scanWallet(as); refreshLedger(); }, 1200);
     } catch (e) {
       setMsg({ kind: "err", text: String((e as Error).message ?? e) });
@@ -198,7 +200,7 @@ export default function App() {
       }
       const txid = (await broadcast(signed)) ?? "";
       const amt = BigInt(j.amount).toLocaleString();
-      setMsg({ kind: "ok", text: partAmount ? `Refunded ${amt} sats. A new receipt for the rest is in your wallet.` : `Refunded ${amt} sats. The receipt is burned.`, txid, secs: (performance.now() - t0) / 1000, fee: feeOf(j.wc), refund: true });
+      setMsg({ kind: "ok", text: partAmount ? `Refunded ${amt} sats. A new receipt for the rest is in your wallet.` : `Refunded ${amt} sats. The receipt is burned.`, txid, secs: (performance.now() - t0) / 1000, fee: feeOf(j.wc), refund: true, amount: BigInt(j.amount), orderId: r.orderId, part: !!partAmount });
       setTimeout(() => { scanWallet(); refreshLedger(); }, 1200);
     } catch (e) {
       setMsg({ kind: "err", text: String((e as Error).message ?? e) });
@@ -261,16 +263,16 @@ export default function App() {
   useEffect(() => {
     if (!pv) return;
     const sample: HeldReceipt[] = [
-      { txid: SAMPLE_TX, vout: 2, amount: 15_000n, orderId: 17636412001n, address: "", path: "receive", index: 0 },
-      { txid: SAMPLE_TX.split("").reverse().join(""), vout: 2, amount: 10_000n, orderId: 17636411002n, address: "", path: "receive", index: 0 },
+      { txid: SAMPLE_TX, vout: 2, amount: 15_000n, orderId: 17636412002n, address: "", path: "receive", index: 0 },
+      { txid: SAMPLE_TX.split("").reverse().join(""), vout: 2, amount: 10_000n, orderId: 17636411001n, address: "", path: "receive", index: 0 },
     ];
     if (pv === "connected" || pv === "paid" || pv === "refunding" || pv === "paying" || pv === "network-cheats") setReceipts(sample);
     if (pv === "refunded") setReceipts(sample.slice(1));
     if (pv === "paying") setBusy("buy-1");
     if (pv === "refunding") setBusy(`refund-${SAMPLE_TX}`);
     if (pv === "demo-funding") setBusy("faucet");
-    if (pv === "paid") setMsg({ kind: "ok", text: "Paid 15,000 sats for Teh tarik. Your receipt is in your wallet.", txid: SAMPLE_TX, secs: 1.6, fee: 523n });
-    if (pv === "refunded") setMsg({ kind: "ok", text: "Refunded 15,000 sats. The receipt is burned.", txid: SAMPLE_TX, secs: 1.3, fee: 611n, refund: true });
+    if (pv === "paid") setMsg({ kind: "ok", text: "Paid 15,000 sats for Teh tarik. Your receipt is in your wallet.", txid: SAMPLE_TX, secs: 1.6, fee: 523n, amount: 15_000n, orderId: 17636412002n });
+    if (pv === "refunded") setMsg({ kind: "ok", text: "Refunded 15,000 sats. The receipt is burned.", txid: SAMPLE_TX, secs: 1.3, fee: 611n, refund: true, amount: 15_000n, orderId: 17636412002n });
     if (pv === "error") setMsg({ kind: "err", text: "Not enough BCH in the connected wallet: need about 18,000 sats, have 4,200" });
     if (pv === "network-cheats") setCheats([
       { id: "underpay", what: "Pay 9,999 sats and keep a receipt that says 10,000", outcome: "refused", reply: "mandatory-script-verify-flag-failed (Script failed an OP_NUMEQUALVERIFY operation)" },
@@ -309,181 +311,293 @@ export default function App() {
   const nAttacks = rn.cases.filter((c) => c.kind === "attack").length;
   const broke = fz.counts["agree-refused"] + fz.counts.hole;
 
-  return (
-    <div className="page">
-      {pv && <div className="preview-flag">Illustration: preview of the "{pv}" state with sample data, not real transactions.</div>}
-      <div className="banner" role="note">
-        <span><b>BCH BLAZE 2026</b> entry.</span>
-        {SLIDES_URL ? <a href={SLIDES_URL}>Slides</a> : <span className="muted">Slides: coming soon</span>}
-        <a href={REPO_URL}>Source code</a>
-        <span>EMBER2026 votes: {EMBER_ADDRESS ? <code>{EMBER_ADDRESS}</code> : <span className="muted">address coming soon</span>}</span>
-      </div>
+  // The printed receipt beside the menu: the result of a purchase or refund, else the newest
+  // receipt in the wallet, else the shop's latest sale read from the chain.
+  const itemOf = (o?: bigint) => (o === undefined ? undefined : MENU.find((m) => m.id === o % 10n));
+  const latestSale = ledger?.find((r) => r.kind === "sale");
+  type SlipMode = "paid" | "held" | "refunded" | "latest" | "loading" | "empty";
+  let slip: { mode: SlipMode; amount?: bigint; orderId?: bigint; txid?: string; held?: HeldReceipt; part?: boolean };
+  if (msg?.kind === "ok" && msg.refund) slip = { mode: "refunded", amount: msg.amount, orderId: msg.orderId, txid: msg.txid, part: msg.part };
+  else if (msg?.kind === "ok") slip = { mode: "paid", amount: msg.amount, orderId: msg.orderId, txid: msg.txid, held: receipts.find((r) => r.txid === msg.txid) };
+  else if (viewState === "connected" && receipts.length) slip = { mode: "held", amount: receipts[0].amount, orderId: receipts[0].orderId, txid: receipts[0].txid, held: receipts[0] };
+  else if (latestSale) slip = { mode: "latest", amount: latestSale.amount, orderId: latestSale.orderId, txid: latestSale.txid };
+  else slip = { mode: ledger || ledgerErr || !shop ? "empty" : "loading" };
+  const slipItem = itemOf(slip.orderId);
+  const canRefund = (h?: HeldReceipt) => !!h && viewState === "connected";
+  const [replay, setReplay] = useState(0);
+  useEffect(() => { (window as unknown as { design?: { onReplay?: (f: () => void) => void } }).design?.onReplay?.(() => setReplay((n) => n + 1)); }, []);
+  const slipKey = `${slip.mode}-${slip.txid ?? ""}-${replay}`;
+  useEffect(() => {
+    if (!msg || pv) return;
+    document.querySelector(".slip")?.scrollIntoView({ block: "nearest", behavior: "smooth" });
+  }, [msg, pv]);
+  const netLabel = NET === "chipnet" ? "chipnet (test network)" : "mainnet";
+  const refundButtons = (h: HeldReceipt) => (
+    <>
+      <button className="tb-btn" disabled={!!busy} onClick={() => refund(h)}>{busy === `refund-${h.txid}` ? (viewMode === "demo" ? "Refunding…" : "Waiting for your wallet…") : "Refund"}</button>
+      {h.amount >= 1092n && <button className="tb-btn tb-btn--ghost" disabled={!!busy} onClick={() => refund(h, h.amount / 2n)}>Refund half</button>}
+    </>
+  );
 
-      <header>
-        <h1>Takeback</h1>
-        <p className="tagline">Pay with Bitcoin Cash, get a receipt that refunds.</p>
-        <p>Every purchase puts a receipt token in your wallet in the same transaction. The shop can refund exactly what's on the receipt, to whoever holds it, once. The contract refuses anything else.</p>
+  return (
+    <div className="tb">
+      <div className="tb-binder" aria-hidden="true"><i /><i /></div>
+      {pv && <div className="tb-preview">Illustration: preview of the "{pv}" state with sample data, not real transactions.</div>}
+      <header className="tb-top" role="note" aria-label="BCH BLAZE 2026 entry">
+        <div className="tb-top__inner">
+          <a className="tb-brand" href={`/?net=${NET}`}><span className="tb-brand__mark" aria-hidden="true" />Takeback</a>
+          <span className="tb-top__event">BCH BLAZE 2026 entry</span>
+          <nav className="tb-top__links" aria-label="Entry links">
+            <a href={REPO_URL}>Source code</a>
+            <a className="tb-top__sec" href="#books">The books</a>
+            <a className="tb-top__sec" href="#proof">The proof</a>
+          </nav>
+          <span className="tb-top__ember">EMBER2026 votes: {EMBER_ADDRESS ? <code>{EMBER_ADDRESS}</code> : <span className="tb-muted">address coming soon</span>}</span>
+          {SLIDES_URL ? <a className="tb-top__slides" href={SLIDES_URL}>Slides</a> : <span className="tb-muted">Slides: coming soon</span>}
+        </div>
       </header>
 
-      {!shop && <p className="notice">The {NET} demo shop isn't set up yet.</p>}
-
-      <section>
-        <h2>{shop?.name ?? "Kopi Blaze"} <span className="muted">demo shop on {NET === "chipnet" ? "chipnet (test network)" : "mainnet"}</span></h2>
-        {viewState !== "connected" ? (
-          <div className="connect">
-            <button onClick={startDemo} disabled={!!busy}>Try it now, no wallet needed</button>
-            <span className="muted">Uses the test network: a demo wallet is made in this browser and gets free test coins.</span>
-            <button className="secondary" onClick={() => wc.connect()}>Connect wallet{NET === "mainnet" ? " (real BCH)" : ""}</button>
-            <span className="muted">Scan with Paytaca or Selene (WizardConnect).</span>
-          </div>
-        ) : viewMode === "demo" ? (
-          <p className="muted">
-            {busy === "faucet" ? "Making a demo wallet and getting test coins…" : <>Demo wallet <code>{burner ? shortTx(burner.address.replace("bchtest:", "")) : "bchtest:…"}</code> · {pv ? "25,000" : coins.reduce((s, c) => s + c.utxo.satoshis, 0n).toLocaleString()} test sats · test coins have no value</>}
-          </p>
-        ) : (
-          <p className="muted">Connected: {pv ? "Paytaca" : wc.walletName ?? "wallet"} · {pv ? 3 : coins.length} coins · <button className="link" onClick={() => wc.disconnect()}>Disconnect</button></p>
-        )}
-        <ul className="menu">
-          {MENU.map((m) => (
-            <li key={String(m.id)}>
-              <div><b>{m.name}</b> <span className="muted">{m.note}</span></div>
-              <div>{m.sats.toLocaleString()} sats <span className="muted">{NET === "mainnet" ? fmtUsd(m.sats, usd) : "test coins"}</span></div>
-              <button disabled={!!busy || (!pv && viewState === "connected" && !scanned) || (!pv && !shop)} onClick={() => buyFirst(m)}>{busy === `buy-${m.id}` ? (viewMode === "demo" ? "Paying…" : "Waiting for your wallet…") : busy === "faucet" ? "Getting test coins…" : !pv && viewState === "connected" && !scanned ? "Reading your wallet…" : "Buy"}</button>
-            </li>
-          ))}
-        </ul>
-        {msg && (
-          <div className={msg.kind === "ok" ? "ok" : "err"} role="status">
-            <p>{msg.text} {msg.txid && <a href={txLink(NET, msg.txid)} target="_blank" rel="noreferrer">View transaction {shortTx(msg.txid)}</a>}</p>
-            {msg.secs !== undefined && (
-              <p className="small">
-                The network accepted it {msg.secs.toFixed(1)} s after you pressed {msg.refund ? "Refund" : "Buy"}{viewMode === "wc" ? " (including your approval in the wallet)" : ""}. Network fee: {msg.fee?.toLocaleString()} sats.
-                {msg.refund && <> A card refund reaches the customer about 5 to 10 business days later (<a href={STRIPE_REFUNDS} target="_blank" rel="noreferrer">Stripe's refund docs</a>).</>}
+      <main className="tb-main">
+        <section className="tb-hero">
+          <div className="tb-hero__head"><h1>Pay with Bitcoin Cash, get a receipt that refunds.</h1></div>
+          <div className="tb-hero__side">
+            <p className="tb-hero__deck">Every purchase puts a receipt token in your wallet in the same transaction. The shop can refund exactly what's on the receipt, to whoever holds it, once. The contract refuses anything else.</p>
+            {viewState !== "connected" ? (
+              <>
+                <div className="tb-hero__actions">
+                  <button className="tb-btn tb-btn--lg" onClick={startDemo} disabled={!!busy}>Try it now, no wallet needed</button>
+                  <button className="tb-btn tb-btn--lg tb-btn--ghost" onClick={() => wc.connect()}>Connect wallet{NET === "mainnet" ? " (real BCH)" : ""}</button>
+                </div>
+                <p className="tb-hero__hint"><span>Uses the test network: a demo wallet is made in this browser and gets free test coins.</span> <span>Scan with Paytaca or Selene (WizardConnect).</span></p>
+              </>
+            ) : viewMode === "demo" ? (
+              <p className="tb-wallet">
+                {busy === "faucet" ? "Making a demo wallet and getting test coins…" : <>Demo wallet <code>{burner ? shortTx(burner.address.replace("bchtest:", "")) : "bchtest:…"}</code> · {pv ? "25,000" : coins.reduce((s, c) => s + c.utxo.satoshis, 0n).toLocaleString()} test sats · test coins have no value</>}
               </p>
+            ) : (
+              <p className="tb-wallet">Connected: {pv ? "Paytaca" : wc.walletName ?? "wallet"} · {pv ? 3 : coins.length} coins · <button className="tb-link" onClick={() => wc.disconnect()}>Disconnect</button></p>
             )}
           </div>
-        )}
-      </section>
-
-      {viewState === "connected" && (
-        <section>
-          <h2>Your receipts</h2>
-          {receipts.length === 0 ? <p className="muted">No receipts from this shop in this wallet yet. Buy something above.</p> : (
-            <ul className="receipts">
-              {receipts.map((r) => (
-                <li key={`${r.txid}:${r.vout}`}>
-                  <div><b>{r.amount.toLocaleString()} sats</b> <span className="muted">order {String(r.orderId).slice(-6)}</span></div>
-                  <a href={txLink(NET, r.txid)} target="_blank" rel="noreferrer">{shortTx(r.txid)}</a>
-                  <span className="actions">
-                    <button disabled={!!busy} onClick={() => refund(r)}>{busy === `refund-${r.txid}` ? (viewMode === "demo" ? "Refunding…" : "Waiting for your wallet…") : "Refund"}</button>
-                    {r.amount >= 1092n && <button className="secondary" disabled={!!busy} onClick={() => refund(r, r.amount / 2n)}>Refund half</button>}
-                  </span>
-                </li>
-              ))}
-            </ul>
-          )}
         </section>
-      )}
 
-      {viewMode === "demo" && (
-        <section>
-          <h2>Try to cheat the real network</h2>
-          <p>Your demo wallet signs five cheating purchases and sends them to a real chipnet node. If a node accepted one, your wallet would pay for it. Each comes back with the node's own answer.</p>
-          <button onClick={cheatTheNetwork} disabled={!!busy || (!pv && !scanned)}>{busy === "cheats" ? "Sending cheats to chipnet…" : "Send 5 cheats to chipnet"}</button>
-          {cheats && (
-            <>
-              <p className={cheats.every((c) => c.outcome === "refused") ? "ok" : "err"}><b>{cheats.filter((c) => c.outcome === "refused").length} of {cheats.length} refused by the network.</b></p>
-              <table>
-                <thead><tr><th>What the cheat tries</th><th>Node's answer</th></tr></thead>
-                <tbody>{cheats.map((c) => <tr key={c.id}><td>{c.what}</td><td className={c.outcome === "refused" ? "ok" : "err"}><code>{c.reply}</code></td></tr>)}</tbody>
-              </table>
-            </>
-          )}
+        {!shop && <p className="tb-notice">The {NET} demo shop isn't set up yet.</p>}
+
+        <section className="tb-stage" aria-label="Demo shop">
+          <div className="tb-window">
+            <div className="tb-window__body">
+              <aside className="tb-side" aria-hidden="true">
+                <b className="tb-side__shop">{shop?.name ?? "Kopi Blaze"}</b>
+                <span className="tb-side__item is-on">Menu</span>
+                <span className="tb-side__item">Receipts</span>
+                <span className="tb-side__item">Books</span>
+                <span className="tb-side__label">Paid in</span>
+                <span className="tb-side__item">BCH on {NET}</span>
+              </aside>
+              <div className="tb-shop">
+                <h2 className="tb-shop__title">{shop?.name ?? "Kopi Blaze"} <span className="tb-muted">demo shop on {netLabel}</span></h2>
+                <ul className="menu">
+                  {MENU.map((m) => (
+                    <li key={String(m.id)} className="menu__item">
+                      <div className="menu__name"><b>{m.name}</b> <span className="tb-muted">{m.note}</span></div>
+                      <div className="menu__price"><span className="tb-num">{m.sats.toLocaleString()} sats</span> <span className="tb-muted">{NET === "mainnet" ? fmtUsd(m.sats, usd) : "test coins"}</span></div>
+                      <button className="tb-btn" disabled={!!busy || (!pv && viewState === "connected" && !scanned) || (!pv && !shop)} onClick={() => buyFirst(m)}>{busy === `buy-${m.id}` ? (viewMode === "demo" ? "Paying…" : "Waiting for your wallet…") : busy === "faucet" ? "Getting test coins…" : !pv && viewState === "connected" && !scanned ? "Reading your wallet…" : "Buy"}</button>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+              <div className="tb-slipcol">
+                <article key={slipKey} className={`slip slip--${slip.mode}`} aria-label="Receipt">
+                  <div className="slip__paper">
+                    <div className="slip__head"><b>{(shop?.name ?? "Kopi Blaze").toUpperCase()}</b><span>demo shop · {NET}</span></div>
+                    <p className="slip__kicker">{slip.mode === "latest" ? "Latest sale on the shop's books, read from the chain" : slip.mode === "refunded" ? "Refund" : slip.mode === "loading" ? "Reading the shop's books…" : slip.mode === "empty" ? (ledger ? "No sales on the shop's books yet. Buy something and your receipt prints here." : "Couldn't read the shop's books from the chain. Buy something and your receipt prints here.") : "Your receipt"}</p>
+                    {slip.mode !== "loading" && slip.mode !== "empty" && (
+                      <>
+                        <dl className="slip__rows">
+                          <div><dt>{slipItem?.name ?? "Purchase"}</dt><dd className="tb-num">{slip.amount?.toLocaleString()} sats</dd></div>
+                          {slip.orderId !== undefined && <div><dt>Order</dt><dd className="tb-num">{String(slip.orderId).slice(-6)}</dd></div>}
+                          <div><dt>Receipt token</dt><dd>{slip.mode === "refunded" ? "burned" : slip.mode === "latest" ? "in the buyer's wallet" : "in your wallet"}</dd></div>
+                        </dl>
+                        <div className="slip__total"><span>{slip.mode === "refunded" ? "Refunded" : "Refundable"}</span><span className="tb-num">{slip.amount?.toLocaleString()} sats</span></div>
+                        {slip.txid && <a className="slip__tx" href={txLink(NET, slip.txid)} target="_blank" rel="noreferrer">Transaction {shortTx(slip.txid)}</a>}
+                      </>
+                    )}
+                    {slip.mode === "refunded" && <span className="slip__stamp" aria-hidden="true">Refunded</span>}
+                  </div>
+                  {slip.held && canRefund(slip.held) && slip.mode !== "refunded" && <div className="slip__actions">{refundButtons(slip.held)}</div>}
+                  {slip.mode === "paid" && !slip.held && viewState === "connected" && <p className="slip__note">Reading your wallet…</p>}
+                </article>
+                {msg && (
+                  <div className={`tb-msg ${msg.kind === "ok" ? "tb-ok" : "tb-err"}`} role="status">
+                    <p>{msg.text} {msg.txid && <a href={txLink(NET, msg.txid)} target="_blank" rel="noreferrer">View transaction {shortTx(msg.txid)}</a>}</p>
+                    {msg.secs !== undefined && (
+                      <p className="tb-small">
+                        The network accepted it {msg.secs.toFixed(1)} s after you pressed {msg.refund ? "Refund" : "Buy"}{viewMode === "wc" ? " (including your approval in the wallet)" : ""}. Network fee: {msg.fee?.toLocaleString()} sats.
+                        {msg.refund && <> A card refund reaches the customer about 5 to 10 business days later (<a href={STRIPE_REFUNDS} target="_blank" rel="noreferrer">Stripe's refund docs</a>).</>}
+                      </p>
+                    )}
+                  </div>
+                )}
+              </div>
+            </div>
+          </div>
         </section>
-      )}
 
-      <section>
-        <h2>The shop's books, read from the chain</h2>
-        {ledgerErr && <p className="err">Couldn't read the chain: {ledgerErr}</p>}
-        {!shop && <p className="muted">The shop opens once its minter contract is on chain.</p>}
-        {shop && !ledger && !ledgerErr && <p className="muted">Reading the minter's history…</p>}
-        {totals && (
-          <p>{totals.sales} {totals.sales === 1 ? "sale" : "sales"} ({totals.salesSats.toLocaleString()} sats) · {totals.refunds} {totals.refunds === 1 ? "refund" : "refunds"} ({totals.refundSats.toLocaleString()} sats) · net {totals.netSats.toLocaleString()} sats in the latest {ledger?.length ?? 0} transactions{NET === "chipnet" ? " · all test transactions from our wallets and visitors' demo wallets" : ""}
-            {!pv && <span className="muted small"> · {ledgerBy === "browser" ? "read from the chain by this page" : "read from the chain by our server; rereading it in your browser…"}</span>}</p>
+        {viewState === "connected" && (
+          <section className="tb-sec tb-receipts" id="receipts">
+            <div className="tb-sec__head"><h2>Your receipts</h2></div>
+            {receipts.length === 0 ? <p className="tb-muted">No receipts from this shop in this wallet yet. Buy something above.</p> : (
+              <ul className="receipts">
+                {receipts.map((r) => (
+                  <li key={`${r.txid}:${r.vout}`}>
+                    <div className="receipts__what"><b className="tb-num">{r.amount.toLocaleString()} sats</b> <span className="tb-muted">{itemOf(r.orderId)?.name ?? "order"} · order {String(r.orderId).slice(-6)}</span></div>
+                    <a href={txLink(NET, r.txid)} target="_blank" rel="noreferrer">{shortTx(r.txid)}</a>
+                    <span className="receipts__actions">{refundButtons(r)}</span>
+                  </li>
+                ))}
+              </ul>
+            )}
+          </section>
         )}
-        {ledger && ledger.length > 0 && (
-          <table>
-            <thead><tr><th>What</th><th>Amount</th><th>Transaction</th></tr></thead>
-            <tbody>
-              {ledger.filter((r) => r.kind !== "other").slice(0, 12).map((r) => (
-                <tr key={r.txid}><td>{r.kind}</td><td>{r.amount ? `${r.amount.toLocaleString()} sats` : ""}</td><td><a href={txLink(NET, r.txid)} target="_blank" rel="noreferrer">{shortTx(r.txid)}</a></td></tr>
-              ))}
-            </tbody>
-          </table>
+
+        {viewMode === "demo" && (
+          <section className="tb-sec tb-cheats" id="cheats">
+            <div className="tb-sec__head">
+              
+              <h2>Try to cheat the real network</h2>
+              <p>Your demo wallet signs five cheating purchases and sends them to a real chipnet node. If a node accepted one, your wallet would pay for it. Each comes back with the node's own answer.</p>
+              <button className="tb-btn" onClick={cheatTheNetwork} disabled={!!busy || (!pv && !scanned)}>{busy === "cheats" ? "Sending cheats to chipnet…" : "Send 5 cheats to chipnet"}</button>
+            </div>
+            {cheats && (
+              <div className="tb-out">
+                <p className={cheats.every((c) => c.outcome === "refused") ? "tb-ok" : "tb-err"}><b>{cheats.filter((c) => c.outcome === "refused").length} of {cheats.length} refused by the network.</b></p>
+                <div className="tb-table-wrap"><table className="tb-table">
+                  <thead><tr><th>What the cheat tries</th><th>Node's answer</th></tr></thead>
+                  <tbody>{cheats.map((c) => <tr key={c.id}><td>{c.what}</td><td className={c.outcome === "refused" ? "tb-ok" : "tb-err"}><code>{c.reply}</code></td></tr>)}</tbody>
+                </table></div>
+              </div>
+            )}
+          </section>
         )}
-        {shop && <p className="muted small">Minter contract: <code>{shop.minterAddress}</code> · receipt category <code>{shop.category.slice(0, 12)}…</code></p>}
-        {shop && <p className="small">Check the receipt token on an independent explorer: <a href={`https://tokenexplorer.cash/?tokenId=${shop.category}&network=${NET}`} target="_blank" rel="noreferrer">tokenexplorer.cash</a> shows its name, icon and receipt fields, and checks the metadata against its hash on chain.</p>}
-      </section>
 
-      <section>
-        <h2>Try to cheat the contract</h2>
-        <p>Four ways we tried to break it. Each reruns from the repo with one command.</p>
-
-        <h3>1. {nAttacks} attacks we wrote down before running them</h3>
-        <p>Over-refunds, second refunds, refunds to someone else, underpaid purchases that still get a receipt, stolen minting tokens, a stolen server key. Your browser runs each one against the real contract on a local copy of the BCH virtual machine.</p>
-        <button onClick={runBreakTest} disabled={breaking}>{breaking ? "Running the cases…" : "Run the attacks"}</button>
-        {breakResults && (() => {
-          const attacks = breakResults.filter((r) => r.kind === "attack");
-          const rejected = attacks.filter((r) => r.outcome === "rejected").length;
-          const valid = breakResults.filter((r) => r.kind === "valid" && r.outcome !== "not-applicable");
-          return (
-            <>
-              <p className={rejected === attacks.length ? "ok" : "err"}><b>{rejected} of {attacks.length} attacks refused by the contract.</b> {valid.filter((r) => r.ok).length} of {valid.length} honest purchases and refunds went through.</p>
-              <table>
-                <thead><tr><th>Case</th><th>What it tries</th><th>Result</th><th>The rule that stopped it</th></tr></thead>
+        <section className="tb-sec tb-books" id="books">
+          <div className="tb-sec__head">
+            
+            <h2>The shop's books, read from the chain</h2>
+            {ledgerErr && <p className="tb-err">Couldn't read the chain: {ledgerErr}</p>}
+            {!shop && <p className="tb-muted">The shop opens once its minter contract is on chain.</p>}
+            {shop && !ledger && !ledgerErr && <p className="tb-muted">Reading the minter's history…</p>}
+            {totals && (
+              <p>{totals.sales} {totals.sales === 1 ? "sale" : "sales"} ({totals.salesSats.toLocaleString()} sats) · {totals.refunds} {totals.refunds === 1 ? "refund" : "refunds"} ({totals.refundSats.toLocaleString()} sats) · net {totals.netSats.toLocaleString()} sats in the latest {ledger?.length ?? 0} transactions{NET === "chipnet" ? " · all test transactions from our wallets and visitors' demo wallets" : ""}
+                {!pv && <span className="tb-muted tb-small"> · {ledgerBy === "browser" ? "read from the chain by this page" : "read from the chain by our server; rereading it in your browser…"}</span>}</p>
+            )}
+          </div>
+          <div className="tb-out">
+            {totals && (
+              <dl className="tb-totals">
+                <div><dt>Sales</dt><dd className="tb-num">{totals.salesSats.toLocaleString()} <small>sats</small></dd></div>
+                <div><dt>Refunds</dt><dd className="tb-num">{totals.refundSats.toLocaleString()} <small>sats</small></dd></div>
+                <div><dt>Net</dt><dd className="tb-num">{totals.netSats.toLocaleString()} <small>sats</small></dd></div>
+              </dl>
+            )}
+            {ledger && ledger.length > 0 && (
+              <div className="tb-table-wrap"><table className="tb-table">
+                <thead><tr><th>What</th><th className="tb-r">Amount</th><th>Transaction</th></tr></thead>
                 <tbody>
-                  {breakResults.map((r) => (
-                    <tr key={r.id}><td>{r.id}</td><td>{r.what}</td><td className={r.ok ? "ok" : "err"}>{r.outcome}</td><td><code>{r.outcome === "rejected" ? lineText(r.detail) : ""}</code></td></tr>
+                  {ledger.filter((r) => r.kind !== "other").slice(0, 12).map((r) => (
+                    <tr key={r.txid}><td>{r.kind}</td><td className="tb-r tb-num">{r.amount ? `${r.amount.toLocaleString()} sats` : ""}</td><td><a href={txLink(NET, r.txid)} target="_blank" rel="noreferrer">{shortTx(r.txid)}</a></td></tr>
                   ))}
                 </tbody>
-              </table>
-            </>
-          );
-        })()}
+              </table></div>
+            )}
+            {shop && <p className="tb-muted tb-small">Minter contract: <code>{shop.minterAddress}</code> · receipt category <code>{shop.category.slice(0, 12)}…</code></p>}
+            {shop && <p className="tb-small">Check the receipt token on an independent explorer: <a href={`https://tokenexplorer.cash/?tokenId=${shop.category}&network=${NET}`} target="_blank" rel="noreferrer">tokenexplorer.cash</a> shows its name, icon and receipt fields, and checks the metadata against its hash on chain.</p>}
+          </div>
+        </section>
 
-        <h3>2. The same attacks, sent to real nodes</h3>
-        <p><b>{rn.refused} of {rn.built} refused by two independent chipnet servers</b> ({rn.byContract} by the contract, {rn.byConsensus} by the network's own token rules). Each was built from the shop's real coins and signed with real keys, including the shop's server key, as if it had been stolen. {rn.validAccepted} of {rn.validRun} honest purchases and refunds went through in the same run.</p>
-        <button className="secondary" onClick={() => setShowReal(!showReal)}>{showReal ? "Hide" : "Show"} every node reply</button>
-        {showReal && (
-          <table>
-            <thead><tr><th>Case</th><th>What it tries</th><th>Node's answer</th></tr></thead>
-            <tbody>{rn.cases.map((c) => (
-              <tr key={c.id}><td>{c.id}</td><td>{c.what}</td><td className={c.kind === "valid" ? (c.outcome === "accepted" ? "ok" : "err") : c.outcome === "refused" ? "ok" : "err"}>{c.kind === "valid" ? <a href={txLink("chipnet", c.txid ?? "")} target="_blank" rel="noreferrer">accepted {shortTx(c.txid ?? "")}</a> : <code>{c.reply}</code>}</td></tr>
-            ))}</tbody>
-          </table>
-        )}
+        <section className="tb-sec tb-proof" id="proof">
+          <div className="tb-sec__head">
+            
+            <h2>Try to cheat the contract</h2>
+            <p>Four ways we tried to break it. Each reruns from the repo with one command.</p>
+          </div>
+          <ol className="tb-layers">
+            <li className="tb-layer">
+              <div className="tb-layer__text">
+                <h3>1. {nAttacks} attacks we wrote down before running them</h3>
+                <p>Over-refunds, second refunds, refunds to someone else, underpaid purchases that still get a receipt, stolen minting tokens, a stolen server key. Your browser runs each one against the real contract on a local copy of the BCH virtual machine.</p>
+                <button className="tb-btn" onClick={runBreakTest} disabled={breaking}>{breaking ? "Running the cases…" : "Run the attacks"}</button>
+              </div>
+              {breakResults && (() => {
+                const attacks = breakResults.filter((r) => r.kind === "attack");
+                const rejected = attacks.filter((r) => r.outcome === "rejected").length;
+                const valid = breakResults.filter((r) => r.kind === "valid" && r.outcome !== "not-applicable");
+                return (
+                  <div className="tb-layer__out">
+                    <p className={rejected === attacks.length ? "tb-ok" : "tb-err"}><b>{rejected} of {attacks.length} attacks refused by the contract.</b> {valid.filter((r) => r.ok).length} of {valid.length} honest purchases and refunds went through.</p>
+                    <div className="tb-table-wrap"><table className="tb-table">
+                      <thead><tr><th>Case</th><th>What it tries</th><th>Result</th><th>The rule that stopped it</th></tr></thead>
+                      <tbody>
+                        {breakResults.map((r) => (
+                          <tr key={r.id}><td>{r.id}</td><td>{r.what}</td><td className={r.ok ? "tb-ok" : "tb-err"}>{r.outcome}</td><td><code>{r.outcome === "rejected" ? lineText(r.detail) : ""}</code></td></tr>
+                        ))}
+                      </tbody>
+                    </table></div>
+                  </div>
+                );
+              })()}
+            </li>
 
-        <h3>3. {fz.n.toLocaleString()} random transactions, judged twice</h3>
-        <p>A fuzzer bends valid purchases and refunds at random (amounts, recipients, tokens, input order, signers) and asks two judges: the contract on the BCH virtual machine, and a separate model of our written rules. On the counted run, <b>{fz.counts["agree-refused"].toLocaleString()} of {broke.toLocaleString()} rule-breaking transactions were refused</b> and {fz.counts["agree-accepted"].toLocaleString()} of {(fz.counts["agree-accepted"] + fz.counts["too-strict"]).toLocaleString()} allowed ones went through. On the contract's first version it found a gap: {fz.v1Holes} cases where a purchase could rewrite the shop's own minting token. No money was at risk; we fixed it before mainnet.</p>
-        <button onClick={runFuzzNow} disabled={!!fuzz && fuzz.done < fuzz.n}>{fuzz && fuzz.done < fuzz.n ? `Fuzzing… ${fuzz.done.toLocaleString()} of ${fuzz.n.toLocaleString()}` : "Fuzz 2,000 more in your browser"}</button>
-        {fuzz && (
-          <p className={fuzz.s.counts.hole === 0 ? "ok" : "err"}>
-            Seed {fuzz.seed}: {fuzz.done.toLocaleString()} tried · {(fuzz.s.counts["agree-refused"] + fuzz.s.counts.hole).toLocaleString()} broke a rule · {fuzz.s.counts["agree-refused"].toLocaleString()} refused · <b>{fuzz.s.counts.hole} got through</b> · {fuzz.s.counts["too-strict"]} honest ones refused
-          </p>
-        )}
+            <li className="tb-layer">
+              <div className="tb-layer__text">
+                <h3>2. The same attacks, sent to real nodes</h3>
+                <p><b>{rn.refused} of {rn.built} refused by two independent chipnet servers</b> ({rn.byContract} by the contract, {rn.byConsensus} by the network's own token rules). Each was built from the shop's real coins and signed with real keys, including the shop's server key, as if it had been stolen. {rn.validAccepted} of {rn.validRun} honest purchases and refunds went through in the same run.</p>
+                <button className="tb-btn tb-btn--ghost" onClick={() => setShowReal(!showReal)}>{showReal ? "Hide" : "Show"} every node reply</button>
+              </div>
+              {showReal && (
+                <div className="tb-layer__out"><div className="tb-table-wrap"><table className="tb-table">
+                  <thead><tr><th>Case</th><th>What it tries</th><th>Node's answer</th></tr></thead>
+                  <tbody>{rn.cases.map((c) => (
+                    <tr key={c.id}><td>{c.id}</td><td>{c.what}</td><td className={c.kind === "valid" ? (c.outcome === "accepted" ? "tb-ok" : "tb-err") : c.outcome === "refused" ? "tb-ok" : "tb-err"}>{c.kind === "valid" ? <a href={txLink("chipnet", c.txid ?? "")} target="_blank" rel="noreferrer">accepted {shortTx(c.txid ?? "")}</a> : <code>{c.reply}</code>}</td></tr>
+                  ))}</tbody>
+                </table></div></div>
+              )}
+            </li>
 
-        <h3>4. Every check that guards money is needed</h3>
-        <p>We deleted each check in the contract, one at a time, and reran everything. <b>{mu.killed} of {mu.compiled} deletions let an attack through</b>, so a test catches each of those. The other {mu.survivors.length} are checks another rule or the network already covers:</p>
-        <ul className="small">
-          {mu.survivors.map((s) => <li key={s.line}><code>{s.check}</code> ({s.fn}): {survivorReason(s.check)}</li>)}
-        </ul>
-      </section>
+            <li className="tb-layer">
+              <div className="tb-layer__text">
+                <h3>3. {fz.n.toLocaleString()} random transactions, judged twice</h3>
+                <p>A fuzzer bends valid purchases and refunds at random (amounts, recipients, tokens, input order, signers) and asks two judges: the contract on the BCH virtual machine, and a separate model of our written rules. On the counted run, <b>{fz.counts["agree-refused"].toLocaleString()} of {broke.toLocaleString()} rule-breaking transactions were refused</b> and {fz.counts["agree-accepted"].toLocaleString()} of {(fz.counts["agree-accepted"] + fz.counts["too-strict"]).toLocaleString()} allowed ones went through. On the contract's first version it found a gap: {fz.v1Holes} cases where a purchase could rewrite the shop's own minting token. No money was at risk; we fixed it before mainnet.</p>
+                <button className="tb-btn" onClick={runFuzzNow} disabled={!!fuzz && fuzz.done < fuzz.n}>{fuzz && fuzz.done < fuzz.n ? `Fuzzing… ${fuzz.done.toLocaleString()} of ${fuzz.n.toLocaleString()}` : "Fuzz 2,000 more in your browser"}</button>
+              </div>
+              {fuzz && (
+                <div className="tb-layer__out">
+                  <p className={fuzz.s.counts.hole === 0 ? "tb-ok" : "tb-err"}>
+                    Seed {fuzz.seed}: {fuzz.done.toLocaleString()} tried · {(fuzz.s.counts["agree-refused"] + fuzz.s.counts.hole).toLocaleString()} broke a rule · {fuzz.s.counts["agree-refused"].toLocaleString()} refused · <b>{fuzz.s.counts.hole} got through</b> · {fuzz.s.counts["too-strict"]} honest ones refused
+                  </p>
+                </div>
+              )}
+            </li>
+
+            <li className="tb-layer">
+              <div className="tb-layer__text">
+                <h3>4. Every check that guards money is needed</h3>
+                <p>We deleted each check in the contract, one at a time, and reran everything. <b>{mu.killed} of {mu.compiled} deletions let an attack through</b>, so a test catches each of those. The other {mu.survivors.length} are checks another rule or the network already covers:</p>
+              </div>
+              <div className="tb-layer__out">
+                <ul className="tb-survivors">
+                  {mu.survivors.map((s) => <li key={s.line}><code>{s.check}</code> ({s.fn}): {survivorReason(s.check)}</li>)}
+                </ul>
+              </div>
+            </li>
+          </ol>
+        </section>
+      </main>
 
       {wc.uri && wc.qrUri && (
         <WizardConnectQRDialog show={wc.state === "connecting" && !pv} onClose={() => wc.disconnect()} uri={wc.uri} qrUri={wc.qrUri} title="Connect your wallet" subtitle="Scan with Paytaca or Selene" />
       )}
-      {pv === "connecting" && <p className="notice">(Preview) The WizardConnect QR dialog opens here; press Connect on the live page to see the real one.</p>}
-      <footer className="muted small">Takeback · built for BCH BLAZE 2026.</footer>
+      {pv === "connecting" && <p className="tb-notice">(Preview) The WizardConnect QR dialog opens here; press Connect on the live page to see the real one.</p>}
+      <footer className="tb-foot"><span>Takeback · built for BCH BLAZE 2026.</span> <a href={REPO_URL}>Source code</a> <a href={SLIDES_URL}>Slides</a></footer>
     </div>
   );
 }

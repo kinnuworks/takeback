@@ -5,43 +5,66 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Takeback · slides</title>
 <link rel="icon" type="image/png" href="/favicon.png">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Hanken+Grotesk:wght@400;500;600;700&family=Courier+Prime:wght@400;700&display=swap">
 <style>
-  :root { --ink: #111; --muted: #5a5a5a; --line: #e2e2e2; --bg: #fff; --accent: #0a6b2d; }
+  /* Layout only; colours, fonts and the decoration come from /design/slides-theme.css,
+     the same tokens as the live page. */
+  :root { --paper: #ffffff; --stage: #ececec; --ink: #111111; --ink-2: #222222; --ink-3: #5a5a5a; --rule: #e2e2e2; --act: #0a6b2d;
+          --font-display: system-ui, sans-serif; --font-body: system-ui, sans-serif; --font-mono: ui-monospace, monospace;
+          --weight-display: 700; --track-display: -0.02em; --display-case: none; --r-slide: 0px; }
   * { box-sizing: border-box; }
-  html, body { margin: 0; background: #ececec; color: var(--ink); font-family: system-ui, -apple-system, "Segoe UI", sans-serif; }
+  html, body { margin: 0; background: var(--stage); color: var(--ink-2); font-family: var(--font-body); }
   .deck { display: grid; gap: 24px; padding: 24px 16px 48px; justify-items: center; }
-  .slide { width: min(100%, 1000px); aspect-ratio: 16 / 9; background: var(--bg); border: 1px solid var(--line); padding: clamp(18px, 4.5vw, 56px); display: flex; flex-direction: column; justify-content: center; position: relative; overflow: hidden; }
-  .slide .n { position: absolute; right: 18px; bottom: 12px; font-size: 12px; color: var(--muted); }
-  .slide .foot { position: absolute; left: 18px; bottom: 12px; font-size: 12px; color: var(--muted); }
-  h1 { font-size: clamp(32px, 7vw, 72px); margin: 0; letter-spacing: -0.02em; }
-  h2 { font-size: clamp(22px, 4vw, 40px); margin: 0 0 clamp(10px, 2vw, 24px); }
+  .slide { width: min(100%, 1000px); aspect-ratio: 16 / 9; background: var(--paper); border: 1px solid var(--rule); border-radius: var(--r-slide); padding: clamp(18px, 4.5vw, 56px); display: flex; flex-direction: column; justify-content: center; position: relative; overflow: hidden; }
+  .slide .n { position: absolute; right: 18px; bottom: 12px; font-size: 13px; color: var(--ink-3); font-family: var(--font-mono); }
+  .slide .foot { position: absolute; left: clamp(18px, 4.5vw, 56px); bottom: 12px; font-size: 13px; color: var(--ink-3); }
+  h1, h2 { font-family: var(--font-display); font-weight: var(--weight-display); letter-spacing: var(--track-display); text-transform: var(--display-case); color: var(--ink); }
+  h1 { font-size: clamp(32px, 7vw, 72px); margin: 0; line-height: 1.05; }
+  h2 { font-size: clamp(22px, 4vw, 40px); margin: 0 0 clamp(10px, 2vw, 24px); line-height: 1.1; }
   p, li { font-size: clamp(13px, 2vw, 21px); line-height: 1.45; margin: 0 0 0.5em; }
   ul { margin: 0; padding-left: 1.1em; }
-  .tag { font-size: clamp(16px, 3vw, 30px); margin: 8px 0 18px; }
-  .muted { color: var(--muted); }
-  .big { font-size: clamp(18px, 3.2vw, 32px); font-weight: 600; }
+  .tag { font-size: clamp(16px, 3vw, 30px); margin: 8px 0 18px; color: var(--ink); }
+  .muted { color: var(--ink-3); }
+  .big { font-size: clamp(18px, 3.2vw, 32px); font-weight: 600; color: var(--ink); }
   .proof { display: grid; grid-template-columns: repeat(3, 1fr); gap: clamp(8px, 1.6vw, 18px); margin-top: clamp(8px, 2vw, 20px); }
-  .proof div { border-top: 3px solid var(--accent); padding-top: 8px; }
-  .proof b { display: block; font-size: clamp(18px, 3.4vw, 36px); }
-  .proof span { font-size: clamp(11px, 1.6vw, 15px); color: var(--muted); }
+  .proof div { border-top: 3px solid var(--act); padding-top: 8px; }
+  .proof b { display: block; font-size: clamp(18px, 3.4vw, 36px); color: var(--ink); font-family: var(--font-display); }
+  .proof span { font-size: clamp(11px, 1.6vw, 15px); color: var(--ink-3); }
   a { color: inherit; }
   @media print {
     html, body { background: #fff; }
     .deck { padding: 0; gap: 0; }
-    .slide { width: 100%; border: 0; page-break-after: always; }
+    .slide { width: 100%; border: 0; border-radius: 0; page-break-after: always; }
     @page { size: 1280px 720px; margin: 0; }
   }
 </style>
+<link rel="stylesheet" href="/design/slides-theme.css">
 </head>
 <body>
 <main class="deck">
 
 <section class="slide" id="s1">
-  <h1>Takeback</h1>
-  <p class="tag">Pay with Bitcoin Cash, get a receipt that refunds.</p>
-  <p class="muted">takeback-bch.vercel.app · source on GitHub (github.com/kinnuworks/takeback)</p>
-  <p class="muted">A BCH BLAZE 2026 Mainnet Track entry</p>
-  <span class="n">1 / 6</span>
+  <div class="title-grid">
+    <div>
+      <h1>Takeback</h1>
+      <p class="tag">Pay with Bitcoin Cash, get a receipt that refunds.</p>
+      <p class="muted">takeback-bch.vercel.app · source on GitHub (github.com/kinnuworks/takeback)</p>
+      <p class="muted">A BCH BLAZE 2026 Mainnet Track entry</p>
+    </div>
+    <figure style="margin:0">
+      <div class="slip">
+        <div class="h"><b>KOPI BLAZE</b>demo shop · chipnet</div>
+        <div class="r"><span>Kopi</span><span>10,000 sats</span></div>
+        <div class="r"><span>Order</span><span>702101</span></div>
+        <div class="r"><span>Receipt token</span><span>burned</span></div>
+        <div class="t"><span>Refunded</span><span>10,000 sats</span></div>
+        <div class="x">Paid <a href="https://chipnet.imaginary.cash/tx/56b3de85c95044699493c35642bfebc13a5c24647973cbc6741f92f35a067281">56b3de85…067281</a><br>Refund <a href="https://chipnet.imaginary.cash/tx/4353aae77fe5e0e7474c43c580a7f3dede7b07245b37a0ae6d759262cb079b0c">4353aae7…cb079b0c</a></div>
+        <span class="stamp" aria-hidden="true">Refunded</span>
+      </div>
+      <figcaption class="caption">A real Kopi purchase and its refund on chipnet (test coins), from a wallet we control.</figcaption>
+    </figure>
+  </div>
+  <span class="tick" aria-hidden="true"></span><span class="arc" aria-hidden="true"></span><span class="n">1 / 6</span>
 </section>
 
 <section class="slide" id="s2">
@@ -50,7 +73,7 @@
   <p>Crypto.com's own help page says it "cannot send the refund amount directly back to the payment wallet address".</p>
   <p class="big">So we put the refund inside the payment. You pay, and the same transaction hands you a receipt that can only ever pay back what you paid.</p>
   <span class="foot">Source: help.crypto.com, "How to get a refund"</span>
-  <span class="n">2 / 6</span>
+  <span class="tick" aria-hidden="true"></span><span class="arc" aria-hidden="true"></span><span class="n">2 / 6</span>
 </section>
 
 <section class="slide" id="s3">
@@ -63,7 +86,7 @@
     <li>The shop's books rebuild from the chain alone.</li>
     <li>A refund lands in seconds. A card refund reaches the customer "approximately 5-10 business days later" (Stripe's refund docs).</li>
   </ul>
-  <span class="n">3 / 6</span>
+  <span class="tick" aria-hidden="true"></span><span class="arc" aria-hidden="true"></span><span class="n">3 / 6</span>
 </section>
 
 <section class="slide" id="s4">
@@ -79,7 +102,7 @@
     <div><b>36 of 48</b><span>deleted contract checks caught by a test; the other 12 are covered twice</span></div>
   </div>
   <span class="foot">Our own tests, from wallets we control. No real users yet. Each reruns from the repo.</span>
-  <span class="n">4 / 6</span>
+  <span class="tick" aria-hidden="true"></span><span class="arc" aria-hidden="true"></span><span class="n">4 / 6</span>
 </section>
 
 <section class="slide" id="s5">
@@ -91,14 +114,14 @@
     <li>Payment processors that take BCH offer it to their merchants. CoinGate's checkout takes BCH again since 12 October 2026.</li>
     <li>Revenue: a small fee per receipt, or a licence for processors. (Assumption: no price tested yet.)</li>
   </ul>
-  <span class="n">5 / 6</span>
+  <span class="tick" aria-hidden="true"></span><span class="arc" aria-hidden="true"></span><span class="n">5 / 6</span>
 </section>
 
 <section class="slide" id="s6">
   <h1>Thank you!</h1>
   <p class="tag">Try it with no wallet: takeback-bch.vercel.app/?net=chipnet</p>
   <p class="muted">Press "Try it now", buy a coffee, refund it, then send five cheats to a real node.</p>
-  <span class="n">6 / 6</span>
+  <span class="tick" aria-hidden="true"></span><span class="arc" aria-hidden="true"></span><span class="n">6 / 6</span>
 </section>
 
 </main>

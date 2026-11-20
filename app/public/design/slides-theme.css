@@ -1,0 +1,59 @@
+/* Slides in the live page's look: Operate's system (green binder field, light sheet,
+   green Hanken Grotesk, ruled columns with corner squares, Courier for receipts). */
+:root {
+  --paper: #ebebeb; --ink: #117025; --ink-2: #29211e; --ink-3: #4f5d5b; --rule: #117025; --act: #117025;
+  --font-display: "Hanken Grotesk", system-ui, sans-serif; --font-body: "Hanken Grotesk", system-ui, sans-serif;
+  --font-mono: "Courier Prime", "Courier New", monospace;
+  --weight-display: 600; --track-display: 0; --r-slide: 0px;
+}
+html, body {
+  background-color: #005c00;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='224' height='224'%3E%3Cg stroke='%23338f3d' stroke-width='1.2' fill='none'%3E%3Cpath stroke-dasharray='3 6' d='M14 0V224M42 0V224M70 0V224M98 0V224M126 0V224M154 0V224M182 0V224M210 0V224'/%3E%3Ccircle cx='42' cy='60' r='6'/%3E%3Ccircle cx='154' cy='28' r='4'/%3E%3Ccircle cx='98' cy='150' r='7'/%3E%3Ccircle cx='182' cy='188' r='5'/%3E%3Ccircle cx='14' cy='206' r='3'/%3E%3Ccircle cx='126' cy='96' r='3' fill='%23338f3d'/%3E%3C/g%3E%3C/svg%3E");
+}
+.slide { border: 0; box-shadow: 0 0 0 1px #003d00; padding-left: clamp(36px, 7vw, 88px); }
+/* binder rings down the left edge of every slide */
+.slide::before {
+  content: ""; position: absolute; left: 0; top: 0; bottom: 0; width: clamp(22px, 3.4vw, 38px);
+  background:
+    radial-gradient(circle at 70% 50%, #0d6b1c 0 38%, #003d00 39% 46%, transparent 47%) 0 18% / 100% 9% no-repeat,
+    radial-gradient(circle at 70% 50%, #0d6b1c 0 38%, #003d00 39% 46%, transparent 47%) 0 50% / 100% 9% no-repeat,
+    radial-gradient(circle at 70% 50%, #0d6b1c 0 38%, #003d00 39% 46%, transparent 47%) 0 82% / 100% 9% no-repeat,
+    linear-gradient(90deg, #005c00 0 40%, transparent 40%);
+}
+/* the ruled content column with its corner square */
+.slide > :first-child { position: relative; }
+.slide::after {
+  content: ""; position: absolute; left: clamp(26px, 5vw, 64px); top: clamp(18px, 4vw, 48px); bottom: clamp(18px, 4vw, 48px);
+  border-left: 1px solid var(--rule);
+}
+.slide .tick { position: absolute; left: calc(clamp(26px, 5vw, 64px) - 3px); top: calc(clamp(18px, 4vw, 48px) - 4px); width: 7px; height: 7px; background: var(--rule); }
+.slide .arc { position: absolute; right: clamp(18px, 4vw, 48px); bottom: clamp(18px, 4vw, 48px); width: 26%; height: 46%; border-right: 1px solid var(--rule); border-bottom: 1px solid var(--rule); border-bottom-right-radius: 100% 100%; pointer-events: none; }
+h1, h2 { color: var(--ink); }
+.tag { color: var(--ink); }
+p, li { color: var(--ink-2); }
+.big { color: var(--ink); }
+.muted { color: var(--ink-3); }
+.slide .n { font-family: var(--font-mono); color: var(--ink); }
+.proof div { border-top: 0; background: #fff; padding: 10px 12px 14px; font-family: var(--font-mono);
+  --z: 5px; mask: conic-gradient(from -45deg at bottom, #0000, #000 1deg 89deg, #0000 90deg) 50% / calc(2 * var(--z)) 100%; }
+.proof b { font-family: var(--font-mono); color: var(--ink-2); border-bottom: 1px dashed var(--ink-2); padding-bottom: 4px; margin-bottom: 6px; }
+.proof span { color: var(--ink-2); }
+/* the printed receipt on the title slide */
+.title-grid { display: grid; grid-template-columns: minmax(0, 1.2fr) minmax(0, 1fr); gap: clamp(16px, 4vw, 48px); align-items: center; }
+.slip { background: #fff; color: var(--ink-2); font-family: var(--font-mono); font-size: clamp(9px, 1.5vw, 16px); line-height: 1.45; padding: 1.2em 1.3em 1.8em; position: relative; filter: drop-shadow(0 8px 18px rgb(0 0 0 / 0.16));
+  --z: 6px; mask: conic-gradient(from -45deg at bottom, #0000, #000 1deg 89deg, #0000 90deg) 50% / calc(2 * var(--z)) 100%; }
+.slip .h { text-align: center; padding-bottom: 0.5em; border-bottom: 1px dashed currentColor; margin-bottom: 0.6em; }
+.slip .h b { display: block; letter-spacing: 0.08em; font-size: 1.15em; }
+.slip .r { display: flex; justify-content: space-between; gap: 1em; }
+.slip .t { display: flex; justify-content: space-between; border-top: 1px dashed currentColor; margin-top: 0.6em; padding-top: 0.4em; font-weight: 700; }
+.slip .t span:last-child { text-decoration: line-through; opacity: 0.6; }
+.slip .x { margin-top: 0.6em; font-size: 0.85em; }
+.slip .x a { color: inherit; text-decoration: underline dotted; }
+.slip .stamp { position: absolute; right: 1em; top: 42%; transform: rotate(-12deg); border: 3px double var(--ink); color: var(--ink); padding: 0.15em 0.5em; font-weight: 700; letter-spacing: 0.12em; font-size: 1.3em; text-transform: uppercase; mix-blend-mode: multiply; }
+.caption { font-size: clamp(10px, 1.3vw, 14px); color: var(--ink-3); margin-top: 0.8em; }
+@media print { html, body { background: #fff; } }
+.slide .arc { z-index: 0; }
+.slide > div, .slide > h1, .slide > h2, .slide > p, .slide > ul, .slide figure { position: relative; z-index: 1; }
+#s2 .arc, #s3 .arc, #s4 .arc, #s5 .arc { display: none; }
+.slip .stamp { top: 50%; }
+#s1 .arc { display: none; }
