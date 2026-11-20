@@ -13,7 +13,8 @@ button.link { padding: 0; border: 0; background: none; text-decoration: underlin
 .ok { color: #0a6b2d; }
 .err { color: #a11; }
 .notice { padding: 8px 12px; background: #fff6d6; }
-.connect { display: flex; gap: 12px; align-items: center; flex-wrap: wrap; }
+.connect { display: grid; grid-template-columns: max-content 1fr; gap: 10px 12px; align-items: center; }
+@media (max-width: 520px) { .connect { grid-template-columns: 1fr; } }
 table { width: 100%; border-collapse: collapse; font-size: 14px; }
 th, td { text-align: left; padding: 6px 4px; border-bottom: 1px solid #eee; }
 code { word-break: break-all; }
