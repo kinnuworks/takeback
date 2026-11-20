@@ -1,0 +1,41 @@
+{
+  "$schema": "https://cashtokens.org/bcmr-v2.schema.json",
+  "version": {
+    "major": 1,
+    "minor": 0,
+    "patch": 0
+  },
+  "latestRevision": "2026-11-20T12:28:59.946Z",
+  "registryIdentity": {
+    "name": "Takeback receipts",
+    "description": "Receipts that refund. Each receipt NFT records the amount paid and an order id."
+  },
+  "identities": {
+    "14ff2ee3ec348be271958148665dfa81e9c6bb5dbc828c1f8d237e8529bbe171": {
+      "2026-11-20T12:28:59.947Z": {
+        "name": "Takeback receipt: Kopi Blaze",
+        "description": "A refundable receipt from the Kopi Blaze demo shop. Hold it to get a refund of exactly the amount paid.",
+        "token": {
+          "category": "14ff2ee3ec348be271958148665dfa81e9c6bb5dbc828c1f8d237e8529bbe171",
+          "symbol": "RCPT",
+          "nfts": {
+            "description": "Receipt: amount paid (8 bytes) and order id (8 bytes).",
+            "parse": {
+              "types": {
+                "": {
+                  "name": "Takeback receipt",
+                  "description": "Refundable receipt"
+                }
+              },
+              "bytecode": ""
+            }
+          }
+        },
+        "uris": {
+          "icon": "https://takeback-bch.vercel.app/receipt-icon.png",
+          "web": "https://takeback-bch.vercel.app"
+        }
+      }
+    }
+  }
+}

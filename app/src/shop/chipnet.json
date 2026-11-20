@@ -1,1 +1,16 @@
-{ "network": "chipnet", "notSetUp": true }
+{
+  "network": "chipnet",
+  "name": "Kopi Blaze",
+  "category": "14ff2ee3ec348be271958148665dfa81e9c6bb5dbc828c1f8d237e8529bbe171",
+  "minterAddress": "bchtest:pd2ygpvw3cz967yzjs9tqz8hr6n9fljw26j4gdqeyxs8hugex8ndx6dw0wdt0",
+  "minterTokenAddress": "bchtest:rd2ygpvw3cz967yzjs9tqz8hr6n9fljw26j4gdqeyxs8hugex8ndxg7jwhvjy",
+  "merchantAddress": "bchtest:qzu4vmef4g96v9k08dfgeq8mmsj9m46qsywntvcqjq",
+  "merchantPkh": "b9566f29aa0ba616cf3b528c80fbdc245dd74081",
+  "refundPk": "02ede52e8b2384e4ff3ed8b20f403d310b003cc0f31030a44b0a4aae3b53cc1113",
+  "ownerPk": "028e1a8de7981b7a28895ba6761cb11172a112924907b285711b865dea154eec24",
+  "minters": 3,
+  "floatEach": "100000",
+  "bcmrUrl": "https://takeback-bch.vercel.app/bcmr-chipnet.json",
+  "bcmrHash": "dbe671b7e6c4d33daaf43a84992a279aa7478f9f7e9b3815db1b4af7b22782ad",
+  "genesisTxid": "f910d432f5f666530265e904714497bb500327b0501aa966dc0b3223c91796f8"
+}

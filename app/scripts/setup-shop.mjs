@@ -31,11 +31,30 @@ const lbHex = (a) => binToHex(cashAddressToLockingBytecode(a).bytecode);
 if (network === "mock") provider.addUtxo(merchantAddr, { ...randomUtxo({ satoshis: 500_000n }), vout: 0, lockingBytecode: lbHex(merchantAddr) });
 
 const minter = minterContract(keys, provider);
-const coins = (await provider.getUtxos(merchantAddr)).filter((u) => !u.token).map((u) => ({ ...u, lockingBytecode: lbHex(merchantAddr) }));
-const genesisCoin = coins.find((u) => u.vout === 0 && u.satoshis >= MINTERS * (FLOAT + 1000n) + 5000n);
+const NEED = MINTERS * (FLOAT + 1000n) + 5000n;
+const plainCoins = async () => (await provider.getUtxos(merchantAddr)).filter((u) => !u.token).map((u) => ({ ...u, lockingBytecode: lbHex(merchantAddr) }));
+let coins = await plainCoins();
+let genesisCoin = coins.find((u) => u.vout === 0 && u.satoshis >= NEED);
 if (!genesisCoin) {
-  console.error(`No vout-0 coin of at least ${MINTERS * (FLOAT + 1000n) + 5000n} sats at ${merchantAddr}. Fund it (or self-send to make a vout-0 coin) first.`);
-  process.exit(1);
+  // Faucets and exchanges rarely pay to output 0. With --send, sweep the merchant's own coins into
+  // one output-0 coin at the same address first (a self-send; nothing leaves the merchant wallet).
+  const total = coins.reduce((s, u) => s + u.satoshis, 0n);
+  const SWEEP_FEE = 200n + 150n * BigInt(coins.length);
+  if (!send || total - SWEEP_FEE < NEED) {
+    console.error(`No vout-0 coin of at least ${NEED} sats at ${merchantAddr} (wallet holds ${total} sats in ${coins.length} coins).${total - SWEEP_FEE >= NEED ? " Rerun with --send to self-send one first." : " Fund it first."}`);
+    process.exit(1);
+  }
+  const sweep = new TransactionBuilder({ provider });
+  for (const c of coins) sweep.addInput(c, new SignatureTemplate(priv(0)).unlockP2PKH());
+  sweep.addOutput({ to: merchantAddr, amount: total - SWEEP_FEE });
+  const swept = await sweep.send();
+  console.log("self-send to make an output-0 coin:", swept.txid);
+  for (let i = 0; i < 20 && !genesisCoin; i++) {
+    await new Promise((r) => setTimeout(r, 1500));
+    coins = await plainCoins();
+    genesisCoin = coins.find((u) => u.txid === swept.txid && u.vout === 0);
+  }
+  if (!genesisCoin) { console.error("self-send broadcast but not seen yet; rerun in a minute."); process.exit(1); }
 }
 const category = genesisCoin.txid;
 
@@ -64,7 +83,8 @@ const registry = {
 };
 const registryJson = JSON.stringify(registry, null, 2);
 const registryHash = binToHex(sha256.hash(utf8ToBin(registryJson)));
-const registryUrl = `${SITE.replace(/^https:\/\//, "")}/.well-known/bitcoin-cash-metadata-registry.json`;
+const REGISTRY_PATH = chain === "mainnet" ? ".well-known/bitcoin-cash-metadata-registry.json" : `bcmr-${chain}.json`;
+const registryUrl = `${SITE.replace(/^https:\/\//, "")}/${REGISTRY_PATH}`;
 
 const tb = new TransactionBuilder({ provider }).addInput(genesisCoin, new SignatureTemplate(priv(0)).unlockP2PKH());
 for (let i = 0n; i < MINTERS; i++) {
@@ -91,6 +111,6 @@ shop.genesisTxid = sent.txid;
 mkdirSync("src/shop", { recursive: true });
 writeFileSync(`src/shop/${chain}.json`, JSON.stringify(shop, null, 2) + "\n");
 mkdirSync("public/.well-known", { recursive: true });
-writeFileSync("public/.well-known/bitcoin-cash-metadata-registry.json", registryJson);
+writeFileSync(`public/${REGISTRY_PATH}`, registryJson);
 console.log("genesis broadcast:", sent.txid);
 process.exit(0);
