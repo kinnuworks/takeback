@@ -39,6 +39,9 @@ echo "== app: typecheck and build"
 echo "== demo path: real browser, banner/tagline/menu, Connect -> wallet pairs over the relay (video in app/e2e/videos)"
 (cd app && perl -e 'alarm 150; exec @ARGV' node e2e/demo-path.mjs 2>&1 | grep -E "^(PASS|FAIL|video|DEMO)" ; test "${PIPESTATUS[0]}" -eq 0)
 
+echo "== live no-wallet demo on chipnet: faucet, buy, refund with timing, 5 cheats refused by a node, attacks and fuzz in the browser"
+(cd app && perl -e 'alarm 180; exec @ARGV' node e2e/demo-instant.mjs 2>&1 | grep -E "^(PASS|FAIL|INSTANT)" ; test "${PIPESTATUS[0]}" -eq 0)
+
 echo "== wallet: WizardConnect pairing + signing over the real relay (headless test wallet)"
 (cd tools/wiz-harness && TEST_MNEMONIC="abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon about" perl -e 'alarm 90; exec @ARGV' node e2e-relay.mjs 2>&1 | grep -E "VM verify: PASS" || { echo "relay round trip failed"; exit 1; })
 

@@ -80,7 +80,7 @@ export default function App() {
   useEffect(() => { refreshLedger(); }, [refreshLedger]);
 
   // Reads coins and this shop's receipts from the connected wallet (phone over WizardConnect, or the demo wallet).
-  const scanWallet = useCallback(async () => {
+  const scanWallet = useCallback(async (as: "wc" | "demo" | null = mode) => {
     if (!shop) return;
     const p = providerFor(NET);
     const found: WalletCoin[] = [];
@@ -94,7 +94,7 @@ export default function App() {
         }
       }
     };
-    if (mode === "demo" && burner) await read(burner.address, "receive", 0);
+    if (as === "demo" && burner) await read(burner.address, "receive", 0);
     else if (wc.manager) {
       for (const [child, path, count] of [[0, "receive", 8], [1, "change", 4]] as const) {
         for (let i = 0; i < count; i++) {
@@ -110,7 +110,7 @@ export default function App() {
     if (wc.state === "connected") { setMode("wc"); }
     else if (mode === "wc") { setMode(null); setScanned(false); }
   }, [wc.state]); // eslint-disable-line react-hooks/exhaustive-deps
-  useEffect(() => { if (mode) scanWallet(); }, [mode, scanWallet]);
+  useEffect(() => { if (mode) scanWallet(mode); }, [mode, scanWallet]);
 
   // The instant demo: a test-network wallet made in this browser, topped up by the demo faucet.
   const startDemo = useCallback(async () => {
@@ -124,9 +124,9 @@ export default function App() {
         const r = await fetch("/api/faucet", { method: "POST", headers: { "content-type": "application/json" }, body: JSON.stringify({ address: burner.address }) });
         const j = await r.json();
         if (!r.ok) throw new Error(j.error ?? "The demo faucet didn't answer");
-        for (let i = 0; i < 15 && (await balance()) < DEMO_FUNDS; i++) await sleep(1000);
+        for (let i = 0; i < 15 && (await balance()) < DEMO_FUNDS - 1_500n; i++) await sleep(1000);
       }
-      await scanWallet();
+      await scanWallet("demo");
     } catch (e) {
       setMsg({ kind: "err", text: String((e as Error).message ?? e) });
     } finally { setBusy(null); }
@@ -198,9 +198,12 @@ export default function App() {
       const minter = minterContract(keys, p);
       const ms = (await p.getUtxos(shop.minterAddress)).filter((u) => isMinterUtxo(u) && u.token?.category === shop.category);
       const plain = (await p.getUtxos(burner.address)).filter((u) => !u.token).sort((a, b) => Number(b.satoshis - a.satoshis));
-      if (!ms.length || !plain.length || plain[0].satoshis < 15_000n) throw new Error("The demo wallet needs test coins first: press Try it now");
+      // Use enough of the demo wallet's coins to cover a 10,000-sat purchase, its receipt and the fee.
+      const cs: SpendableUtxo[] = [];
+      for (const u of plain) { if (cs.reduce((t, c) => t + c.satoshis, 0n) >= 16_000n) break; cs.push({ ...u, lockingBytecode: lbHex(burner.address) }); }
+      const have = cs.reduce((t, c) => t + c.satoshis, 0n);
+      if (!ms.length || have < 16_000n) throw new Error(`The demo wallet needs about 16,000 test sats for the cheats (it has ${have.toLocaleString()}): press Try it now`);
       const M: SpendableUtxo = { ...ms[0], lockingBytecode: lbHex(shop.minterAddress) };
-      const coin: SpendableUtxo = { ...plain[0], lockingBytecode: lbHex(burner.address) };
       const sig = new SignatureTemplate(burner.priv);
       const order = BigInt(Date.now());
       const receipt = (amount: bigint, extra = 0n) => ({ to: burner.tokenAddress, amount: 2_500n, token: { category: shop.category, amount: 0n, nft: { capability: "none" as const, commitment: encodeReceipt(amount, order + extra) } } });
@@ -216,10 +219,10 @@ export default function App() {
       const done: Cheat[] = [];
       for (const c of list) {
         const tb = new TransactionBuilder({ provider: p });
-        if (c.minterSecond) tb.addInput(coin, sig.unlockP2PKH()).addInput(M, minter.unlock.pay());
-        else tb.addInput(M, minter.unlock.pay()).addInput(coin, sig.unlockP2PKH());
+        if (c.minterSecond) { tb.addInput(cs[0], sig.unlockP2PKH()).addInput(M, minter.unlock.pay()); for (const x of cs.slice(1)) tb.addInput(x, sig.unlockP2PKH()); }
+        else { tb.addInput(M, minter.unlock.pay()); for (const x of cs) tb.addInput(x, sig.unlockP2PKH()); }
         for (const o of c.outs) tb.addOutput(o as never);
-        const change = M.satoshis + coin.satoshis - c.outs.reduce((s, o) => s + o.amount, 0n) - 2_500n;
+        const change = M.satoshis + have - c.outs.reduce((s, o) => s + o.amount, 0n) - 3_000n;
         if (change >= 546n) tb.addOutput({ to: burner.address, amount: change });
         let outcome: Cheat["outcome"], reply: string;
         try { await p.sendRawTransaction(tb.build()); outcome = "accepted"; reply = "accepted (this would be a hole)"; }
@@ -227,7 +230,7 @@ export default function App() {
         done.push({ id: c.id, what: c.what, outcome, reply });
         setCheats([...done]);
       }
-      setTimeout(() => scanWallet(), 1000);
+      setTimeout(() => scanWallet("demo"), 1000);
     } catch (e) {
       setMsg({ kind: "err", text: String((e as Error).message ?? e) });
     } finally { setBusy(null); }
