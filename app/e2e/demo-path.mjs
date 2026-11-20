@@ -5,16 +5,23 @@
 // With E2E_FULL=1 (needs a funded wallet and the shop set up on the chosen network) it also buys
 // the cheapest item, checks the receipt appears, refunds it and checks the receipt is gone.
 // Usage: node e2e/demo-path.mjs [url]   (default: builds and serves the app locally)
+// Full chipnet run: E2E_FULL=1 E2E_MNEMONIC_ENV=CHIPNET_TEST_MNEMONIC node --env-file=../tools/wiz-harness/.env.local e2e/demo-path.mjs "https://takeback-bch.vercel.app/?net=chipnet"
 import { chromium } from "playwright";
 import { spawn } from "node:child_process";
 import { mkdirSync } from "node:fs";
 import { startTestWallet } from "../../tools/wiz-harness/testwallet.mjs";
 
 const FULL = process.env.E2E_FULL === "1";
-const mnemonic = process.env.E2E_MNEMONIC ?? "abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon about";
+// E2E_MNEMONIC_ENV names the env variable that holds the seed (so it never sits on a command line).
+const mnemonic = (process.env.E2E_MNEMONIC_ENV && process.env[process.env.E2E_MNEMONIC_ENV]) || process.env.E2E_MNEMONIC || "abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon about";
 let server;
 let url = process.argv[2];
-const fail = async (msg) => { console.error("FAIL", msg); await cleanup(); process.exit(1); };
+const fail = async (msg) => {
+  console.error("FAIL", msg);
+  try { const t = await page.innerText("main, body"); console.error("PAGE:", t.replace(/\s+/g, " ").slice(0, 1500)); } catch {}
+  if (errors?.length) console.error("ERRORS:", errors.slice(0, 5).join(" | "));
+  await cleanup(); process.exit(1);
+};
 let browser;
 async function cleanup() { try { await browser?.close(); } catch {} if (server) server.kill(); }
 
@@ -56,12 +63,12 @@ step("page shows the wallet connected over the real relay");
 
 if (FULL) {
   const before = await page.locator(".receipts li").count();
-  await page.locator(".menu li").first().getByRole("button", { name: "Buy" }).click();
+  await page.locator(".menu li").first().getByRole("button", { name: "Buy" }).click({ timeout: 60_000 }).catch((e) => fail("buy button: " + String(e).split("\n")[0]));
   await page.waitForSelector("text=Your receipt is in your wallet", { timeout: 60_000 }).catch(() => fail("purchase didn't complete"));
   step("purchase: wallet signed, page reports the receipt");
   await page.waitForFunction((n) => document.querySelectorAll(".receipts li").length > n, before, { timeout: 60_000 }).catch(() => fail("receipt didn't appear in the wallet list"));
   step("receipt appears under Your receipts");
-  await page.locator(".receipts li").first().getByRole("button", { name: "Refund" }).click();
+  await page.locator(".receipts li").first().getByRole("button", { name: "Refund", exact: true }).click({ timeout: 30_000 }).catch((e) => fail("refund button: " + String(e).split("\n")[0]));
   await page.waitForSelector("text=The receipt is burned", { timeout: 60_000 }).catch(() => fail("refund didn't complete"));
   step("refund: co-signed, wallet signed, receipt burned");
 }
