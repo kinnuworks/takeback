@@ -48,6 +48,9 @@ curl -sf https://takeback-bch.vercel.app/slides.html | grep -q "The story of Tak
 echo "== the demo faucet holds at least 100,000 chipnet test sats (about four new visitors); refill it before it runs dry"
 curl -sf https://takeback-bch.vercel.app/api/faucet | python3 -c "import json,sys; b=int(json.load(sys.stdin)['balance']); print(f'faucet balance {b:,} test sats'); sys.exit(0 if b >= 100000 else 1)"
 
+echo "== the chipnet shop's refund float holds at least 100,000 sats (refunds are paid from it; purchases pay the merchant)"
+(cd app && node scripts/top-up-float.mjs chipnet --check)
+
 echo "== live no-wallet demo on chipnet: faucet, buy, refund with timing, 5 cheats refused by a node, attacks and fuzz in the browser"
 (cd app && perl -e 'alarm 180; exec @ARGV' node e2e/demo-instant.mjs 2>&1 | grep -E "^(PASS|FAIL|INSTANT)" ; test "${PIPESTATUS[0]}" -eq 0)
 
