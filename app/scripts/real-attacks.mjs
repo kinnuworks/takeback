@@ -1,4 +1,4 @@
-// Sends the attack lists (evidence/attacks.json, evidence/attacks-2.json) to real Bitcoin Cash nodes.
+// Sends the attack lists (evidence/attacks.json, attacks-2.json, attacks-3.json) to real Bitcoin Cash nodes.
 // Every attack is built from the shop's real coins and signed with real keys, the shop's hot refund
 // key included (the "stolen server key" case), then broadcast to two independent Electrum servers.
 // The node's own reply and the signed raw transaction are saved, so anyone can rebroadcast them.
@@ -17,7 +17,7 @@ import { minterContract, encodeReceipt, decodeReceipt, isMinterUtxo } from "../s
 
 const network = process.argv[2];
 if (!["chipnet", "mainnet"].includes(network)) { console.error("network: chipnet | mainnet"); process.exit(2); }
-const OUT = new URL(`../../evidence/real-node-${network}.json`, import.meta.url).pathname;
+const OUT = new URL(`../../evidence/real-node-${network}${process.env.REAL_NODE_SUFFIX ?? ""}.json`, import.meta.url).pathname;
 const SERVERS = network === "chipnet" ? ["chipnet.bch.ninja", "chipnet.imaginary.cash"] : ["bch.imaginary.cash", "electrum.imaginary.cash"];
 const providers = SERVERS.map((hostname) => new ElectrumNetworkProvider(network, { hostname }));
 const provider = providers[0];
@@ -51,6 +51,7 @@ function why(replies) {
   if (/script|OP_|verify|signature|NULLFAIL|EQUALVERIFY|mandatory/i.test(r)) return "contract (script failed)";
   if (/token|category|commitment/i.test(r)) return "consensus token rules";
   if (/missing|spent|conflict/i.test(r)) return "inputs no longer available";
+  if (/inputs-duplicate/i.test(r)) return "BUILD ERROR: duplicate input (our script's bug, not a refusal)";
   return "other: " + r.slice(0, 80);
 }
 
@@ -97,8 +98,9 @@ async function freshMinter(min = 40_000n) {
   if (!ms.length) throw new Error("no minter UTXO with enough float");
   return ms.sort((a, b) => Number(b.satoshis - a.satoshis))[0];
 }
-async function buyerCoin(min) {
-  const cs = (await utxos(buyer)).filter((u) => !u.token && u.satoshis >= min).sort((a, b) => Number(b.satoshis - a.satoshis));
+async function buyerCoin(min, exclude = []) {
+  const used = new Set(exclude.map((u) => `${u.txid}:${u.vout}`));
+  const cs = (await utxos(buyer)).filter((u) => !u.token && u.satoshis >= min && !used.has(`${u.txid}:${u.vout}`)).sort((a, b) => Number(b.satoshis - a.satoshis));
   if (!cs.length) throw new Error(`buyer has no plain coin of ${min}+ sats`);
   return cs[0];
 }
@@ -134,7 +136,7 @@ async function run(id, what, kind, buildHex) {
   const reason = why(replies);
   const accepted = replies.some((x) => x.accepted);
   const answered = replies.filter((x) => !x.unreachable).length;
-  const ok = kind === "valid" ? accepted : !accepted && answered > 0;
+  const ok = kind === "valid" ? accepted : !accepted && answered > 0 && !reason.startsWith("BUILD ERROR");
   results.push({ id, what, kind, outcome: accepted ? "accepted" : answered ? "refused" : "no server answered", serversAnswered: answered, reason, ok, txid: txidOf(hex), rawTx: hex, replies, at: new Date().toISOString() });
   console.log(ok ? "PASS" : "FAIL", id, accepted ? "accepted" : "refused", "->", reason, "|", replies[0].reply.slice(0, 110));
   return accepted ? txidOf(hex) : undefined;
@@ -142,7 +144,9 @@ async function run(id, what, kind, buildHex) {
 
 const spec1 = JSON.parse(readFileSync(new URL("../../evidence/attacks.json", import.meta.url), "utf8"));
 const spec2 = JSON.parse(readFileSync(new URL("../../evidence/attacks-2.json", import.meta.url), "utf8"));
-const whatOf = Object.fromEntries([...spec1.valid, ...spec1.attacks, ...spec2.valid, ...spec2.attacks].map((c) => [c.id, c.what]));
+const spec3 = JSON.parse(readFileSync(new URL("../../evidence/attacks-3.json", import.meta.url), "utf8"));
+const spec4 = JSON.parse(readFileSync(new URL("../../evidence/attacks-4.json", import.meta.url), "utf8"));
+const whatOf = Object.fromEntries([...spec1.valid, ...spec1.attacks, ...spec2.valid, ...spec2.attacks, ...spec3.attacks, ...spec4.attacks].map((c) => [c.id, c.what]));
 
 // ---------- setup: the attacker's own token category (a fake shop) ----------
 console.log(`network ${network}; servers ${SERVERS.join(", ")}; shop ${C.slice(0, 8)}…`);
@@ -179,8 +183,14 @@ const v2 = await run("V2", whatOf.V2, "valid", () => purchase(1_000n));
 const R2 = v2 && await seen(v2, 2, buyer);
 const v1 = await run("V1", whatOf.V1, "valid", () => purchase(5_000n));
 const R3 = v1 && await seen(v1, 2, buyer);
-const R1 = (await utxos(buyer)).filter((u) => u.token?.category === C && u.token.nft?.capability === "none" && u.txid !== v1 && u.txid !== v2).sort((a, b) => Number(b.satoshis - a.satoshis))[0];
-if (!R1) throw new Error("no earlier receipt at the buyer to attack with");
+let R1 = (await utxos(buyer)).filter((u) => u.token?.category === C && u.token.nft?.capability === "none" && u.txid !== v1 && u.txid !== v2 && decodeReceipt(u.token.nft.commitment)?.amount === 10_000n)[0];
+if (!R1) {
+  // A fresh shop has no earlier receipt: buy one 10,000-sat receipt to attack with (a real purchase).
+  const hex = await purchase(10_000n);
+  const t = await retry(() => provider.sendRawTransaction(hex));
+  setupTx.push({ what: "setup: a 10,000-sat purchase whose receipt the attacks below try to abuse", txid: t });
+  R1 = await seen(t, 2, buyer);
+}
 const A = decodeReceipt(R1.token.nft.commitment).amount;
 console.log("attacking with receipt", `${R1.txid.slice(0, 8)}:${R1.vout}`, "worth", A.toString());
 
@@ -207,6 +217,8 @@ const P_ATT = {
   A18: set(2, (x) => ({ ...x, token: nft(C, "mutable", commit(P, order)) })),
   A19: (o) => [...o, { to: buyerT, amount: 1000n, token: { category: C, amount: 1000n } }],
 };
+P_ATT.M01 = set(0, (x) => ({ ...x, token: nft(C, "minting", "01") }));
+P_ATT.M04 = set(0, (x) => ({ ...x, token: nft(C, "minting", "ab".repeat(40)) }));
 for (const [id, mod] of Object.entries(P_ATT)) await run(id, whatOf[id], "attack", () => purchase(P, mod));
 // A09: the receipt is minted in a category the attacker controls (spending the attacker's own minting token).
 await run("A09", whatOf.A09, "attack", () => purchase(P, (o) => [...set(2, (x) => ({ ...x, token: nft(X, "none", commit(P, order)) }))(o), { to: buyerT, amount: 1000n, token: nft(X, "minting", "") }], [{ utxo: xMinting, unlock: buyerKey.unlockP2PKH() }]));
@@ -238,6 +250,7 @@ const R_ATT = {
   A33: () => refund({ extra: R2 ? [{ utxo: R2, unlock: buyerKey.unlockP2PKH() }] : [] }),
   A34: () => refund({ extra: R3 ? [{ utxo: R3, unlock: buyerKey.unlockP2PKH() }] : [] }),
 };
+R_ATT.M02 = () => refund({ mod: set(0, (x) => ({ ...x, token: nft(C, "minting", "01") })) });
 for (const [id, b] of Object.entries(R_ATT)) await run(id, whatOf[id], "attack", b);
 
 // ---------- list 2: partial-refund attacks ----------
@@ -268,7 +281,40 @@ const PR_ATT = {
   P11: () => partial({ mod: (o) => [...set(0, (x) => ({ ...x, amount: x.amount - 5_000n }))(o), { to: attacker, amount: 5_000n }] }),
   P12: () => partial({ r: A + 1_000n, mod: set(2, (x) => ({ ...x, token: nft(C, "none", commit(1n, ordR1)) })) }),
 };
+PR_ATT.M03 = () => partial({ mod: set(0, (x) => ({ ...x, token: nft(C, "minting", "01") })) });
 for (const [id, b] of Object.entries(PR_ATT)) await run(id, whatOf[id], "attack", b);
+
+// ---------- list 4: input-order tricks and the admin path (found by mutation testing) ----------
+// K01-K03: the attacker's plain coin at input 0, the minter at input 1, output 0 to the attacker.
+// K05-K06: the attacker's own minting token (category X) at input 0 and a fake X receipt at input 2.
+async function minterSecond(path, lead) {
+  const M = await freshMinter();
+  const lure = lead ?? await buyerCoin(3_000n);
+  const ins = [{ utxo: lure, unlock: buyerKey.unlockP2PKH() }];
+  if (path === "pay") {
+    const c = await buyerCoin(8_000n, [lure]);
+    ins.push({ utxo: M, unlock: minter.unlock.pay() }, { utxo: c, unlock: buyerKey.unlockP2PKH() });
+    return assemble(ins, [
+      { to: buyerT, amount: M.satoshis, token: M.token },
+      { to: merchant, amount: P },
+      { to: buyerT, amount: 2500n, token: nft(C, "none", commit(P, ++order)) },
+    ], buyer);
+  }
+  const rec = lead ? fakeReceipt : R1;
+  const amt = decodeReceipt(rec.token.nft.commitment).amount;
+  const r = path === "refund" ? amt : 2_000n;
+  ins.push({ utxo: M, unlock: path === "refund" ? minter.unlock.refund(refundKey, 2n) : minter.unlock.partialRefund(refundKey, 2n, r) }, { utxo: rec, unlock: buyerKey.unlockP2PKH() });
+  const outs = [{ to: lead ? buyerT : buyer, amount: lure.satoshis, token: lead ? lure.token : undefined }, { to: buyer, amount: r }];
+  if (path === "partial") outs.push({ to: buyerT, amount: 1000n, token: nft(rec.token.category, "none", commit(amt - r, decodeReceipt(rec.token.nft.commitment).orderId)) });
+  outs.push({ to: buyerT, amount: M.satoshis - r, token: M.token }); // the shop's minting token and float, to the attacker
+  return assemble(ins.concat([{ utxo: await buyerCoin(3_000n, [lure]), unlock: buyerKey.unlockP2PKH() }]), outs.map((o) => (o.token ? o : { to: o.to, amount: o.amount })), buyer);
+}
+await run("K01", whatOf.K01, "attack", () => minterSecond("pay"));
+await run("K02", whatOf.K02, "attack", () => minterSecond("refund"));
+await run("K03", whatOf.K03, "attack", () => minterSecond("partial"));
+await run("K04", whatOf.K04, "attack", async () => { const M = await freshMinter(); return assemble([{ utxo: M, unlock: minter.unlock.admin(refundKey) }], [{ to: attackerT, amount: M.satoshis - 2_000n, token: M.token }], attacker); });
+await run("K05", whatOf.K05, "attack", () => minterSecond("refund", xMinting));
+await run("K06", whatOf.K06, "attack", () => minterSecond("partial", xMinting));
 
 // ---------- valid refunds last (they spend the extra receipts) ----------
 if (R2) await run("V3", whatOf.V3, "valid", () => refund({ receipt: R2 }));
@@ -279,7 +325,7 @@ if (R3b) await run("PV3", whatOf.PV3, "valid", () => partial({ receipt: R3b, r: 
 // ---------- report ----------
 const attacks = results.filter((r) => r.kind === "attack");
 const built = attacks.filter((r) => r.outcome !== "not built");
-const refused = built.filter((r) => r.outcome === "refused");
+const refused = built.filter((r) => r.outcome === "refused" && !String(r.reason).startsWith("BUILD ERROR"));
 const refusedByBoth = refused.filter((r) => r.serversAnswered === SERVERS.length).length;
 const byContract = refused.filter((r) => r.reason === "contract (script failed)").length;
 const valid = results.filter((r) => r.kind === "valid");

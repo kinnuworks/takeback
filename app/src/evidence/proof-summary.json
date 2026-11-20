@@ -1,0 +1,593 @@
+{
+ "realNode": {
+  "network": "chipnet",
+  "servers": [
+   "chipnet.bch.ninja",
+   "chipnet.imaginary.cash"
+  ],
+  "ranAt": "2026-11-20T14:39:43.629Z",
+  "built": 50,
+  "refused": 50,
+  "byContract": 49,
+  "byConsensus": 1,
+  "validAccepted": 5,
+  "validRun": 5,
+  "cases": [
+   {
+    "id": "V2",
+    "kind": "valid",
+    "what": "pay 1 sat over the minimum dust-safe amount with a matching receipt",
+    "outcome": "accepted",
+    "reason": "accepted",
+    "reply": "a7ec2f711853c4bd28b70f3e7bd582b9690f36fe6da08c8867c72cc25d3b5ae5",
+    "txid": "a7ec2f711853c4bd28b70f3e7bd582b9690f36fe6da08c8867c72cc25d3b5ae5"
+   },
+   {
+    "id": "V1",
+    "kind": "valid",
+    "what": "pay 5,000 sats, mint one immutable 16-byte receipt for 5,000",
+    "outcome": "accepted",
+    "reason": "accepted",
+    "reply": "3c2d98fa18fe2d238f7a4c1c5a7c92e2d585e4d158724ef1f80159d44330205f",
+    "txid": "3c2d98fa18fe2d238f7a4c1c5a7c92e2d585e4d158724ef1f80159d44330205f"
+   },
+   {
+    "id": "A01",
+    "kind": "attack",
+    "what": "merchant paid 1 sat less than the receipt amount",
+    "outcome": "refused",
+    "reason": "contract (script failed)",
+    "reply": "Script failed an OP_NUMEQUALVERIFY operation",
+    "txid": "457b88e5f2aa23d6fb96754eaf7f78e378986246b0f1332b3abb78b4d0cb11f2"
+   },
+   {
+    "id": "A02",
+    "kind": "attack",
+    "what": "merchant paid half the receipt amount",
+    "outcome": "refused",
+    "reason": "contract (script failed)",
+    "reply": "Script failed an OP_NUMEQUALVERIFY operation",
+    "txid": "d6230a202daaabdfe52a7ce469088ecb0f49b180f90685ab9514b90f9caa0a03"
+   },
+   {
+    "id": "A03",
+    "kind": "attack",
+    "what": "merchant paid nothing, receipt minted",
+    "outcome": "refused",
+    "reason": "contract (script failed)",
+    "reply": "Script failed an OP_NUMEQUALVERIFY operation",
+    "txid": "b26eeccf942ff991a2cc2ce49b8c974da62fcf2729dbed7876df5c2abc627adf"
+   },
+   {
+    "id": "A04",
+    "kind": "attack",
+    "what": "payment sent to an address other than the merchant's",
+    "outcome": "refused",
+    "reason": "contract (script failed)",
+    "reply": "Script failed an OP_EQUALVERIFY operation",
+    "txid": "0eb9ad2a902009496ef63032fb2b26199baafc27b31028bf529c4be2b6027db9"
+   },
+   {
+    "id": "A05",
+    "kind": "attack",
+    "what": "receipt commitment 15 bytes",
+    "outcome": "refused",
+    "reason": "contract (script failed)",
+    "reply": "Script failed an OP_NUMEQUALVERIFY operation",
+    "txid": "28a499632fe70243e2666fa2314c9b853a3f6e6ed24a186c72a0ebd1dad54d7c"
+   },
+   {
+    "id": "A06",
+    "kind": "attack",
+    "what": "receipt commitment 17 bytes",
+    "outcome": "refused",
+    "reason": "contract (script failed)",
+    "reply": "Script failed an OP_NUMEQUALVERIFY operation",
+    "txid": "70663bafb8c82787b509d9d7d84985dfac60df825d4696cd877f3a28856139f4"
+   },
+   {
+    "id": "A07",
+    "kind": "attack",
+    "what": "receipt amount 0",
+    "outcome": "refused",
+    "reason": "contract (script failed)",
+    "reply": "Script failed an OP_VERIFY operation",
+    "txid": "4d0da1809b2783139db26210ca0bf0507fa9a4d1df5abc54d4973a08c60a5c4e"
+   },
+   {
+    "id": "A08",
+    "kind": "attack",
+    "what": "receipt amount negative",
+    "outcome": "refused",
+    "reason": "contract (script failed)",
+    "reply": "Script failed an OP_NUMEQUALVERIFY operation",
+    "txid": "f5b92678e0f4b3c1b0e0afab9308a2259badda36a91753bfd8cbce215774e225"
+   },
+   {
+    "id": "A10",
+    "kind": "attack",
+    "what": "receipt output carries no token",
+    "outcome": "refused",
+    "reason": "contract (script failed)",
+    "reply": "Script failed an OP_EQUALVERIFY operation",
+    "txid": "d856241c60ef2bb77b7d8086fcdfcf652c9fb85bc46933f06d8eac7082b6d923"
+   },
+   {
+    "id": "A11",
+    "kind": "attack",
+    "what": "minting baton sent to an attacker instead of back to the minter",
+    "outcome": "refused",
+    "reason": "contract (script failed)",
+    "reply": "Script failed an OP_EQUALVERIFY operation",
+    "txid": "9b522b0bd54d61b671aa6a6866b2da672682cc9b85b4c778b0f0b4a04ae441ca"
+   },
+   {
+    "id": "A12",
+    "kind": "attack",
+    "what": "minter recreated at a different locking bytecode",
+    "outcome": "refused",
+    "reason": "contract (script failed)",
+    "reply": "Script failed an OP_EQUALVERIFY operation",
+    "txid": "7dfd9110b55d2cc6831c887c6cdaa084a3504018649ed18690795fa132508f18"
+   },
+   {
+    "id": "A13",
+    "kind": "attack",
+    "what": "minting baton downgraded to an immutable NFT",
+    "outcome": "refused",
+    "reason": "contract (script failed)",
+    "reply": "Script failed an OP_EQUALVERIFY operation",
+    "txid": "e2f72d1fb2450d09ab8cd5ea991e05fbbb2e356472ed0a835019bcd10f023b79"
+   },
+   {
+    "id": "A14",
+    "kind": "attack",
+    "what": "minter float reduced by 1 sat",
+    "outcome": "refused",
+    "reason": "contract (script failed)",
+    "reply": "Script failed an OP_VERIFY operation",
+    "txid": "703000ba3442b51f9ea430031d2f6c6745f6c1c08db3550fd27576238e6f06eb"
+   },
+   {
+    "id": "A15",
+    "kind": "attack",
+    "what": "a second minting baton of the category sent to an attacker",
+    "outcome": "refused",
+    "reason": "contract (script failed)",
+    "reply": "Script failed an OP_VERIFY operation",
+    "txid": "ec37ee95cfa8d9e63a478f9b767a1fca8fcd4e62a545eeef708b7db895baf324"
+   },
+   {
+    "id": "A16",
+    "kind": "attack",
+    "what": "two receipts minted for one payment",
+    "outcome": "refused",
+    "reason": "contract (script failed)",
+    "reply": "Script failed an OP_VERIFY operation",
+    "txid": "efec9b8817f0a7927606da86d21a375c641f13e2928a786e212ae5169cdd9b11"
+   },
+   {
+    "id": "A17",
+    "kind": "attack",
+    "what": "receipt minted with minting capability",
+    "outcome": "refused",
+    "reason": "contract (script failed)",
+    "reply": "Script failed an OP_EQUALVERIFY operation",
+    "txid": "85dd88f38e6256075de814ff02a1d67f59beb8a93dd46df43d003977f2c1018e"
+   },
+   {
+    "id": "A18",
+    "kind": "attack",
+    "what": "receipt minted with mutable capability",
+    "outcome": "refused",
+    "reason": "contract (script failed)",
+    "reply": "Script failed an OP_EQUALVERIFY operation",
+    "txid": "164f2573409265925764450958314bf3f172ef60dcf581df12957393dfb8718f"
+   },
+   {
+    "id": "A19",
+    "kind": "attack",
+    "what": "fungible tokens of the category minted alongside the receipt",
+    "outcome": "refused",
+    "reason": "consensus token rules",
+    "reply": "token::OutputData(id=ebef9a8f0693ed7d8f765d8f537cfc, bitfield=10, amount=1000, commitment=",
+    "txid": "6235032b364c1eb3fddb61b5ba6dc584d3997c8f2b05d38292f49ed847f61fb5"
+   },
+   {
+    "id": "M01",
+    "kind": "attack",
+    "what": "a purchase that rewrites the shop's minting token commitment to 0x01 (v1 accepted it: 333 fuzz cases)",
+    "outcome": "refused",
+    "reason": "contract (script failed)",
+    "reply": "Script failed an OP_EQUALVERIFY operation",
+    "txid": "d1bc4f416255322a5415394e815833de7f3b6a4bb4d92a4b8697f760a568e948"
+   },
+   {
+    "id": "M04",
+    "kind": "attack",
+    "what": "a purchase that grows the minting token commitment to 40 bytes of junk",
+    "outcome": "refused",
+    "reason": "contract (script failed)",
+    "reply": "Script failed an OP_EQUALVERIFY operation",
+    "txid": "9e29003d96b5dbe81417787114174b69ad04a6ec2461066616176e979ad696ad"
+   },
+   {
+    "id": "A09",
+    "kind": "attack",
+    "what": "receipt minted in a different token category",
+    "outcome": "refused",
+    "reason": "contract (script failed)",
+    "reply": "Script failed an OP_EQUALVERIFY operation",
+    "txid": "2c2bc81b7388e82232c4ff8714ee91dc75e5411e37da304fcedc92bbd50a592e"
+   },
+   {
+    "id": "A20",
+    "kind": "attack",
+    "what": "refund without the merchant's signature",
+    "outcome": "refused",
+    "reason": "contract (script failed)",
+    "reply": "Signature must be zero for failed CHECK(MULTI",
+    "txid": "ef2ebdd997d50112fe1d316b279427b2b6a9d5543cd06f9c8443bf8035f061b3"
+   },
+   {
+    "id": "A21",
+    "kind": "attack",
+    "what": "refund signed by a key that isn't the merchant's",
+    "outcome": "refused",
+    "reason": "contract (script failed)",
+    "reply": "Signature must be zero for failed CHECK(MULTI",
+    "txid": "7bd5fa274de551c01fc314dd6ae694a6cb6ca5697fb2e79c361b8d3f5e1e9404"
+   },
+   {
+    "id": "A22",
+    "kind": "attack",
+    "what": "refund 1 sat more than the receipt amount",
+    "outcome": "refused",
+    "reason": "contract (script failed)",
+    "reply": "Script failed an OP_VERIFY operation",
+    "txid": "418de8e62a558028e4cc975bab98a1b1832dd10ed657daf79ab097519ff49937"
+   },
+   {
+    "id": "A23",
+    "kind": "attack",
+    "what": "refund twice the receipt amount",
+    "outcome": "refused",
+    "reason": "contract (script failed)",
+    "reply": "Script failed an OP_VERIFY operation",
+    "txid": "ed800f757eb2f9b0f8ffb07116cee5da903cac7dbe2fb1ea495227721a0ad05e"
+   },
+   {
+    "id": "A24",
+    "kind": "attack",
+    "what": "refund paid to an address other than the receipt holder's",
+    "outcome": "refused",
+    "reason": "contract (script failed)",
+    "reply": "Script failed an OP_EQUALVERIFY operation",
+    "txid": "1b597553b12b43a439c35d965019ef1b45a36c81f148b9ab5caf5ec05a3edf28"
+   },
+   {
+    "id": "A25",
+    "kind": "attack",
+    "what": "refund against an NFT of a different category with a large amount",
+    "outcome": "refused",
+    "reason": "contract (script failed)",
+    "reply": "Script failed an OP_EQUALVERIFY operation",
+    "txid": "9bdbfd372daf9b3795923e675cba4a63a5ef87dde2ed2f3b78073e22ce3c98fe"
+   },
+   {
+    "id": "A26",
+    "kind": "attack",
+    "what": "receipt carried into a change output instead of burned (double refund later)",
+    "outcome": "refused",
+    "reason": "contract (script failed)",
+    "reply": "Script failed an OP_VERIFY operation",
+    "txid": "bc3356e4249f96919f3fe07413b76cba4ea8de029d8415ad6edcc58f695464a8"
+   },
+   {
+    "id": "A27",
+    "kind": "attack",
+    "what": "receipt carried into the refund output",
+    "outcome": "refused",
+    "reason": "contract (script failed)",
+    "reply": "Script failed an OP_EQUALVERIFY operation",
+    "txid": "0141efc84b38ac1d28617fbca3feb3585e894402b827ef6076f2cf6c70896c95"
+   },
+   {
+    "id": "A28",
+    "kind": "attack",
+    "what": "receipt index pointing at the minter itself",
+    "outcome": "refused",
+    "reason": "contract (script failed)",
+    "reply": "Script failed an OP_VERIFY operation",
+    "txid": "08d9aed6b8302355965387f5066ef3b8579e40847371f042c219bfaad077d312"
+   },
+   {
+    "id": "A29",
+    "kind": "attack",
+    "what": "minting baton dropped during a refund",
+    "outcome": "refused",
+    "reason": "contract (script failed)",
+    "reply": "Script failed an OP_EQUALVERIFY operation",
+    "txid": "2a3e74cf1307109b2cfeb5115295a0a525b69ac2beff4a76503775a80ebd4520"
+   },
+   {
+    "id": "A30",
+    "kind": "attack",
+    "what": "minter float drained beyond the refund amount during a refund",
+    "outcome": "refused",
+    "reason": "contract (script failed)",
+    "reply": "Script failed an OP_VERIFY operation",
+    "txid": "72ac7cbb12425e691437a5f33797614b70f1d2bae0222cf467e6999cdc5f2724"
+   },
+   {
+    "id": "A31",
+    "kind": "attack",
+    "what": "refund less than the receipt amount while burning the whole receipt (customer short-changed)",
+    "outcome": "refused",
+    "reason": "contract (script failed)",
+    "reply": "Script failed an OP_NUMEQUALVERIFY operation",
+    "txid": "f57cccd25f0913923ee550d902a62080f282696858455272a99c0f5229110e80"
+   },
+   {
+    "id": "A32",
+    "kind": "attack",
+    "what": "extra outputs added to the refund carrying category tokens",
+    "outcome": "refused",
+    "reason": "contract (script failed)",
+    "reply": "Script failed an OP_VERIFY operation",
+    "txid": "047d3d06df39da4aded3bacc77de6be38a21b4f32ee4f661688c2b39db39e725"
+   },
+   {
+    "id": "A33",
+    "kind": "attack",
+    "what": "two receipts burned but only one refunded at the larger amount",
+    "outcome": "refused",
+    "reason": "contract (script failed)",
+    "reply": "Script failed an OP_VERIFY operation",
+    "txid": "9255d0873ad347ab0d5e8a857bf22f77f6a1a7ddb9346a79194346b196045075"
+   },
+   {
+    "id": "A34",
+    "kind": "attack",
+    "what": "replaying a signed refund against a second receipt with the same amount",
+    "outcome": "refused",
+    "reason": "contract (script failed)",
+    "reply": "Script failed an OP_VERIFY operation",
+    "txid": "fa24a69943928b4512b8270cc9e3a8c22c0197dc951dee30ad622da58bd3e895"
+   },
+   {
+    "id": "M02",
+    "kind": "attack",
+    "what": "a refund, signed by the shop's real refund key, that rewrites the minting token commitment",
+    "outcome": "refused",
+    "reason": "contract (script failed)",
+    "reply": "Script failed an OP_EQUALVERIFY operation",
+    "txid": "87b9091056ab3e60262bad06300cf6034793af8efd3541b04173e02326f2315a"
+   },
+   {
+    "id": "P01",
+    "kind": "attack",
+    "what": "remainder receipt for more than what's left (2,000 refunded, 4,000 re-issued)",
+    "outcome": "refused",
+    "reason": "contract (script failed)",
+    "reply": "Script failed an OP_EQUALVERIFY operation",
+    "txid": "ca819ef22e056ebd7fdd97b6ef35ce59739892ecd5200a836d519fecad39d09e"
+   },
+   {
+    "id": "P02",
+    "kind": "attack",
+    "what": "remainder receipt sent to an attacker instead of the holder",
+    "outcome": "refused",
+    "reason": "contract (script failed)",
+    "reply": "Script failed an OP_EQUALVERIFY operation",
+    "txid": "2dfe36c9e5e453567622dfdbe35236cfdd4322e6daf1d697a0348cc3c1a661f2"
+   },
+   {
+    "id": "P03",
+    "kind": "attack",
+    "what": "remainder receipt minted with minting capability",
+    "outcome": "refused",
+    "reason": "contract (script failed)",
+    "reply": "Script failed an OP_EQUALVERIFY operation",
+    "txid": "9c1a58c9e0439ea13a6594e7bb4a78679eb0d982378836cb31a322041ca9eadb"
+   },
+   {
+    "id": "P04",
+    "kind": "attack",
+    "what": "remainder receipt with a different order id",
+    "outcome": "refused",
+    "reason": "contract (script failed)",
+    "reply": "Script failed an OP_EQUALVERIFY operation",
+    "txid": "fc565d911ed4541e098e7ecb23c631f8272b831dbd152b5a8c36a008d7f2f69e"
+   },
+   {
+    "id": "P05",
+    "kind": "attack",
+    "what": "refund amount 0 with a full-value remainder receipt",
+    "outcome": "refused",
+    "reason": "contract (script failed)",
+    "reply": "Script failed an OP_VERIFY operation",
+    "txid": "1ec2e8065c487528f1371c8d4f524149e625f6af328e2b8ab224d9dd7c1ea4df"
+   },
+   {
+    "id": "P06",
+    "kind": "attack",
+    "what": "refund the whole amount through the partial path with a 0 remainder receipt",
+    "outcome": "refused",
+    "reason": "contract (script failed)",
+    "reply": "Script failed an OP_VERIFY operation",
+    "txid": "c0c48f0878c3eac52818487038abb30bf5ec3cf10c89a8a21adef027314c643b"
+   },
+   {
+    "id": "P07",
+    "kind": "attack",
+    "what": "partial refund that also mints a second remainder receipt",
+    "outcome": "refused",
+    "reason": "contract (script failed)",
+    "reply": "Script failed an OP_VERIFY operation",
+    "txid": "0748748ca160de6a85782586da544d0539162875f2b16a1cffc42753a4d5a05b"
+   },
+   {
+    "id": "P08",
+    "kind": "attack",
+    "what": "partial refund without the refund key's signature",
+    "outcome": "refused",
+    "reason": "contract (script failed)",
+    "reply": "Signature must be zero for failed CHECK(MULTI",
+    "txid": "1dad59d35c6d0db6b25c9e12fa489b8653df7651e1c17b470f1b0a6b49b1365f"
+   },
+   {
+    "id": "P09",
+    "kind": "attack",
+    "what": "partial refund paid to an attacker",
+    "outcome": "refused",
+    "reason": "contract (script failed)",
+    "reply": "Script failed an OP_EQUALVERIFY operation",
+    "txid": "362e2861a7085af9f73fd921002a576057457e89295f7a15544595b06063b0b8"
+   },
+   {
+    "id": "P10",
+    "kind": "attack",
+    "what": "partial refund with no remainder receipt (customer short-changed)",
+    "outcome": "refused",
+    "reason": "contract (script failed)",
+    "reply": "Script failed an OP_EQUALVERIFY operation",
+    "txid": "f500cfd194a6e71b102e3c0fc8d33e471f24b30c98337dbd1e97d9ad244d9e1a"
+   },
+   {
+    "id": "P11",
+    "kind": "attack",
+    "what": "partial refund that drains the float beyond the refund amount",
+    "outcome": "refused",
+    "reason": "contract (script failed)",
+    "reply": "Script failed an OP_VERIFY operation",
+    "txid": "5efae334a1deb084b4cd8620e07d01499e0b6ea13043d7566c65483495ae332a"
+   },
+   {
+    "id": "P12",
+    "kind": "attack",
+    "what": "partial refund of more than the receipt amount",
+    "outcome": "refused",
+    "reason": "contract (script failed)",
+    "reply": "Script failed an OP_VERIFY operation",
+    "txid": "e272331b600fc9c9cb03e11326a59ad88d8c73e569c3150396cb6260f4834e8e"
+   },
+   {
+    "id": "M03",
+    "kind": "attack",
+    "what": "a partial refund, signed by the shop's real refund key, that rewrites the minting token commitment",
+    "outcome": "refused",
+    "reason": "contract (script failed)",
+    "reply": "Script failed an OP_EQUALVERIFY operation",
+    "txid": "c2fc36a6dd8e1afca7b24859ee448a76b80c08593a5b296c26929e78ec775514"
+   },
+   {
+    "id": "V3",
+    "kind": "valid",
+    "what": "refund exactly the receipt amount to the receipt holder, receipt burned, merchant signed",
+    "outcome": "accepted",
+    "reason": "accepted",
+    "reply": "7a4117fbbd1a11f70c5f43fd214d7f6e3180e0943fa56df630792c6a8b225481",
+    "txid": "7a4117fbbd1a11f70c5f43fd214d7f6e3180e0943fa56df630792c6a8b225481"
+   },
+   {
+    "id": "PV1",
+    "kind": "valid",
+    "what": "refund 2,000 of a 5,000 receipt; the holder gets 2,000 and a new receipt for 3,000 with the same order id",
+    "outcome": "accepted",
+    "reason": "accepted",
+    "reply": "38d601cc59f357d0f7fd5ac67a2cb00c7c7b0538f929e0546acba4d73464e298",
+    "txid": "38d601cc59f357d0f7fd5ac67a2cb00c7c7b0538f929e0546acba4d73464e298"
+   },
+   {
+    "id": "PV3",
+    "kind": "valid",
+    "what": "refund 546 sats (the dust minimum) of a 5,000 receipt with a 4,454 remainder receipt",
+    "outcome": "accepted",
+    "reason": "accepted",
+    "reply": "99b471ad8d67a1519b9171c18de68bb90f65b530795e90e736b73d829c7d809d",
+    "txid": "99b471ad8d67a1519b9171c18de68bb90f65b530795e90e736b73d829c7d809d"
+   }
+  ]
+ },
+ "fuzz": {
+  "seed": 20261122,
+  "n": 20000,
+  "counts": {
+   "agree-refused": 18714,
+   "agree-accepted": 1286,
+   "hole": 0,
+   "too-strict": 0,
+   "setup": 0
+  },
+  "rules": 34,
+  "v1Holes": 333
+ },
+ "mutants": {
+  "killed": 36,
+  "compiled": 48,
+  "total": 52,
+  "survivors": [
+   {
+    "line": 30,
+    "fn": "pay",
+    "check": "require(tx.outputs[0].tokenAmount == 0);"
+   },
+   {
+    "line": 35,
+    "fn": "pay",
+    "check": "require(tx.outputs[2].tokenAmount == 0);"
+   },
+   {
+    "line": 39,
+    "fn": "pay",
+    "check": "require(amount > 0);"
+   },
+   {
+    "line": 57,
+    "fn": "refund",
+    "check": "require(receiptInput != 0);"
+   },
+   {
+    "line": 63,
+    "fn": "refund",
+    "check": "require(tx.outputs[0].tokenAmount == 0);"
+   },
+   {
+    "line": 71,
+    "fn": "refund",
+    "check": "require(amount > 0);"
+   },
+   {
+    "line": 79,
+    "fn": "refund",
+    "check": "require(tx.outputs[1].tokenCategory == 0x);"
+   },
+   {
+    "line": 105,
+    "fn": "partialRefund",
+    "check": "require(receiptInput != 0);"
+   },
+   {
+    "line": 111,
+    "fn": "partialRefund",
+    "check": "require(tx.outputs[0].tokenAmount == 0);"
+   },
+   {
+    "line": 116,
+    "fn": "partialRefund",
+    "check": "require(receipt.length == 16);"
+   },
+   {
+    "line": 118,
+    "fn": "partialRefund",
+    "check": "require(refundAmount > 0);"
+   },
+   {
+    "line": 130,
+    "fn": "partialRefund",
+    "check": "require(tx.outputs[2].tokenAmount == 0);"
+   }
+  ]
+ }
+}

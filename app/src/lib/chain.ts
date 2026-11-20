@@ -21,7 +21,7 @@ export function txLink(net: Net, txid: string) {
 export interface LedgerRow {
   txid: string;
   height: number;
-  kind: "sale" | "refund" | "setup" | "other";
+  kind: "sale" | "refund" | "partial refund" | "setup" | "other";
   amount: bigint;
   orderId?: bigint;
   customer?: string;
@@ -45,9 +45,14 @@ export async function shopLedger(shop: ShopConfig, limit = 40): Promise<LedgerRo
       return typeof r === "string" ? undefined : r.address;
     };
     const receiptOut = tx.outputs[2];
-    if (outCat(0) === shop.category && outCat(2) === shop.category && receiptOut?.token?.nft?.capability === "none") {
-      const d = decodeReceipt(binToHex(receiptOut.token.nft.commitment));
+    const receiptAt2 = outCat(0) === shop.category && outCat(2) === shop.category && receiptOut?.token?.nft?.capability === "none";
+    if (receiptAt2 && addr(1) === shop.merchantAddress) {
+      // A sale pays the merchant at output 1 and puts the new receipt at output 2.
+      const d = decodeReceipt(binToHex(receiptOut.token!.nft!.commitment));
       rows.push({ txid: h.tx_hash, height: h.height, kind: "sale", amount: d?.amount ?? 0n, orderId: d?.orderId, customer: addr(2) });
+    } else if (receiptAt2) {
+      // A partial refund pays the holder at output 1 and re-issues a receipt for the rest at output 2.
+      rows.push({ txid: h.tx_hash, height: h.height, kind: "partial refund", amount: tx.outputs[1]?.valueSatoshis ?? 0n, customer: addr(1) });
     } else if (outCat(0) === shop.category && tx.outputs.slice(1).every((o) => !o.token) && addr(1) !== shop.merchantAddress) {
       rows.push({ txid: h.tx_hash, height: h.height, kind: "refund", amount: tx.outputs[1]?.valueSatoshis ?? 0n, customer: addr(1) });
     } else if (tx.outputs.filter((o) => o.token?.nft?.capability === "minting").length > 1) {
@@ -61,7 +66,7 @@ export async function shopLedger(shop: ShopConfig, limit = 40): Promise<LedgerRo
 
 export function sumLedger(rows: LedgerRow[]) {
   const sales = rows.filter((r) => r.kind === "sale");
-  const refunds = rows.filter((r) => r.kind === "refund");
+  const refunds = rows.filter((r) => r.kind === "refund" || r.kind === "partial refund");
   const total = (xs: LedgerRow[]) => xs.reduce((s, r) => s + r.amount, 0n);
   return { sales: sales.length, salesSats: total(sales), refunds: refunds.length, refundSats: total(refunds), netSats: total(sales) - total(refunds) };
 }
