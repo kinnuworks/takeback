@@ -404,6 +404,7 @@ export default function App() {
           </table>
         )}
         {shop && <p className="muted small">Minter contract: <code>{shop.minterAddress}</code> · receipt category <code>{shop.category.slice(0, 12)}…</code></p>}
+        {shop && <p className="small">Check the receipt token on an independent explorer: <a href={`https://tokenexplorer.cash/?tokenId=${shop.category}&network=${NET}`} target="_blank" rel="noreferrer">tokenexplorer.cash</a> shows its name, icon and receipt fields, and checks the metadata against its hash on chain.</p>}
       </section>
 
       <section>

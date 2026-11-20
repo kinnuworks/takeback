@@ -32,6 +32,7 @@ It needs Bitcoin Cash because the receipt is a CashToken minted by a covenant in
 - **The fuzzer:** [`app/src/lib/fuzz.ts`](app/src/lib/fuzz.ts) and the model of the rules it checks against, [`rules-model.ts`](app/src/lib/rules-model.ts). Rerun: `cd app && node contracts/fuzz.test.mjs 20000 20261122`.
 - **The mutation test:** [`app/contracts/mutants.test.mjs`](app/contracts/mutants.test.mjs), results in [`evidence/mutants-result.json`](evidence/mutants-result.json).
 - **Chipnet shop (contract v2):** [shop setup](https://chipnet.imaginary.cash/tx/13f39d1ae6350b3b4a15250b9e77af965101942bd28a42944ce3b6769e64d081). Open https://takeback-bch.vercel.app/?net=chipnet to see its books rebuilt from the chain.
+- **The receipt token on an independent explorer:** [tokenexplorer.cash](https://tokenexplorer.cash/?tokenId=ebef9a8f0693ed7d8f765d8f537cfcc920b5e9a6668423d5c5265781bf9c7dd3&network=chipnet) shows the name, icon and parsable receipt fields (amount paid, order id), and checks that the metadata matches its hash on chain. The registry was updated through the shop's authchain ([update](https://chipnet.imaginary.cash/tx/838b952e31274db008df1311f0875ca1e5e9eaf7bf4c30370c841b5a691f93f8)).
 - **Mainnet:** not yet. The mainnet shop goes on chain once its float is funded.
 
 ## Evidence
