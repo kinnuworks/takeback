@@ -25,7 +25,9 @@ export interface ShopKeys {
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 export function minterContract(keys: ShopKeys, provider: NetworkProvider): Contract<any> {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  return new Contract(artifact as unknown as Artifact, [keys.merchantPkh, keys.refundPk, keys.ownerPk], { provider }) as Contract<any>;
+  // Mutation testing (contracts/mutants.test.mjs) swaps in a mutant's artifact here; nothing else does.
+  const override = (globalThis as { __TAKEBACK_ARTIFACT__?: unknown }).__TAKEBACK_ARTIFACT__;
+  return new Contract((override ?? artifact) as unknown as Artifact, [keys.merchantPkh, keys.refundPk, keys.ownerPk], { provider }) as Contract<any>;
 }
 
 /** Receipt commitment: amount (8 bytes, VM number padded) + order id (8 bytes). */

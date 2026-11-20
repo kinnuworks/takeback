@@ -1,0 +1,11 @@
+{
+  "about": "Fourth, labelled attack list: test gaps found by mutation testing on contract v2 (app/contracts/mutants.test.mjs, first run 2026-11-20 20:40 IST). Deleting `require(this.activeInputIndex == 0)` from any path left every earlier attack refused, so no test proved that check matters. These attacks would get through without it. Written before any run of this list; lists 1-3 are unchanged. Every attack must be rejected.",
+  "seed": 20261125,
+  "valid": [],
+  "attacks": [
+    { "id": "K01", "path": "pay", "what": "steal the shop's minting token: put the minter at input 1 behind the attacker's own coin at input 0, and send output 0 (the minting token) to the attacker's address, which matches input 0" },
+    { "id": "K02", "path": "refund", "what": "with the stolen hot refund key: minter at input 1, attacker's coin at input 0, and the minting token plus the whole float sent to the attacker at output 0" },
+    { "id": "K03", "path": "partialRefund", "what": "with the stolen hot refund key: the same input-order trick through the partial-refund path" },
+    { "id": "K04", "path": "admin", "what": "use the owner's admin path without the owner's key (signed by the hot refund key) to take the float" }
+  ]
+}
