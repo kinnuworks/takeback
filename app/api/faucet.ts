@@ -34,7 +34,9 @@ export default async function handler(req: Req, res: Res) {
     if (req.method === "GET") return res.status(200).json({ network: "chipnet", address: w.address, balance: balance.toString() });
     if (req.method !== "POST") return res.status(405).json({ error: "POST only" });
 
-    const body = (typeof req.body === "string" ? JSON.parse(req.body) : req.body) as { address?: string };
+    let body: { address?: string };
+    try { body = (typeof req.body === "string" ? JSON.parse(req.body) : req.body) ?? {}; }
+    catch { return res.status(400).json({ error: "The request body must be JSON" }); }
     const address = String(body?.address ?? "");
     const decoded = decodeCashAddress(address);
     if (typeof decoded === "string" || decoded.prefix !== "bchtest" || !decoded.type.startsWith("p2pkh")) return res.status(400).json({ error: "A chipnet (bchtest:) P2PKH address is required" });

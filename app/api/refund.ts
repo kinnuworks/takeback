@@ -16,7 +16,10 @@ type Res = { status: (n: number) => Res; json: (b: unknown) => void; setHeader: 
 export default async function handler(req: Req, res: Res) {
   res.setHeader("Cache-Control", "no-store");
   if (req.method !== "POST") return res.status(405).json({ error: "POST only" });
-  const body = (typeof req.body === "string" ? JSON.parse(req.body) : req.body) as { txid?: string; vout?: number; holderAddress?: string; network?: string; amount?: string };
+  let body: { txid?: string; vout?: number; holderAddress?: string; network?: string; amount?: string };
+  try { body = (typeof req.body === "string" ? JSON.parse(req.body) : req.body) ?? {}; }
+  catch { return res.status(400).json({ error: "The request body must be JSON" }); }
+  if (typeof body !== "object") return res.status(400).json({ error: "The request body must be a JSON object" });
   const network = body.network === "chipnet" ? "chipnet" : "mainnet";
   const shop = loadShop(network);
   if (!shop) return res.status(503).json({ error: `No ${network} shop is set up yet` });
@@ -41,6 +44,7 @@ export default async function handler(req: Req, res: Res) {
     const minterUtxo: SpendableUtxo = { ...minters[Math.floor(Math.random() * minters.length)], lockingBytecode: binToHex(cashAddressToLockingBytecode(shop.minterAddress).bytecode as Uint8Array) };
     const receiptUtxo: SpendableUtxo = { ...receipt, lockingBytecode: binToHex(lb.bytecode) };
     const keys: ShopKeys = { merchantPkh: hexToBin(shop.merchantPkh), refundPk: hexToBin(shop.refundPk), ownerPk: hexToBin(shop.ownerPk) };
+    if (body.amount !== undefined && !/^\d+$/.test(String(body.amount))) return res.status(400).json({ error: "amount must be a whole number of sats" });
     const refundAmount = body.amount ? BigInt(body.amount) : undefined;
     const plan = buildRefund({ provider, keys, minterUtxo, refundKey: hexToBin(keyHex), receiptUtxo, holderAddress: body.holderAddress, refundAmount });
     return res.status(200).json({ wc: relaySafe(plan.wc), inputIndex: plan.inputIndex, amount: plan.amount.toString() });

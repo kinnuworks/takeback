@@ -12,7 +12,6 @@ import {
   hash160, binToHex, hexToBin, cashAddressToLockingBytecode, encodeLockingBytecodeP2pkh,
   lockingBytecodeToCashAddress, bigIntToVmNumber, hash256, swapEndianness,
 } from "@bitauth/libauth";
-import { makeKeys } from "../../tools/wiz-harness/testwallet.mjs";
 import { minterContract, encodeReceipt, decodeReceipt, isMinterUtxo } from "../src/lib/takeback.ts";
 
 const network = process.argv[2];
@@ -70,6 +69,8 @@ if (process.argv.includes("--replay")) {
 }
 
 // ---------- keys and coins ----------
+// Loaded only for a full run, so the keyless --replay above needs nothing outside app/.
+const { makeKeys } = await import("../../tools/wiz-harness/testwallet.mjs");
 const shop = JSON.parse(readFileSync(new URL(`../src/shop/${network}.json`, import.meta.url), "utf8"));
 const merchantSeed = process.env.TAKEBACK_MERCHANT_MNEMONIC;
 const buyerSeed = process.env[network === "chipnet" ? "CHIPNET_TEST_MNEMONIC" : "MAINNET_TEST_MNEMONIC"];
