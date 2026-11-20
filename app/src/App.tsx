@@ -15,7 +15,7 @@ import "./App.css";
 const params = new URLSearchParams(location.search);
 const NET: Net = params.get("net") === "chipnet" ? "chipnet" : "mainnet";
 const shop = loadShop(NET);
-const SLIDES_URL = import.meta.env.VITE_SLIDES_URL as string | undefined;
+const SLIDES_URL = (import.meta.env.VITE_SLIDES_URL as string | undefined) ?? "/slides.html";
 const REPO_URL = (import.meta.env.VITE_REPO_URL as string | undefined) ?? "https://github.com/kinnuworks/takeback";
 const EMBER_ADDRESS = import.meta.env.VITE_EMBER_ADDRESS as string | undefined;
 const STRIPE_REFUNDS = "https://docs.stripe.com/refunds";

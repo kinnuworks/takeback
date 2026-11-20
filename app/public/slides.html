@@ -1,0 +1,117 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Takeback · slides</title>
+<link rel="icon" type="image/png" href="/favicon.png">
+<style>
+  :root { --ink: #111; --muted: #5a5a5a; --line: #e2e2e2; --bg: #fff; --accent: #0a6b2d; }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; background: #ececec; color: var(--ink); font-family: system-ui, -apple-system, "Segoe UI", sans-serif; }
+  .deck { display: grid; gap: 24px; padding: 24px 16px 48px; justify-items: center; }
+  .slide { width: min(100%, 1000px); aspect-ratio: 16 / 9; background: var(--bg); border: 1px solid var(--line); padding: clamp(18px, 4.5vw, 56px); display: flex; flex-direction: column; justify-content: center; position: relative; overflow: hidden; }
+  .slide .n { position: absolute; right: 18px; bottom: 12px; font-size: 12px; color: var(--muted); }
+  .slide .foot { position: absolute; left: 18px; bottom: 12px; font-size: 12px; color: var(--muted); }
+  h1 { font-size: clamp(32px, 7vw, 72px); margin: 0; letter-spacing: -0.02em; }
+  h2 { font-size: clamp(22px, 4vw, 40px); margin: 0 0 clamp(10px, 2vw, 24px); }
+  p, li { font-size: clamp(13px, 2vw, 21px); line-height: 1.45; margin: 0 0 0.5em; }
+  ul { margin: 0; padding-left: 1.1em; }
+  .tag { font-size: clamp(16px, 3vw, 30px); margin: 8px 0 18px; }
+  .muted { color: var(--muted); }
+  .big { font-size: clamp(18px, 3.2vw, 32px); font-weight: 600; }
+  .proof { display: grid; grid-template-columns: repeat(3, 1fr); gap: clamp(8px, 1.6vw, 18px); margin-top: clamp(8px, 2vw, 20px); }
+  .proof div { border-top: 3px solid var(--accent); padding-top: 8px; }
+  .proof b { display: block; font-size: clamp(18px, 3.4vw, 36px); }
+  .proof span { font-size: clamp(11px, 1.6vw, 15px); color: var(--muted); }
+  a { color: inherit; }
+  @media print {
+    html, body { background: #fff; }
+    .deck { padding: 0; gap: 0; }
+    .slide { width: 100%; border: 0; page-break-after: always; }
+    @page { size: 1280px 720px; margin: 0; }
+  }
+</style>
+</head>
+<body>
+<main class="deck">
+
+<section class="slide" id="s1">
+  <h1>Takeback</h1>
+  <p class="tag">Pay with Bitcoin Cash, get a receipt that refunds.</p>
+  <p class="muted">takeback-bch.vercel.app · source on GitHub (github.com/kinnuworks/takeback)</p>
+  <p class="muted">A BCH BLAZE 2026 Mainnet Track entry</p>
+  <span class="n">1 / 6</span>
+</section>
+
+<section class="slide" id="s2">
+  <h2>The story of Takeback</h2>
+  <p>Refunds are the awkward moment in every crypto shop. The shop asks the customer for an address, types in an amount and hopes nobody made a mistake.</p>
+  <p>Crypto.com's own help page says it "cannot send the refund amount directly back to the payment wallet address".</p>
+  <p class="big">So we put the refund inside the payment. You pay, and the same transaction hands you a receipt that can only ever pay back what you paid.</p>
+  <span class="foot">Source: help.crypto.com, "How to get a refund"</span>
+  <span class="n">2 / 6</span>
+</section>
+
+<section class="slide" id="s3">
+  <h2>Benefits of Takeback</h2>
+  <ul>
+    <li>Refund in one tap. Nobody types an address.</li>
+    <li>Exactly the amount paid, once, to whoever holds the receipt.</li>
+    <li>Partial refunds keep the rest owed on a new receipt.</li>
+    <li>A stolen server key can't drain the shop: the contract limits what it can sign.</li>
+    <li>The shop's books rebuild from the chain alone.</li>
+    <li>A refund lands in seconds. A card refund reaches the customer "approximately 5-10 business days later" (Stripe's refund docs).</li>
+  </ul>
+  <span class="n">3 / 6</span>
+</section>
+
+<section class="slide" id="s4">
+  <h2>BCH usage</h2>
+  <ul>
+    <li>The receipt is a CashTokens NFT, minted by a CashScript covenant inside the payment itself.</li>
+    <li>The covenant uses the 2026 VM's loops to check every other input and output for the shop's tokens.</li>
+    <li>Phone wallets connect with WizardConnect and sign their own inputs.</li>
+  </ul>
+  <div class="proof">
+    <div><b>56 of 56</b><span>attacks refused by two real chipnet servers</span></div>
+    <div><b>0 of 18,714</b><span>rule-breaking random transactions got through (fuzzer, 20,000 cases)</span></div>
+    <div><b>36 of 48</b><span>deleted contract checks caught by a test; the other 12 are covered twice</span></div>
+  </div>
+  <span class="foot">Our own tests, from wallets we control. No real users yet. Each reruns from the repo.</span>
+  <span class="n">4 / 6</span>
+</section>
+
+<section class="slide" id="s5">
+  <h2>The vision for Takeback</h2>
+  <ul>
+    <li>Any shop that takes BCH adds a Takeback pay button.</li>
+    <li>PUSD receipts for dollar prices.</li>
+    <li>Wallets show a Refund button on any Takeback receipt.</li>
+    <li>Payment processors that take BCH offer it to their merchants. CoinGate's checkout takes BCH again since 12 October 2026.</li>
+    <li>Revenue: a small fee per receipt, or a licence for processors. (Assumption: no price tested yet.)</li>
+  </ul>
+  <span class="n">5 / 6</span>
+</section>
+
+<section class="slide" id="s6">
+  <h1>Thank you!</h1>
+  <p class="tag">Try it with no wallet: takeback-bch.vercel.app/?net=chipnet</p>
+  <p class="muted">Press "Try it now", buy a coffee, refund it, then send five cheats to a real node.</p>
+  <span class="n">6 / 6</span>
+</section>
+
+</main>
+<script>
+  // Arrow keys and space move between slides.
+  const slides = [...document.querySelectorAll(".slide")];
+  const current = () => slides.reduce((best, s, i) => Math.abs(s.getBoundingClientRect().top) < Math.abs(slides[best].getBoundingClientRect().top) ? i : best, 0);
+  addEventListener("keydown", (e) => {
+    const d = ["ArrowRight", "ArrowDown", "PageDown", " "].includes(e.key) ? 1 : ["ArrowLeft", "ArrowUp", "PageUp"].includes(e.key) ? -1 : 0;
+    if (!d) return;
+    e.preventDefault();
+    slides[Math.max(0, Math.min(slides.length - 1, current() + d))].scrollIntoView({ behavior: "smooth", block: "center" });
+  });
+</script>
+</body>
+</html>
