@@ -1,0 +1,11 @@
+{
+  "about": "Third, labelled attack list: attacks found by the differential fuzzer's counted run on contract v1 (evidence/fuzz-result-v1.json, seed 20261122). Written 2026-11-20 20:15 IST before the contract fix (v2) and before any run of this list. Every attack must be rejected; the lists above are unchanged.",
+  "seed": 20261124,
+  "valid": [],
+  "attacks": [
+    { "id": "M01", "path": "pay", "what": "a purchase that rewrites the shop's minting token commitment to 0x01 (v1 accepted it: 333 fuzz cases)" },
+    { "id": "M02", "path": "refund", "what": "a refund, signed by the shop's real refund key, that rewrites the minting token commitment" },
+    { "id": "M03", "path": "partialRefund", "what": "a partial refund, signed by the shop's real refund key, that rewrites the minting token commitment" },
+    { "id": "M04", "path": "pay", "what": "a purchase that grows the minting token commitment to 40 bytes of junk" }
+  ]
+}
