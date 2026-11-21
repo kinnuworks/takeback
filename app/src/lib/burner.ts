@@ -1,7 +1,8 @@
-// The instant demo wallet: a throwaway key made in this browser, chipnet (test network) only, funded
-// with test coins by /api/faucet. It signs the same transactions a phone wallet signs over
-// WizardConnect (P2PKH inputs, Schnorr, SIGHASH_ALL | SIGHASH_UTXOS | SIGHASH_FORKID), so the demo
-// runs the real purchase and refund paths against the real chipnet contract. Never used on mainnet.
+// The instant demo wallet: a throwaway key made in this browser, one per network (a chipnet key is
+// never used on mainnet), funded by /api/faucet: test coins on chipnet, a few cents of real BCH on
+// mainnet when the owner has switched that faucet on. It signs the same transactions a phone wallet
+// signs over WizardConnect (P2PKH inputs, Schnorr, SIGHASH_ALL | SIGHASH_UTXOS | SIGHASH_FORKID), so
+// the demo runs the real purchase and refund paths against the real contract.
 import {
   secp256k1, hash160, hash256, binToHex, hexToBin, decodeTransactionBCH, encodeTransactionBCH,
   generateSigningSerializationBCH, encodeLockingBytecodeP2pkh, lockingBytecodeToCashAddress, SigningSerializationFlag,
@@ -9,30 +10,32 @@ import {
 } from "@bitauth/libauth";
 import { parseExtendedJson, toUint8Array, toBigInt } from "@wizardconnect/core";
 
-const STORE = "takeback-demo-key-chipnet";
+type Net = "mainnet" | "chipnet";
+const storeKey = (net: Net) => `takeback-demo-key-${net}`;
 const SIGHASH = SigningSerializationFlag.allOutputs | SigningSerializationFlag.utxos | SigningSerializationFlag.forkId;
 
 export interface Burner { priv: Uint8Array; pub: Uint8Array; address: string; tokenAddress: string }
 
-function fromPriv(priv: Uint8Array): Burner {
+function fromPriv(priv: Uint8Array, net: Net): Burner {
   const pub = secp256k1.derivePublicKeyCompressed(priv) as Uint8Array;
   const lb = encodeLockingBytecodeP2pkh(hash160(pub));
-  const a = lockingBytecodeToCashAddress({ bytecode: lb, prefix: "bchtest" });
-  const t = lockingBytecodeToCashAddress({ bytecode: lb, prefix: "bchtest", tokenSupport: true });
+  const prefix = net === "mainnet" ? "bitcoincash" : "bchtest";
+  const a = lockingBytecodeToCashAddress({ bytecode: lb, prefix });
+  const t = lockingBytecodeToCashAddress({ bytecode: lb, prefix, tokenSupport: true });
   if (typeof a === "string" || typeof t === "string") throw new Error("address encoding failed");
   return { priv, pub, address: a.address, tokenAddress: t.address };
 }
 
 /** Loads this browser's demo key, or makes one. Storage can be blocked: then the key lives for this page only. */
-export function loadBurner(): Burner {
+export function loadBurner(net: Net = "chipnet"): Burner {
   try {
-    const saved = localStorage.getItem(STORE);
-    if (saved && /^[0-9a-f]{64}$/.test(saved)) return fromPriv(hexToBin(saved));
+    const saved = localStorage.getItem(storeKey(net));
+    if (saved && /^[0-9a-f]{64}$/.test(saved)) return fromPriv(hexToBin(saved), net);
   } catch { /* storage blocked: fall through to a fresh key */ }
   let priv: Uint8Array;
   do { priv = crypto.getRandomValues(new Uint8Array(32)); } while (!secp256k1.validatePrivateKey(priv));
-  try { localStorage.setItem(STORE, binToHex(priv)); } catch { /* page-only key */ }
-  return fromPriv(priv);
+  try { localStorage.setItem(storeKey(net), binToHex(priv)); } catch { /* page-only key */ }
+  return fromPriv(priv, net);
 }
 
 /**

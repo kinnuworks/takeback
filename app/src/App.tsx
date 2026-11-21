@@ -27,7 +27,8 @@ const PREVIEW = params.get("state") ? (PREVIEW_ALIAS[params.get("state")!] ?? pa
 
 export const PREVIEW_STATES = ["idle", "connecting", "connected-empty", "connected", "paying", "paid", "refunding", "refunded", "error", "ledger-empty", "break-test", "demo-funding", "network-cheats"] as const;
 const SAMPLE_TX = "3f1a9c2e7b6d4f0a8e5c1b2d9f7a6e4c3b2a1908f7e6d5c4b3a291807f6e5d4c";
-const DEMO_FUNDS = 25_000n;
+// What the demo faucet gives a new demo wallet on each network (mainnet only when the owner has switched it on).
+const DEMO_FUNDS: Record<Net, bigint> = { chipnet: 25_000n, mainnet: 25_000n };
 
 const MENU = [
   { id: 1n, name: "Kopi", note: "Black coffee", sats: 10_000n },
@@ -65,7 +66,15 @@ export default function App() {
   const wc = useWizardConnect({ dappName: "Takeback", dappIcon: `${location.origin}/receipt-icon.png` });
   const usd = useBchUsd();
   const [mode, setMode] = useState<"wc" | "demo" | null>(null);
-  const burner = useMemo<Burner | null>(() => (NET === "chipnet" ? loadBurner() : null), []);
+  const burner = useMemo<Burner | null>(() => loadBurner(NET), []);
+  // On mainnet the no-wallet demo runs only while the owner's mainnet faucet is switched on;
+  // otherwise "Try it now" goes to the chipnet shop.
+  const [mainnetDemo, setMainnetDemo] = useState(false);
+  useEffect(() => {
+    if (NET !== "mainnet" || PREVIEW) return;
+    fetch("/api/faucet?net=mainnet").then((r) => r.json()).then((j) => setMainnetDemo(j?.enabled === true)).catch(() => undefined);
+  }, []);
+  const demoHere = NET === "chipnet" || mainnetDemo;
   const [coins, setCoins] = useState<WalletCoin[]>([]);
   const [receipts, setReceipts] = useState<HeldReceipt[]>([]);
   const [busy, setBusy] = useState<string | null>(null);
@@ -125,24 +134,25 @@ export default function App() {
 
   // The instant demo: a test-network wallet made in this browser, topped up by the demo faucet.
   const startDemo = useCallback(async (): Promise<WalletCoin[] | undefined> => {
-    if (NET !== "chipnet") { location.href = `${location.pathname}?net=chipnet&demo=1`; return; }
+    if (!demoHere) { location.href = `${location.pathname}?net=chipnet&demo=1`; return; }
     if (!burner) return;
     setMode("demo"); setBusy("faucet"); setMsg(null);
     try {
-      const p = providerFor("chipnet");
+      const p = providerFor(NET);
+      const funds = DEMO_FUNDS[NET];
       const balance = async () => (await p.getUtxos(burner.address)).filter((u) => !u.token).reduce((s, u) => s + u.satoshis, 0n);
-      if ((await balance()) < DEMO_FUNDS - 1_500n) { // enough for the dearest item after a buy-and-refund round trip
-        const r = await fetch("/api/faucet", { method: "POST", headers: { "content-type": "application/json" }, body: JSON.stringify({ address: burner.address }) });
+      if ((await balance()) < funds - 1_500n) { // enough for the dearest item after a buy-and-refund round trip
+        const r = await fetch("/api/faucet", { method: "POST", headers: { "content-type": "application/json" }, body: JSON.stringify({ address: burner.address, network: NET }) });
         const j = await r.json().catch(() => ({}));
         // A wallet that already holds enough for a coffee carries on even if the faucet can't top it up.
         if (!r.ok && (await balance()) < 13_500n) throw new Error(j.error ?? "The demo faucet didn't answer");
-        if (r.ok) for (let i = 0; i < 15 && (await balance()) < DEMO_FUNDS - 1_500n; i++) await sleep(1000);
+        if (r.ok) for (let i = 0; i < 15 && (await balance()) < funds - 1_500n; i++) await sleep(1000);
       }
       return await scanWallet("demo");
     } catch (e) {
       setMsg({ kind: "err", text: String((e as Error).message ?? e) });
     } finally { setBusy(null); }
-  }, [burner, scanWallet]);
+  }, [burner, scanWallet, demoHere]);
   useEffect(() => { if (params.get("demo") === "1" && NET === "chipnet" && !PREVIEW) startDemo(); }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
   const broadcast = async (signedHex: string) => {
@@ -154,7 +164,7 @@ export default function App() {
   // WizardConnect QR opens.
   const buyFirst = async (item: (typeof MENU)[number]) => {
     if (connected) return buy(item);
-    if (NET !== "chipnet") { wc.connect(); return; }
+    if (!demoHere) { wc.connect(); return; }
     const found = await startDemo();
     if (found?.length) await buy(item, { coins: found, as: "demo" });
   };
@@ -211,13 +221,13 @@ export default function App() {
     } finally { setBusy(null); }
   };
 
-  // Five cheating purchases, signed by the demo wallet and sent to a real chipnet node. A node that
+  // Five cheating purchases, signed by the demo wallet and sent to a real node of this network. A node that
   // accepts one would take the demo wallet's own test coins; every one should come back refused.
   const cheatTheNetwork = async () => {
     if (!shop || !keys || !burner) return;
     setBusy("cheats"); setCheats(null);
     try {
-      const p = providerFor("chipnet");
+      const p = providerFor(NET);
       const minter = minterContract(keys, p);
       const ms = (await p.getUtxos(shop.minterAddress)).filter((u) => isMinterUtxo(u) && u.token?.category === shop.category);
       const plain = (await p.getUtxos(burner.address)).filter((u) => !u.token).sort((a, b) => Number(b.satoshis - a.satoshis));
@@ -225,7 +235,7 @@ export default function App() {
       const cs: SpendableUtxo[] = [];
       for (const u of plain) { if (cs.reduce((t, c) => t + c.satoshis, 0n) >= 16_000n) break; cs.push({ ...u, lockingBytecode: lbHex(burner.address) }); }
       const have = cs.reduce((t, c) => t + c.satoshis, 0n);
-      if (!ms.length || have < 16_000n) throw new Error(`The demo wallet needs about 16,000 test sats for the cheats (it has ${have.toLocaleString()}): press Try it now`);
+      if (!ms.length || have < 16_000n) throw new Error(`The demo wallet needs about 16,000 sats for the cheats (it has ${have.toLocaleString()}): press Try it now`);
       const M: SpendableUtxo = { ...ms[0], lockingBytecode: lbHex(shop.minterAddress) };
       const sig = new SignatureTemplate(burner.priv);
       const order = BigInt(Date.now());
@@ -373,11 +383,11 @@ export default function App() {
                   <button className="tb-btn tb-btn--lg" onClick={startDemo} disabled={!!busy}>Try it now, no wallet needed</button>
                   <button className="tb-btn tb-btn--lg tb-btn--ghost" onClick={() => wc.connect()}>Connect wallet{NET === "mainnet" ? " (real BCH)" : ""}</button>
                 </div>
-                <p className="tb-hero__hint"><span>Uses the test network: a demo wallet is made in this browser and gets free test coins.</span> <span>Scan with Paytaca or Selene (WizardConnect).</span></p>
+                <p className="tb-hero__hint"><span>{NET === "mainnet" && mainnetDemo ? "A demo wallet is made in this browser and gets a few cents of real BCH from the shop." : "Uses the test network: a demo wallet is made in this browser and gets free test coins."}</span> <span>Scan with Paytaca or Selene (WizardConnect).</span></p>
               </>
             ) : viewMode === "demo" ? (
               <p className="tb-wallet">
-                {busy === "faucet" ? "Making a demo wallet and getting test coins…" : <>Demo wallet <code>{burner ? shortTx(burner.address.replace("bchtest:", "")) : "bchtest:…"}</code> · {pv ? "25,000" : coins.reduce((s, c) => s + c.utxo.satoshis, 0n).toLocaleString()} test sats · test coins have no value</>}
+                {busy === "faucet" ? (NET === "mainnet" ? "Making a demo wallet and getting it a few cents of BCH…" : "Making a demo wallet and getting test coins…") : <>Demo wallet <code>{burner ? shortTx(burner.address.replace(/^[a-z]+:/, "")) : "…"}</code> · {pv ? "25,000" : coins.reduce((s, c) => s + c.utxo.satoshis, 0n).toLocaleString()} {NET === "mainnet" ? "sats of real BCH (a few cents)" : "test sats · test coins have no value"}</>}
               </p>
             ) : (
               <p className="tb-wallet">Connected: {pv ? "Paytaca" : wc.walletName ?? "wallet"} · {pv ? 3 : coins.length} coins · <button className="tb-link" onClick={() => wc.disconnect()}>Disconnect</button></p>
@@ -471,8 +481,8 @@ export default function App() {
             <div className="tb-sec__head">
               
               <h2>Try to cheat the real network</h2>
-              <p>Your demo wallet signs five cheating purchases and sends them to a real chipnet node. If a node accepted one, your wallet would pay for it. Each comes back with the node's own answer.</p>
-              <button className="tb-btn" onClick={cheatTheNetwork} disabled={!!busy || (!pv && !scanned)}>{busy === "cheats" ? "Sending cheats to chipnet…" : "Send 5 cheats to chipnet"}</button>
+              <p>Your demo wallet signs five cheating purchases and sends them to a real {NET} node. If a node accepted one, your wallet would pay for it. Each comes back with the node's own answer.</p>
+              <button className="tb-btn" onClick={cheatTheNetwork} disabled={!!busy || (!pv && !scanned)}>{busy === "cheats" ? `Sending cheats to ${NET}…` : `Send 5 cheats to ${NET}`}</button>
             </div>
             {cheats && (
               <div className="tb-out">
