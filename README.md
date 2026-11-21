@@ -9,7 +9,7 @@ It needs Bitcoin Cash because the receipt is a CashToken minted by a covenant in
 ![Try it now: a demo wallet gets test coins, buys a coffee, gets a receipt, refunds it](docs/demo.gif)
 
 **Try it in 30 seconds**
-1. Open https://takeback-bch.vercel.app/?net=chipnet and press **Try it now, no wallet needed**. A demo wallet is made in your browser and gets free test coins (chipnet, the test network).
+1. Open https://takeback-bch.vercel.app and press **Try it now, no wallet needed** (or any **Buy** button). A demo wallet is made in your browser and gets free test coins (chipnet, the test network).
 2. Buy a coffee from the Kopi Blaze demo shop. The receipt shows up under **Your receipts**.
 3. Press **Refund**. The same amount comes back, the receipt burns, and the page shows how many seconds it took.
 4. Press **Send 5 cheats to chipnet** and watch a real node refuse each one.
