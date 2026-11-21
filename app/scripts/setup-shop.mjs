@@ -16,7 +16,8 @@ import { receiptRegistry } from "../src/lib/bcmr.ts";
 const network = process.argv[2];
 const send = process.argv.includes("--send");
 const SITE = process.env.TAKEBACK_SITE ?? "https://takeback-bch.vercel.app";
-const MINTERS = 3n, FLOAT = 100_000n;
+// TAKEBACK_MINTERS and TAKEBACK_FLOAT (sats per minter) can shrink the shop when funds are small.
+const MINTERS = BigInt(process.env.TAKEBACK_MINTERS ?? 3), FLOAT = BigInt(process.env.TAKEBACK_FLOAT ?? 100_000);
 if (!["mainnet", "chipnet", "mock"].includes(network)) { console.error("network: mainnet | chipnet | mock"); process.exit(2); }
 const mnemonic = process.env.TAKEBACK_MERCHANT_MNEMONIC;
 if (!mnemonic) { console.error("TAKEBACK_MERCHANT_MNEMONIC missing"); process.exit(2); }
