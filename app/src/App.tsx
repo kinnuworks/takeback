@@ -18,7 +18,8 @@ const NET: Net = params.get("net") === "mainnet" ? "mainnet" : params.get("net")
 const shop = loadShop(NET);
 const SLIDES_URL = (import.meta.env.VITE_SLIDES_URL as string | undefined) ?? "/slides.html";
 const REPO_URL = (import.meta.env.VITE_REPO_URL as string | undefined) ?? "https://github.com/kinnuworks/takeback";
-const EMBER_ADDRESS = import.meta.env.VITE_EMBER_ADDRESS as string | undefined;
+// The project wallet's token-aware address (seed held by the owner); VITE_EMBER_ADDRESS overrides it.
+const EMBER_ADDRESS = (import.meta.env.VITE_EMBER_ADDRESS as string | undefined) ?? "bitcoincash:zqtly9ycq6rzsxtu6kevfu6s9j4nn4u47c6mmx6mf6";
 const STRIPE_REFUNDS = "https://docs.stripe.com/refunds";
 // ?state=<name> previews one UI state with sample data, for design work. Labelled on screen.
 const PREVIEW_ALIAS: Record<string, string> = { result: "paid", empty: "idle", loading: "paying" };
