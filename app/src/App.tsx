@@ -353,6 +353,7 @@ export default function App() {
           <nav className="tb-top__links" aria-label="Entry links">
             <a href={REPO_URL}>Source code</a>
             <a className="tb-top__sec" href="#books">The books</a>
+            <a className="tb-top__sec" href="#shops">For shops</a>
             <a className="tb-top__sec" href="#proof">The proof</a>
           </nav>
           <span className="tb-top__ember">EMBER2026 votes: {EMBER_ADDRESS ? <code>{EMBER_ADDRESS}</code> : <span className="tb-muted">address coming soon</span>}</span>
@@ -515,6 +516,23 @@ export default function App() {
             )}
             {shop && <p className="tb-muted tb-small">Minter contract: <code>{shop.minterAddress}</code> · receipt category <code>{shop.category.slice(0, 12)}…</code></p>}
             {shop && <p className="tb-small">Check the receipt token on an independent explorer: <a href={`https://tokenexplorer.cash/?tokenId=${shop.category}&network=${NET}`} target="_blank" rel="noreferrer">tokenexplorer.cash</a> shows its name, icon and receipt fields, and checks the metadata against its hash on chain.</p>}
+          </div>
+        </section>
+
+        <section className="tb-sec tb-books" id="shops">
+          <div className="tb-sec__head">
+            <h2>For shops that take Bitcoin Cash</h2>
+            <p>Today a crypto refund means asking the customer for an address and typing the amount by hand (CoinGate's merchant refund page). Takeback makes the refund part of the payment.</p>
+          </div>
+          <div className="tb-out">
+            <div className="tb-table-wrap"><table className="tb-table">
+              <tbody>
+                <tr><th>What the shop gets</th><td>Refunds in one tap that can never exceed what was paid or happen twice, a receipt the customer can see in their wallet, and books that rebuild from the chain.</td></tr>
+                <tr><th>Why it matters</th><td>Retailers estimate that 19.3% of online sales will be returned in 2025 (NRF). A card refund reaches the customer approximately 5 to 10 business days later, and Stripe keeps its processing fee (Stripe's refund docs).</td></tr>
+                <tr><th>Where it starts</th><td>Shops that already take BCH through a processor or a point-of-sale wallet. CoinGate's checkout has taken BCH again since 12 October 2026.</td></tr>
+                <tr><th>How it earns</th><td>A small fee per receipt, or a licence for payment processors. This is a plan; no price has been tested.</td></tr>
+              </tbody>
+            </table></div>
           </div>
         </section>
 
