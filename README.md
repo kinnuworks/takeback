@@ -85,7 +85,7 @@ Limits, in numbers: zero real users and zero mainnet transactions so far; all ch
 - The demo shop runs on chipnet (the test network). It isn't on mainnet yet (waiting for its refund float).
 - A remainder receipt from a partial refund can be refunded in full, but a second partial refund of it needs the holder to add a coin for the fee.
 - Prices are in BCH only. PUSD-priced items are planned.
-- The demo shop approves every valid refund automatically. A real shop would set its own policy.
+- The demo shop approves every valid refund up to 25,000 sats automatically. A real shop would set its own policy.
 
 ## Run it locally
 
