@@ -5,6 +5,7 @@
 import {
   secp256k1, hash160, hash256, binToHex, hexToBin, decodeTransactionBCH, encodeTransactionBCH,
   generateSigningSerializationBCH, encodeLockingBytecodeP2pkh, lockingBytecodeToCashAddress, SigningSerializationFlag,
+  cashAddressToLockingBytecode,
 } from "@bitauth/libauth";
 import { parseExtendedJson, toUint8Array, toBigInt } from "@wizardconnect/core";
 
@@ -64,4 +65,21 @@ export function feeOf(wcJson: unknown): bigint {
   if (typeof tx === "string") return 0n;
   const ins = wc.sourceOutputs.reduce((s, o) => s + toBigInt(o.valueSatoshis as never), 0n);
   return ins - tx.outputs.reduce((s, o) => s + o.valueSatoshis, 0n);
+}
+
+/**
+ * Checks a refund the server prepared before any wallet signs it: input 1 is the receipt being
+ * refunded, and output 1 pays the holder's own address exactly the expected amount. Throws if not.
+ */
+export function checkRefundPlan(wcJson: unknown, inputIndex: number, receipt: { txid: string; vout: number }, holderAddress: string, amount: bigint): void {
+  const wc = parseExtendedJson(JSON.stringify(wcJson)) as { transaction: unknown };
+  const tx = typeof wc.transaction === "string" ? decodeTransactionBCH(hexToBin(wc.transaction)) : (wc.transaction as ReturnType<typeof decodeTransactionBCH>);
+  if (typeof tx === "string") throw new Error("The server's refund couldn't be read");
+  const lb = cashAddressToLockingBytecode(holderAddress);
+  if (typeof lb === "string") throw new Error(lb);
+  const inp = tx.inputs[inputIndex];
+  const out = tx.outputs[1];
+  const ok = inputIndex === 1 && !!inp && binToHex(inp.outpointTransactionHash) === receipt.txid && inp.outpointIndex === receipt.vout
+    && !!out && binToHex(out.lockingBytecode) === binToHex(lb.bytecode) && out.valueSatoshis === amount && !out.token;
+  if (!ok) throw new Error("The refund the server prepared doesn't pay you the receipt's amount; not signing it");
 }

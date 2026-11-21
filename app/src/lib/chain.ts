@@ -37,7 +37,8 @@ export async function shopLedger(shop: ShopConfig, limit = 40): Promise<LedgerRo
   // Read the raw transactions six at a time (one by one took several seconds on a fresh page).
   const todo = recent.map((h) => h.tx_hash).filter((t) => !rawCache.has(t));
   await Promise.all(Array.from({ length: 6 }, async () => {
-    for (let t = todo.shift(); t; t = todo.shift()) rawCache.set(t, await p.getRawTransaction(t));
+    // One transaction that can't be read is skipped, not allowed to fail the whole ledger.
+    for (let t = todo.shift(); t; t = todo.shift()) { try { rawCache.set(t, await p.getRawTransaction(t)); } catch { /* left out of this read */ } }
   }));
   for (const h of recent) {
     const raw = rawCache.get(h.tx_hash);

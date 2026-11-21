@@ -31,8 +31,9 @@ export default async function handler(req: Req, res: Res) {
   try {
     const coins = (await provider.getUtxos(w.address)).filter((u) => !u.token);
     const balance = coins.reduce((s, u) => s + u.satoshis, 0n);
-    if (req.method === "GET") return res.status(200).json({ network: "chipnet", address: w.address, balance: balance.toString() });
+    if (req.method === "GET") { res.setHeader("Cache-Control", "public, s-maxage=10"); return res.status(200).json({ network: "chipnet", address: w.address, balance: balance.toString() }); }
     if (req.method !== "POST") return res.status(405).json({ error: "POST only" });
+    if (!String(req.headers?.["content-type"] ?? "").includes("application/json")) return res.status(415).json({ error: "Send the request as application/json" });
 
     let body: { address?: string };
     try { body = (typeof req.body === "string" ? JSON.parse(req.body) : req.body) ?? {}; }
@@ -64,7 +65,8 @@ export default async function handler(req: Req, res: Res) {
     times.push(now); recent.set(ip, times);
     return res.status(200).json({ txid: sent.txid, amount: AMOUNT.toString() });
   } catch (e) {
-    return res.status(500).json({ error: String((e as Error).message ?? e).split("\n")[0] });
+    console.error("faucet failed:", e);
+    return res.status(500).json({ error: "The test faucet couldn't send right now; try again in a moment" });
   } finally {
     await provider.disconnect?.().catch(() => undefined);
   }

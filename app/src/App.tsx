@@ -5,7 +5,7 @@ import { TransactionBuilder, SignatureTemplate, type SpendableUtxo } from "cashs
 import { buildPurchase, relaySafe, decodeReceipt, isMinterUtxo, p2pkhAddress, minterContract, encodeReceipt, type WalletCoin, type ShopKeys } from "./lib/takeback.ts";
 import { loadShop } from "./lib/shop.ts";
 import { providerFor, shopLedger, sumLedger, txLink, shortTx, type LedgerRow, type Net } from "./lib/chain.ts";
-import { loadBurner, signWcInputs, feeOf, type Burner } from "./lib/burner.ts";
+import { loadBurner, signWcInputs, feeOf, checkRefundPlan, type Burner } from "./lib/burner.ts";
 import contractSource from "../contracts/ReceiptMinter.cash?raw";
 import proof from "./evidence/proof-summary.json";
 import type { CaseResult } from "./lib/attacks.ts";
@@ -194,6 +194,7 @@ export default function App() {
       const resp = await fetch("/api/refund", { method: "POST", headers: { "content-type": "application/json" }, body: JSON.stringify({ txid: r.txid, vout: r.vout, holderAddress: r.address, network: NET, amount: partAmount?.toString() }) });
       const j = await resp.json();
       if (!resp.ok) throw new Error(j.error ?? "Refund request failed");
+      checkRefundPlan(j.wc, j.inputIndex, r, r.address, partAmount ?? r.amount);
       let signed: string;
       if (mode === "demo") signed = signWcInputs(j.wc, [j.inputIndex], burner!);
       else {

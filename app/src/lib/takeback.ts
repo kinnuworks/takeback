@@ -37,11 +37,14 @@ export function encodeReceipt(amount: bigint, orderId: bigint): string {
 }
 
 export function decodeReceipt(commitmentHex: string): { amount: bigint; orderId: bigint } | undefined {
+  // Read each 8-byte half the way the contract does (OP_BIN2NUM): the padding is zeros and the sign
+  // lives in the top byte, so a value like 40,000 (bytes 40 9c 00 ...) stays positive. Trimming the
+  // padding first dropped the byte that kept it positive.
   const b = hexToBin(commitmentHex);
   if (b.length !== 16) return undefined;
-  const trim = (x: Uint8Array) => { let e = x.length; while (e > 0 && x[e - 1] === 0) e--; return x.slice(0, e); };
-  const amount = vmNumberToBigInt(trim(b.slice(0, 8)), { requireMinimalEncoding: false });
-  const orderId = vmNumberToBigInt(trim(b.slice(8, 16)), { requireMinimalEncoding: false });
+  const read = (x: Uint8Array) => vmNumberToBigInt(x, { requireMinimalEncoding: false, maximumVmNumberByteLength: 8 });
+  const amount = read(b.slice(0, 8));
+  const orderId = read(b.slice(8, 16));
   if (typeof amount === "string" || typeof orderId === "string") return undefined;
   return { amount, orderId };
 }
@@ -165,6 +168,7 @@ export function buildPartialRefund(opts: {
   if (!decoded) throw new Error("Malformed receipt");
   if (refundAmount < 546n) throw new Error("A refund has to be at least 546 sats (the dust limit)");
   if (refundAmount >= decoded.amount) throw new Error("A partial refund must be less than the receipt; use a full refund");
+  if (decoded.amount - refundAmount < 546n) throw new Error("A partial refund must leave at least 546 sats on the receipt (the dust limit), or it could never be refunded");
   if (minterUtxo.satoshis - refundAmount < 1000n) throw new Error("The shop's refund float is too low right now");
   const minter = minterContract(keys, provider);
   const plain = toPlainAddress(holderAddress);
