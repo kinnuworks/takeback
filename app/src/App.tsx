@@ -13,7 +13,8 @@ import type { FuzzSummary } from "./lib/fuzz.ts";
 import "./App.css";
 
 const params = new URLSearchParams(location.search);
-const NET: Net = params.get("net") === "chipnet" ? "chipnet" : "mainnet";
+// The plain link opens the mainnet shop once it exists; until then the working chipnet shop.
+const NET: Net = params.get("net") === "mainnet" ? "mainnet" : params.get("net") === "chipnet" ? "chipnet" : loadShop("mainnet") ? "mainnet" : "chipnet";
 const shop = loadShop(NET);
 const SLIDES_URL = (import.meta.env.VITE_SLIDES_URL as string | undefined) ?? "/slides.html";
 const REPO_URL = (import.meta.env.VITE_REPO_URL as string | undefined) ?? "https://github.com/kinnuworks/takeback";
