@@ -33,6 +33,9 @@ echo "== contract: differential fuzzer, 20,000 random transactions (seed 2026112
 echo "== wallets: the receipt registry's parse bytecode, run in the BCMR spec's parsing transaction, yields amount and order id"
 (cd app && node contracts/bcmr-parse.test.mjs | tail -1)
 
+echo "== receipts: amounts and order ids round-trip exactly as the contract reads them (OP_BIN2NUM)"
+(cd app && node tests/decode.test.mjs)
+
 echo "== flow: purchase + refund built by the app, signed by the headless wallet, verified on the VM"
 (cd app && node tests/flow.test.ts | tail -1)
 
@@ -56,6 +59,9 @@ echo "== live no-wallet demo on chipnet: faucet, buy, refund with timing, 5 chea
 
 echo "== live one-click buy: Buy on a cold chipnet page makes and funds a demo wallet, pays, then refunds"
 (cd app && perl -e 'alarm 150; exec @ARGV' node e2e/demo-buy-first.mjs 2>&1 | grep -E "^(PASS|FAIL|BUY)" ; test "${PIPESTATUS[0]}" -eq 0)
+
+echo "== live partial refund: Refund half gives back half and a new receipt for the rest, which then refunds in full"
+(cd app && perl -e 'alarm 150; exec @ARGV' node e2e/demo-partial.mjs 2>&1 | grep -E "^(PASS|FAIL|PARTIAL)" ; test "${PIPESTATUS[0]}" -eq 0)
 
 echo "== wallet: WizardConnect pairing + signing over the real relay (headless test wallet)"
 (cd tools/wiz-harness && TEST_MNEMONIC="abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon about" perl -e 'alarm 90; exec @ARGV' node e2e-relay.mjs 2>&1 | grep -E "VM verify: PASS" || { echo "relay round trip failed"; exit 1; })

@@ -33,6 +33,8 @@ jobs:
         run: node contracts/mutants.test.mjs | tail -1
       - name: Wallets can parse the receipts (BCMR)
         run: node contracts/bcmr-parse.test.mjs | tail -1
+      - name: Receipt amounts and order ids round-trip as the contract reads them
+        run: node tests/decode.test.mjs
       - name: Purchase and refund flow, signed like a WizardConnect wallet
         run: node tests/flow.test.ts | tail -1
       - name: Build
