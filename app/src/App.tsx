@@ -466,6 +466,7 @@ export default function App() {
           <li><b>2. Hold</b><span>The receipt sits in your wallet like a paper receipt: amount and order number, readable in wallets that show tokens.</span></li>
           <li><b>3. Refund</b><span>Press Refund. Exactly the receipt's amount comes back to whoever holds it, the receipt is destroyed, and it can never be refunded twice.</span></li>
         </ol>
+        <p className="tb-steps__note">Built on the May 2026 upgrade: the contract uses its new loops to check every input and output of a payment for the shop's tokens. <a href={`${REPO_URL}/blob/master/app/contracts/ReceiptMinter.cash`} target="_blank" rel="noreferrer">Read the contract</a></p>
 
         {viewState === "connected" && (
           <section className="tb-sec tb-receipts" id="receipts">
