@@ -43,8 +43,9 @@ interface Cheat { id: string; what: string; outcome?: "refused" | "accepted"; re
 function useBchUsd() {
   const [usd, setUsd] = useState<number | null>(null);
   useEffect(() => {
-    fetch("https://api.coingecko.com/api/v3/simple/price?ids=bitcoin-cash&vs_currencies=usd")
-      .then((r) => r.json()).then((j) => setUsd(j?.["bitcoin-cash"]?.usd ?? null)).catch(() => setUsd(null));
+    // Our server reads the price and caches it (api/price.ts); null means no price service answered.
+    fetch("/api/price")
+      .then((r) => r.json()).then((j) => setUsd(typeof j?.usd === "number" ? j.usd : null)).catch(() => setUsd(null));
   }, []);
   return usd;
 }
