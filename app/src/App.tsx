@@ -66,6 +66,8 @@ export default function App() {
   const wc = useWizardConnect({ dappName: "Takeback", dappIcon: `${location.origin}/receipt-icon.png` });
   const usd = useBchUsd();
   const [mode, setMode] = useState<"wc" | "demo" | null>(null);
+  const [copied, setCopied] = useState(false);
+  const onPhone = useMemo(() => { try { return matchMedia("(pointer: coarse)").matches; } catch { return false; } }, []);
   const burner = useMemo<Burner | null>(() => loadBurner(NET), []);
   // On mainnet the no-wallet demo runs only while the owner's mainnet faucet is switched on;
   // otherwise "Try it now" goes to the chipnet shop.
@@ -628,7 +630,17 @@ export default function App() {
       </main>
 
       {wc.uri && wc.qrUri && (
-        <WizardConnectQRDialog show={wc.state === "connecting" && !pv} onClose={() => wc.disconnect()} uri={wc.uri} qrUri={wc.qrUri} title="Connect your wallet" subtitle="Scan with Paytaca or Selene" />
+        <WizardConnectQRDialog show={wc.state === "connecting" && !pv && !onPhone} onClose={() => wc.disconnect()} uri={wc.uri} qrUri={wc.qrUri} title="Connect your wallet" subtitle="Scan with Paytaca or Selene" />
+      )}
+      {wc.uri && wc.state === "connecting" && !pv && onPhone && (
+        // A phone can't scan its own screen: hand the pairing link to a wallet app on this phone instead.
+        <div className="tb-phonebar" role="dialog" aria-label="Connect your wallet">
+          <b>Connect your wallet</b>
+          <a className="tb-btn" href={wc.uri}>Open in your wallet app</a>
+          <button className="tb-btn tb-btn--ghost" onClick={() => { navigator.clipboard?.writeText(wc.uri!).then(() => setCopied(true)).catch(() => undefined); }}>{copied ? "Link copied: paste it into Paytaca or Selene" : "Copy link"}</button>
+          <span>Or open this page on a computer and scan the QR code with your phone.</span>
+          <button className="link" onClick={() => wc.disconnect()}>Cancel</button>
+        </div>
       )}
       {pv === "connecting" && <p className="tb-notice">(Preview) The WizardConnect QR dialog opens here; press Connect on the live page to see the real one.</p>}
       <footer className="tb-foot"><span>Takeback · built for BCH BLAZE 2026.</span> <a href={REPO_URL}>Source code</a> <a href={SLIDES_URL}>Slides</a></footer>

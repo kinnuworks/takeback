@@ -282,3 +282,11 @@ code { overflow-wrap: anywhere; }
 @media (max-width: 560px) {
   .tb-hero__side::after { display: none; }
 }
+
+/* Phones: a bar over the WizardConnect dialog that opens the pairing link in a wallet app. */
+.tb-phonebar { position: fixed; left: 12px; right: 12px; bottom: 12px; z-index: 2147483647; display: grid; gap: 8px; padding: 12px 14px; background: var(--sheet); border: 1px solid var(--frame-line); border-radius: var(--r-card); box-shadow: 0 6px 24px rgba(0, 0, 0, 0.18); font-size: 14px; color: var(--ink-2); }
+.tb-phonebar .tb-btn { justify-self: stretch; text-align: center; }
+.tb-phonebar a.tb-btn { color: var(--btn-fg); text-decoration: none; }
+.tb-phonebar .tb-btn { white-space: normal; }
+.tb-phonebar button.link { justify-self: start; padding: 0; border: 0; background: none; color: var(--ink-2); text-decoration: underline; font: inherit; }
+.tb-phonebar b { font-size: 16px; color: var(--ink); }
