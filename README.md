@@ -4,7 +4,7 @@ Pay with Bitcoin Cash, get a receipt that refunds. Every purchase puts a receipt
 
 It needs Bitcoin Cash because the receipt is a CashToken minted by a covenant inside the payment itself, and the refund rules live in that covenant, so neither the shop's server nor the customer can bend them.
 
-**Live demo:** https://takeback-bch.vercel.app
+**Live demo:** https://takeback-bch.vercel.app (live on Bitcoin Cash mainnet: [a real purchase](https://blockchair.com/bitcoin-cash/transaction/51bbcdde8a1db55f8f8df13d1a0e515d2a2d8c40a9c426e5c58d570463ca3d09) and [its refund](https://blockchair.com/bitcoin-cash/transaction/0288d01e87264130e94a60c9ff0ed858da9e4937b5308a9268aaffeafd69e5d0) through the page, and 56 of 56 cheating transactions refused by two mainnet nodes, [every reply saved](evidence/real-node-mainnet.json); test transactions from our own wallets)
 
 ![Try it now: a demo wallet gets test coins, buys a coffee, gets a receipt, refunds it](docs/demo.gif)
 
