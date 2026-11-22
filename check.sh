@@ -45,6 +45,9 @@ echo "== app: typecheck and build"
 echo "== demo path: real browser, banner/tagline/menu, Connect -> wallet pairs over the relay (video in app/e2e/videos)"
 (cd app && perl -e 'alarm 150; exec @ARGV' node e2e/demo-path.mjs 2>&1 | grep -E "^(PASS|FAIL|video|DEMO)" ; test "${PIPESTATUS[0]}" -eq 0)
 
+echo "== mainnet: when the owner's mainnet demo budget is empty or at its hourly cap, Try it now carries on in the chipnet demo (no error)"
+(cd app && perl -e 'alarm 120; exec @ARGV' node e2e/mainnet-fallback.mjs 2>&1 | grep -E "^(PASS|FAIL|MAINNET)" ; test "${PIPESTATUS[0]}" -eq 0)
+
 echo "== required banner: the Widget Factory slides page is live"
 curl -sf https://takeback-bch.vercel.app/slides.html | grep -q "The story of Takeback" && echo "slides live"
 
