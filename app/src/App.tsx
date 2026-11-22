@@ -74,7 +74,9 @@ export default function App() {
   const [mainnetDemo, setMainnetDemo] = useState(false);
   useEffect(() => {
     if (NET !== "mainnet" || PREVIEW) return;
-    fetch("/api/faucet?net=mainnet").then((r) => r.json()).then((j) => setMainnetDemo(j?.enabled === true)).catch(() => undefined);
+    // Off once the owner's budget can't fund one more demo wallet: "Try it now" then goes to chipnet.
+    const canFund = (b: unknown) => { try { return BigInt(String(b ?? "0")) >= DEMO_FUNDS.mainnet + 2_000n; } catch { return false; } };
+    fetch("/api/faucet?net=mainnet").then((r) => r.json()).then((j) => setMainnetDemo(j?.enabled === true && canFund(j?.balance))).catch(() => undefined);
   }, []);
   const demoHere = NET === "chipnet" || mainnetDemo;
   const [coins, setCoins] = useState<WalletCoin[]>([]);
@@ -147,7 +149,11 @@ export default function App() {
         const r = await fetch("/api/faucet", { method: "POST", headers: { "content-type": "application/json" }, body: JSON.stringify({ address: burner.address, network: NET }) });
         const j = await r.json().catch(() => ({}));
         // A wallet that already holds enough for a coffee carries on even if the faucet can't top it up.
-        if (!r.ok && (await balance()) < 13_500n) throw new Error(j.error ?? "The demo faucet didn't answer");
+        if (!r.ok && (await balance()) < 13_500n) {
+          // The mainnet budget can run out or hit its hourly cap: carry on with the test-network demo.
+          if (NET === "mainnet") { location.href = `${location.pathname}?net=chipnet&demo=1`; return; }
+          throw new Error(j.error ?? "The demo faucet didn't answer");
+        }
         if (r.ok) for (let i = 0; i < 15 && (await balance()) < funds - 1_500n; i++) await sleep(1000);
       }
       return await scanWallet("demo");
