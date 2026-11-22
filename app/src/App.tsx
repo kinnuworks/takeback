@@ -461,6 +461,12 @@ export default function App() {
           </div>
         </section>
 
+        <ol className="tb-steps" aria-label="How it works">
+          <li><b>1. Pay</b><span>One transaction pays the shop and puts a receipt token in your wallet. The contract won't let one happen without the other.</span></li>
+          <li><b>2. Hold</b><span>The receipt sits in your wallet like a paper receipt: amount and order number, readable in wallets that show tokens.</span></li>
+          <li><b>3. Refund</b><span>Press Refund. Exactly the receipt's amount comes back to whoever holds it, the receipt is destroyed, and it can never be refunded twice.</span></li>
+        </ol>
+
         {viewState === "connected" && (
           <section className="tb-sec tb-receipts" id="receipts">
             <div className="tb-sec__head"><h2>Your receipts</h2></div>
