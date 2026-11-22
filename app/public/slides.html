@@ -84,7 +84,7 @@
     <li>Partial refunds keep the rest owed on a new receipt.</li>
     <li>A stolen server key can't drain the shop: the contract limits what it can sign.</li>
     <li>The shop's books rebuild from the chain alone.</li>
-    <li>A refund lands in seconds. A card refund reaches the customer "approximately 5-10 business days later" (Stripe's refund docs).</li>
+    <li>A refund lands in seconds: 0.9 to 6.5 seconds from the click in our 5 timed test runs. A card refund reaches the customer "approximately 5-10 business days later" (Stripe's refund docs).</li>
   </ul>
   <span class="tick" aria-hidden="true"></span><span class="arc" aria-hidden="true"></span><span class="n">3 / 6</span>
 </section>
@@ -93,8 +93,8 @@
   <h2>BCH usage</h2>
   <ul>
     <li>The receipt is a CashTokens NFT, minted by a CashScript covenant inside the payment itself.</li>
-    <li>The covenant uses the 2026 VM's loops to check every other input and output for the shop's tokens.</li>
-    <li>Phone wallets connect with WizardConnect and sign their own inputs.</li>
+    <li>Built on the May 2026 upgrade: the covenant's loops check every other input and output.</li>
+    <li>Phones connect with WizardConnect. tokenexplorer.cash independently checks the receipt's metadata against the chain.</li>
   </ul>
   <div class="proof">
     <div><b>56 of 56</b><span>attacks refused by two real chipnet servers</span></div>
