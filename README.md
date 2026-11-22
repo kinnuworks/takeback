@@ -25,6 +25,8 @@ It needs Bitcoin Cash because the receipt is a CashToken minted by a covenant in
 - **The books come from the chain.** Every purchase and refund spends a minter UTXO, so the page rebuilds sales, refunds and net from the minter's history ([`chain.ts`](app/src/lib/chain.ts)).
 - **CashScript 0.14 on the 2026 VM.** The contract uses the loops from the May 2026 upgrade to check every other input and output for the shop's token category.
 
+Wallet developers: [`docs/receipt-format.md`](docs/receipt-format.md) describes the receipt's bytes, its BCMR parser and how any wallet could show a Refund button.
+
 The heart of the purchase rule, from [`ReceiptMinter.cash`](app/contracts/ReceiptMinter.cash):
 
 ```solidity
@@ -86,6 +88,14 @@ Limits, in numbers: zero real users and zero mainnet transactions so far; all ch
 - A remainder receipt from a partial refund can be refunded in full, but a second partial refund of it needs the holder to add a coin for the fee.
 - Prices are in BCH only. PUSD-priced items are planned.
 - The demo shop approves every valid refund up to 25,000 sats automatically. A real shop would set its own policy.
+
+## Run your own shop
+
+The demo shop is one instance; any shop can open its own with its own keys.
+
+1. Put a 12-word seed for the shop in an env file as `TAKEBACK_MERCHANT_MNEMONIC` and fund its first address (about 310,000 sats on mainnet for three minters with a 100,000-sat refund float each; `TAKEBACK_MINTERS` and `TAKEBACK_FLOAT` make it smaller).
+2. `cd app && node --env-file=<your env file> scripts/setup-shop.mjs mainnet --send` creates the shop's token category, its minter contracts and its BCMR registry in one transaction, and writes `src/shop/mainnet.json`.
+3. Deploy the page with the shop's refund key (the seed's `m/44'/145'/0'/0/1`) as `TAKEBACK_REFUND_KEY`. Top up the refund float later with `scripts/top-up-float.mjs`.
 
 ## Run it locally
 
