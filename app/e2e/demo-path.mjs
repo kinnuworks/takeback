@@ -53,6 +53,14 @@ if (!/Pay with Bitcoin Cash, get a receipt that refunds\./.test(text)) await fai
 step("tagline");
 if ((await page.locator(".menu li").count()) < 3) await fail("menu missing");
 step("menu with 3 items");
+// The first screen links the live mainnet proof: a real purchase and refund and the mainnet attack run.
+if (/[?&]net=chipnet/.test(url)) step("first-screen mainnet proof (skipped on a chipnet link)");
+else {
+  const proof = await page.locator(".tb-hero__proof").first().innerText().catch(() => "");
+  const links = await page.locator(".tb-hero__proof a").evaluateAll((as) => as.map((a) => a.href)).catch(() => []);
+  if (!/mainnet/i.test(proof) || !/56 of 56/.test(proof) || !links.some((h) => /blockchair\.com\/bitcoin-cash\/transaction\/[0-9a-f]{64}/.test(h))) await fail("first screen lacks the mainnet proof line with transaction links");
+  step("first-screen mainnet proof line with transaction links");
+}
 
 await page.getByRole("button", { name: /Connect wallet/ }).click();
 const uri = await page.waitForFunction(() => (document.body.innerText.match(/wiz:\/\/\S+/i) || [null])[0], null, { timeout: 15_000 }).then((h) => h.jsonValue()).catch(() => null);
