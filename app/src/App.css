@@ -84,6 +84,8 @@ code { overflow-wrap: anywhere; }
 .tb-hero__side { display: flex; flex-direction: column; gap: var(--s-4); }
 .tb-hero__deck { font-size: var(--fs-deck); line-height: var(--lh-deck); color: var(--deck-color); max-width: 52ch; padding-right: 18%; }
 .tb-hero__actions { display: flex; flex-wrap: wrap; gap: var(--s-2); }
+.tb-hero__proof { font-size: 14px; color: var(--ink-2); max-width: 60ch; padding-right: 18%; margin: 0 0 14px; }
+.tb-hero__proof a { color: inherit; text-decoration: underline; text-underline-offset: 2px; }
 .tb-hero__hint { font-size: 14px; color: var(--ink-3); max-width: 60ch; padding-right: 18%; display: flex; flex-direction: column; gap: 2px; }
 .tb-wallet { font-size: var(--fs-body); color: var(--ink-2); }
 .tb-wallet code { font-size: 15px; }
@@ -237,7 +239,7 @@ code { overflow-wrap: anywhere; }
   .tb-hero__head, .tb-hero__side { padding: 10px 8px 12px 18px; }
   .tb-hero__head::after { display: none; }
   .tb-hero__side::after { top: auto; bottom: 0; height: 60%; border-top: 0; border-bottom: 1px solid var(--ink); border-radius: 0 0 100% 0 / 0 0 40% 0; width: 30%; }
-  .tb-hero__deck, .tb-hero__hint { padding-right: 0; }
+  .tb-hero__deck, .tb-hero__hint, .tb-hero__proof { padding-right: 0; }
   .tb-window { margin-inline: 0; }
   .tb-window__body { grid-template-columns: 1fr; margin: 10px 10px 0; padding: 14px 14px 24px; gap: var(--s-5); }
   .tb-side { display: none; }

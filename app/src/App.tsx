@@ -71,14 +71,16 @@ export default function App() {
   const burner = useMemo<Burner | null>(() => loadBurner(NET), []);
   // On mainnet the no-wallet demo runs only while the owner's mainnet faucet is switched on;
   // otherwise "Try it now" goes to the chipnet shop.
-  const [mainnetDemo, setMainnetDemo] = useState(false);
+  // null while the budget check runs: the mainnet page starts with the mainnet wording, and if the budget
+  // turns out empty, Try it now still falls back to the chipnet demo (e2e/mainnet-fallback.mjs).
+  const [mainnetDemo, setMainnetDemo] = useState<boolean | null>(NET === "mainnet" ? null : false);
   useEffect(() => {
     if (NET !== "mainnet" || PREVIEW) return;
     // Off once the owner's budget can't fund one more demo wallet: "Try it now" then goes to chipnet.
     const canFund = (b: unknown) => { try { return BigInt(String(b ?? "0")) >= DEMO_FUNDS.mainnet + 2_000n; } catch { return false; } };
     fetch("/api/faucet?net=mainnet").then((r) => r.json()).then((j) => setMainnetDemo(j?.enabled === true && canFund(j?.balance))).catch(() => undefined);
   }, []);
-  const demoHere = NET === "chipnet" || mainnetDemo;
+  const demoHere = NET === "chipnet" || mainnetDemo !== false;
   const [coins, setCoins] = useState<WalletCoin[]>([]);
   const [receipts, setReceipts] = useState<HeldReceipt[]>([]);
   const [busy, setBusy] = useState<string | null>(null);
@@ -385,13 +387,18 @@ export default function App() {
           <div className="tb-hero__head"><h1>Pay with Bitcoin Cash, get a receipt that refunds.</h1></div>
           <div className="tb-hero__side">
             <p className="tb-hero__deck">Every purchase puts a receipt token in your wallet in the same transaction. The shop can refund exactly what's on the receipt, to whoever holds it, once. The contract refuses anything else.</p>
+            {NET === "mainnet" ? (
+              <p className="tb-hero__proof">Live on Bitcoin Cash mainnet: <a href="https://blockchair.com/bitcoin-cash/transaction/51bbcdde8a1db55f8f8df13d1a0e515d2a2d8c40a9c426e5c58d570463ca3d09">a real purchase</a> and <a href="https://blockchair.com/bitcoin-cash/transaction/0288d01e87264130e94a60c9ff0ed858da9e4937b5308a9268aaffeafd69e5d0">its refund</a> through this page, and <a href="https://github.com/kinnuworks/takeback/blob/master/evidence/real-node-mainnet.json">56 of 56 cheating transactions refused</a> by two mainnet nodes. Test transactions from our own wallets.</p>
+            ) : (
+              <p className="tb-hero__proof">This is the test network. The same shop is <a href={`${location.pathname}?net=mainnet`}>live on mainnet</a>, where 56 of 56 cheating transactions were refused by two mainnet nodes.</p>
+            )}
             {viewState !== "connected" ? (
               <>
                 <div className="tb-hero__actions">
                   <button className="tb-btn tb-btn--lg" onClick={startDemo} disabled={!!busy}>Try it now, no wallet needed</button>
                   <button className="tb-btn tb-btn--lg tb-btn--ghost" onClick={() => wc.connect()}>Connect wallet{NET === "mainnet" ? " (real BCH)" : ""}</button>
                 </div>
-                <p className="tb-hero__hint"><span>{NET === "mainnet" && mainnetDemo ? "A demo wallet is made in this browser and gets a few cents of real BCH from the shop." : "Uses the test network: a demo wallet is made in this browser and gets free test coins."}</span> <span>Scan with Paytaca or Selene (WizardConnect).</span></p>
+                <p className="tb-hero__hint"><span>{NET === "mainnet" && mainnetDemo !== false ? "A demo wallet is made in this browser and gets a few cents of real BCH from the shop." : "Uses the test network: a demo wallet is made in this browser and gets free test coins."}</span> <span>Scan with Paytaca or Selene (WizardConnect).</span></p>
               </>
             ) : viewMode === "demo" ? (
               <p className="tb-wallet">
