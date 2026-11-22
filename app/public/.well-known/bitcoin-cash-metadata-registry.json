@@ -1,0 +1,63 @@
+{
+  "$schema": "https://cashtokens.org/bcmr-v2.schema.json",
+  "version": {
+    "major": 1,
+    "minor": 1,
+    "patch": 0
+  },
+  "latestRevision": "2026-11-22T11:42:33.390Z",
+  "registryIdentity": {
+    "name": "Takeback receipts",
+    "description": "Receipts that refund. Each receipt NFT records the amount paid and an order id."
+  },
+  "identities": {
+    "13a64a125725c0a2d831417d0bb035c2f0dfd11742b57ae19c0c82a59df36011": {
+      "2026-11-22T11:42:33.390Z": {
+        "name": "Takeback receipt: Kopi Blaze",
+        "description": "A refundable receipt from the Kopi Blaze demo shop. Hold it to get a refund of exactly the amount paid.",
+        "token": {
+          "category": "13a64a125725c0a2d831417d0bb035c2f0dfd11742b57ae19c0c82a59df36011",
+          "symbol": "RCPT",
+          "nfts": {
+            "description": "Receipt: amount paid (8 bytes) and order id (8 bytes).",
+            "fields": {
+              "amount": {
+                "name": "Amount paid",
+                "description": "What the receipt refunds, in satoshis.",
+                "encoding": {
+                  "type": "number",
+                  "aggregate": "add",
+                  "unit": "sats"
+                }
+              },
+              "order": {
+                "name": "Order",
+                "description": "The shop's order id.",
+                "encoding": {
+                  "type": "number"
+                }
+              }
+            },
+            "parse": {
+              "bytecode": "006b00cf587f7c816b816b",
+              "types": {
+                "": {
+                  "name": "Takeback receipt",
+                  "description": "Refundable: the shop refunds exactly the amount paid, once, to whoever holds it.",
+                  "fields": [
+                    "amount",
+                    "order"
+                  ]
+                }
+              }
+            }
+          }
+        },
+        "uris": {
+          "icon": "https://takeback-bch.vercel.app/receipt-icon.png",
+          "web": "https://takeback-bch.vercel.app"
+        }
+      }
+    }
+  }
+}

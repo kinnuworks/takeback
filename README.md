@@ -9,11 +9,11 @@ It needs Bitcoin Cash because the receipt is a CashToken minted by a covenant in
 ![Try it now: a demo wallet gets test coins, buys a coffee, gets a receipt, refunds it](docs/demo.gif)
 
 **Try it in 30 seconds**
-1. Open https://takeback-bch.vercel.app and press **Try it now, no wallet needed** (or any **Buy** button). A demo wallet is made in your browser and gets free test coins (chipnet, the test network).
-2. Buy a coffee from the Kopi Blaze demo shop. The receipt shows up under **Your receipts**.
+1. Open https://takeback-bch.vercel.app (the Kopi Blaze shop, live on Bitcoin Cash mainnet) and press **Try it now, no wallet needed** (or any **Buy** button). A demo wallet is made in your browser and gets 25,000 sats (a few cents) of real BCH from the shop's small demo budget. When that budget is used up, the same demo runs on chipnet, the test network, with free test coins.
+2. Buy a coffee. The receipt shows up under **Your receipts**.
 3. Press **Refund**. The same amount comes back, the receipt burns, and the page shows how many seconds it took.
-4. Press **Send 5 cheats to chipnet** and watch a real node refuse each one.
-5. With a phone wallet: open the live link, press **Connect wallet**, scan with Paytaca or Selene (WizardConnect), and do the same with real BCH.
+4. Press **Send 5 cheats to mainnet** (or chipnet) and watch a real node refuse each one.
+5. With a phone wallet: open the live link, press **Connect wallet**, scan with Paytaca or Selene (WizardConnect), and do the same with your own BCH.
 
 ## How it uses Bitcoin Cash
 
@@ -50,11 +50,17 @@ No keys or test coins are needed for any of these: from a fresh clone, `cd app &
 - **The mutation test:** [`app/contracts/mutants.test.mjs`](app/contracts/mutants.test.mjs), results in [`evidence/mutants-result.json`](evidence/mutants-result.json).
 - **Chipnet shop (contract v2):** [shop setup](https://chipnet.imaginary.cash/tx/13f39d1ae6350b3b4a15250b9e77af965101942bd28a42944ce3b6769e64d081). Open https://takeback-bch.vercel.app/?net=chipnet to see its books rebuilt from the chain.
 - **The receipt token on an independent explorer:** [tokenexplorer.cash](https://tokenexplorer.cash/?tokenId=ebef9a8f0693ed7d8f765d8f537cfcc920b5e9a6668423d5c5265781bf9c7dd3&network=chipnet) shows the name, icon and parsable receipt fields (amount paid, order id), and checks that the metadata matches its hash on chain. The registry was updated through the shop's authchain ([update](https://chipnet.imaginary.cash/tx/838b952e31274db008df1311f0875ca1e5e9eaf7bf4c30370c841b5a691f93f8)).
-- **Mainnet:** not yet. The mainnet shop goes on chain once its float is funded.
+- **Mainnet:** the shop is live on Bitcoin Cash mainnet ([shop setup](https://blockchair.com/bitcoin-cash/transaction/f5140bf3e9c808794769a35419f468baaff0136db690cf4f07e67517a75d4888), three minters with a 100,000-sat refund float each). A real purchase through the live page with a WizardConnect wallet we control ([purchase](https://blockchair.com/bitcoin-cash/transaction/51bbcdde8a1db55f8f8df13d1a0e515d2a2d8c40a9c426e5c58d570463ca3d09)) and its refund, receipt burned ([refund](https://blockchair.com/bitcoin-cash/transaction/0288d01e87264130e94a60c9ff0ed858da9e4937b5308a9268aaffeafd69e5d0)). The receipt token on [tokenexplorer.cash (mainnet)](https://tokenexplorer.cash/?tokenId=13a64a125725c0a2d831417d0bb035c2f0dfd11742b57ae19c0c82a59df36011&network=mainnet). The live page rebuilds the mainnet books from these transactions.
 
 ## Evidence
 
-Evidence, stated plainly: no real users yet; it was built for this hackathon. Instead: our own break test of the refund rules (written attack lists, a fuzzer and a mutation test), and test transactions from wallets we control on chipnet, including every attack sent to real nodes. Each one reruns from the repo with one command.
+Evidence, stated plainly: no real users yet; it was built for this hackathon. Instead: our own break test of the refund rules (written attack lists, a fuzzer and a mutation test), and test transactions from wallets we control on mainnet and chipnet, including every attack sent to real nodes. Each one reruns from the repo with one command.
+
+> Claim: real Bitcoin Cash mainnet nodes refuse every attack on the live shop's receipt contract, and honest purchases and refunds go through.
+> Evidence type: Test transactions from wallets we control (addresses listed), not real users.
+> Data: lists 1 to 4 (56 attacks), built from the live mainnet shop's coins (minter bitcoincash:pvmqapfxjwqwf0tnzacu9gj35799ervjj2hmpudxrdry6hecw8eezkwd8xrhd) and signed with real keys, the shop's hot refund key included, from our test buyer bitcoincash:qrr4uprqpan9pa3va89axd9leax2cq8xkswywauqa9; sent to bch.imaginary.cash and bch.loping.net on 2026-11-22.
+> Result: 56 of 56 refused by both servers (55 by the contract, 1 by consensus token rules; 95% interval 93.6% to 100.0%); 5 of 5 honest purchases and refunds accepted in the same run. Separately, 5 of 5 purchase-and-refund pairs through the live page accepted (95% interval 56.6% to 100.0%): one with a WizardConnect wallet, four with the no-wallet demo, where the refund was accepted 1.8 to 4.3 s after the click. Every node reply and signed transaction: [`evidence/real-node-mainnet.json`](evidence/real-node-mainnet.json).
+> Rerun: `cd app && node scripts/real-attacks.mjs mainnet --verify` (no keys: refetches the real coins each saved transaction spent and reruns it on the BCH 2026 VM); the live-page pairs: `node e2e/demo-instant-mainnet.mjs` with our mainnet test seed. Limits: the attacks are ours, and so are all the honest mainnet transactions so far.
 
 > Claim: real Bitcoin Cash nodes refuse every attack on the receipt contract, not only our local copy of the VM.
 > Evidence type: Test transactions from wallets we control (chipnet, no monetary value), not real users.
@@ -80,11 +86,11 @@ Evidence, stated plainly: no real users yet; it was built for this hackathon. In
 > Result: 36 of 48 mutants let an attack through, so a test catches each of those deletions. The other 12 are checks another rule or consensus already covers, listed with the reason on the live page. The first run showed three input-order checks no test covered; list 4 now covers them.
 > Rerun: `cd app && node contracts/mutants.test.mjs`. Limits: it deletes whole checks only.
 
-Limits, in numbers: zero real users and zero mainnet transactions so far; all chipnet transactions come from our own wallets and from visitors' demo wallets with test coins; 56 hand-written attacks; the fuzzer's model shares our understanding of the rules. The next real test is a mainnet purchase and refund from a wallet we control, which passes if the holder gets back exactly the receipt amount and the receipt is gone.
+Limits, in numbers: zero real users; every mainnet and chipnet transaction so far comes from our own wallets or from visitors' demo wallets; 56 hand-written attacks; the fuzzer's model shares our understanding of the rules.
 
 ## What doesn't work yet
 
-- The demo shop runs on chipnet (the test network). It isn't on mainnet yet (waiting for its refund float).
+- The no-wallet demo on mainnet has a small budget (250,000 sats, about ten demo wallets of 25,000 sats). After that, **Try it now** runs the same demo on chipnet; a phone wallet still buys and refunds on mainnet.
 - A remainder receipt from a partial refund can be refunded in full, but a second partial refund of it needs the holder to add a coin for the fee.
 - Prices are in BCH only. PUSD-priced items are planned.
 - The demo shop approves every valid refund up to 25,000 sats automatically. A real shop would set its own policy.

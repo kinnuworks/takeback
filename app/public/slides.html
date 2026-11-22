@@ -53,15 +53,15 @@
     </div>
     <figure style="margin:0">
       <div class="slip">
-        <div class="h"><b>KOPI BLAZE</b>demo shop · chipnet</div>
+        <div class="h"><b>KOPI BLAZE</b>demo shop · mainnet</div>
         <div class="r"><span>Kopi</span><span>10,000 sats</span></div>
-        <div class="r"><span>Order</span><span>702101</span></div>
+        <div class="r"><span>Order</span><span>17953479247571</span></div>
         <div class="r"><span>Receipt token</span><span>burned</span></div>
         <div class="t"><span>Refunded</span><span>10,000 sats</span></div>
-        <div class="x">Paid <a href="https://chipnet.imaginary.cash/tx/56b3de85c95044699493c35642bfebc13a5c24647973cbc6741f92f35a067281">56b3de85…067281</a><br>Refund <a href="https://chipnet.imaginary.cash/tx/4353aae77fe5e0e7474c43c580a7f3dede7b07245b37a0ae6d759262cb079b0c">4353aae7…cb079b0c</a></div>
+        <div class="x">Paid <a href="https://blockchair.com/bitcoin-cash/transaction/51bbcdde8a1db55f8f8df13d1a0e515d2a2d8c40a9c426e5c58d570463ca3d09">51bbcdde…ca3d09</a><br>Refund <a href="https://blockchair.com/bitcoin-cash/transaction/0288d01e87264130e94a60c9ff0ed858da9e4937b5308a9268aaffeafd69e5d0">0288d01e…69e5d0</a></div>
         <span class="stamp" aria-hidden="true">Refunded</span>
       </div>
-      <figcaption class="caption">A real Kopi purchase and its refund on chipnet (test coins), from a wallet we control.</figcaption>
+      <figcaption class="caption">A real Kopi purchase and its refund on Bitcoin Cash mainnet, through the live page, from a wallet we control.</figcaption>
     </figure>
   </div>
   <span class="tick" aria-hidden="true"></span><span class="arc" aria-hidden="true"></span><span class="n">1 / 6</span>
@@ -84,7 +84,7 @@
     <li>Partial refunds keep the rest owed on a new receipt.</li>
     <li>A stolen server key can't drain the shop: the contract limits what it can sign.</li>
     <li>The shop's books rebuild from the chain alone.</li>
-    <li>A refund lands in seconds: 0.9 to 6.5 seconds from the click in our 5 timed test runs. A card refund reaches the customer "approximately 5-10 business days later" (Stripe's refund docs).</li>
+    <li>A refund lands in seconds: 1.8 to 4.3 seconds from the click in our 4 timed mainnet runs. A card refund reaches the customer "approximately 5-10 business days later" (Stripe's refund docs).</li>
   </ul>
   <span class="tick" aria-hidden="true"></span><span class="arc" aria-hidden="true"></span><span class="n">3 / 6</span>
 </section>
@@ -92,12 +92,12 @@
 <section class="slide" id="s4">
   <h2>BCH usage</h2>
   <ul>
-    <li>The receipt is a CashTokens NFT, minted by a CashScript covenant inside the payment itself.</li>
+    <li>Live on Bitcoin Cash mainnet. The receipt is a CashTokens NFT, minted by a CashScript covenant inside the payment itself.</li>
     <li>Built on the May 2026 upgrade: the covenant's loops check every other input and output.</li>
     <li>Phones connect with WizardConnect. tokenexplorer.cash independently checks the receipt's metadata against the chain.</li>
   </ul>
   <div class="proof">
-    <div><b>56 of 56</b><span>attacks refused by two real chipnet servers</span></div>
+    <div><b>56 of 56</b><span>attacks refused by two real mainnet servers (and by two chipnet servers)</span></div>
     <div><b>0 of 18,714</b><span>rule-breaking random transactions got through (fuzzer, 20,000 cases)</span></div>
     <div><b>36 of 48</b><span>deleted contract checks caught by a test; the other 12 are covered twice</span></div>
   </div>

@@ -1,1 +1,16 @@
-{ "network": "mainnet", "notSetUp": true }
+{
+  "network": "mainnet",
+  "name": "Kopi Blaze",
+  "category": "13a64a125725c0a2d831417d0bb035c2f0dfd11742b57ae19c0c82a59df36011",
+  "minterAddress": "bitcoincash:pvmqapfxjwqwf0tnzacu9gj35799ervjj2hmpudxrdry6hecw8eezkwd8xrhd",
+  "minterTokenAddress": "bitcoincash:rvmqapfxjwqwf0tnzacu9gj35799ervjj2hmpudxrdry6hecw8eezya3xlzwx",
+  "merchantAddress": "bitcoincash:qzu4vmef4g96v9k08dfgeq8mmsj9m46qsy2p0t6h4u",
+  "merchantPkh": "b9566f29aa0ba616cf3b528c80fbdc245dd74081",
+  "refundPk": "02ede52e8b2384e4ff3ed8b20f403d310b003cc0f31030a44b0a4aae3b53cc1113",
+  "ownerPk": "028e1a8de7981b7a28895ba6761cb11172a112924907b285711b865dea154eec24",
+  "minters": 3,
+  "floatEach": "100000",
+  "bcmrUrl": "https://takeback-bch.vercel.app/.well-known/bitcoin-cash-metadata-registry.json",
+  "bcmrHash": "cf02946f1b1a8323c5d3df919385b948fd5c744ea1f4e6b91fb6982f4f713d54",
+  "genesisTxid": "f5140bf3e9c808794769a35419f468baaff0136db690cf4f07e67517a75d4888"
+}
